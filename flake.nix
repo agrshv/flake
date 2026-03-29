@@ -77,6 +77,7 @@
       };
 
       # Custom installer ISO
+      # nix build .#nixosConfigurations.installer.config.system.build.isoImage
       nixosConfigurations.installer = nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
