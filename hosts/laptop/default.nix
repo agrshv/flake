@@ -11,11 +11,8 @@
 
   catppuccin.enable = true;
 
-  nixpkgs.overlays = [ inputs.millennium.overlays.default ];
-
   nixpkgs.config.allowUnfree = true;
 
-  # TPM2 LUKS unlock
   boot = {
     initrd = {
       systemd.enable = true;
@@ -28,12 +25,7 @@
       efi.canTouchEfiVariables = true;
       limine = {
         enable = true;
-        secureBoot.enable = true;
-        extraEntries = ''
-          /Windows 11
-          protocol: efi
-          path: uuid(80ff5274-5886-4219-89a8-e228f6e1ac0d):/EFI/Microsoft/Boot/bootmgfw.efi
-        '';
+        # secureBoot.enable = true;
       };
     };
     plymouth = {
@@ -42,15 +34,7 @@
     };
   };
 
-  security.tpm2 = {
-    enable = true;
-    pkcs11.enable = true;
-    tctiEnvironment.enable = true;
-  };
-
-  hardware.i2c.enable = true;
-
-  networking.hostName = "desktop";
+  networking.hostName = "laptop";
   networking.networkmanager.enable = true;
   time.timeZone = "Asia/Almaty";
 
@@ -59,8 +43,6 @@
     extraGroups = [
       "wheel"
       "networkmanager"
-      "tss"
-      "i2c"
     ];
     initialPassword = "changeme";
   };
@@ -75,36 +57,28 @@
     options = "--delete-older-than 14d";
   };
 
-  # Sway + minimal stack
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
   };
 
-  # Launcher
   environment.systemPackages = with pkgs; [
-    mako # notifications
-    grim # screenshots
-    slurp # region select
-    wl-clipboard # clipboard
-    pavucontrol # audio control
+    mako
+    grim
+    slurp
+    wl-clipboard
+    pavucontrol
     networkmanagerapplet
     vim
     git
     btop
-    tpm2-tss
-    tpm2-tools
-    ddcutil
-    librsvg # SVG loader for gdk-pixbuf (needed for swaybar tray icons)
   ];
 
-  # Portal for screen sharing, file dialogs etc
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
   };
 
-  # Login manager — keep it minimal
   services.greetd = {
     enable = true;
     settings = {
@@ -117,29 +91,12 @@
 
   programs.ssh.startAgent = true;
 
-  programs.steam = {
-    enable = true;
-    package = pkgs.millennium-steam;
-    extraPackages = with pkgs; [
-      gamescope
-      mangohud
-      mangojuice
-    ];
-    extraCompatPackages = with pkgs; [
-      proton-ge-bin
-      steamtinkerlaunch
-    ];
-    protontricks.enable = true;
-  };
-
-  # Audio
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     pulse.enable = true;
   };
 
-  # Fonts
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
@@ -167,9 +124,4 @@
   };
 
   system.stateVersion = "25.11";
-
-  system.activationScripts.efiBootFallback = ''
-    mkdir -p /boot/EFI/boot
-    touch /boot/EFI/boot/BOOTX64.EFI
-  '';
 }

@@ -23,12 +23,10 @@
               content = {
                 type = "luks";
                 name = "cryptroot";
-                # TPM2 unlock settings
                 settings = {
                   allowDiscards = true;
                   bypassWorkqueues = true;
                 };
-                # Password fallback is set during install
                 content = {
                   type = "btrfs";
                   extraArgs = [ "-f" ];
