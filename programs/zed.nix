@@ -14,7 +14,10 @@ in
     mutableUserSettings = false;
     mutableUserTasks = false;
     package = pkgs-unstable.zed-editor;
-    extensions = [ "nix" "git-firefly" ];
+    extensions = [
+      "nix"
+      "git-firefly"
+    ];
     extraPackages = with pkgs; [
       nixd
       nil

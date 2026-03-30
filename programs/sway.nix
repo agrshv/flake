@@ -18,6 +18,8 @@
       };
       output."*".bg = "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png fill";
       output."DP-4".mode = "1920x1080@239.757Hz";
+      output."HDMI-A-1".position = "0 0";
+      output."eDP-1".position = "0 1080";
       bars = [
         {
           fonts = {
@@ -30,7 +32,7 @@
           statusCommand = "${pkgs.i3status}/bin/i3status";
           workspaceButtons = true;
           workspaceNumbers = true;
-          trayOutput = "DP-4";
+          trayOutput = "*";
           extraConfig = ''
             icon_theme Papirus-Dark
           '';

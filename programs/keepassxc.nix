@@ -8,6 +8,7 @@
       General.ConfigVersion = 2;
       Browser.Enabled = true;
       SSHAgent.Enabled = true;
+      FdoSecrets.Enabled = true;
       GUI = {
         TrayIconAppearance = "monochrome-light";
         ApplicationTheme = "dark";
