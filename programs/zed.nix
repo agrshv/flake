@@ -14,6 +14,7 @@ in
     mutableUserSettings = false;
     mutableUserTasks = false;
     package = pkgs-unstable.zed-editor;
+    extensions = [ "nix" "git-firefly" ];
     extraPackages = with pkgs; [
       nixd
       nil
@@ -34,7 +35,6 @@ in
         show_onboarding_banner = true;
       };
       tabs.show_close_button = "hidden";
-      
     };
   };
 }
