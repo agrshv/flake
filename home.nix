@@ -9,6 +9,7 @@
     ./programs/ghostty.nix
     ./programs/git.nix
     ./programs/keepassxc.nix
+    ./programs/mako.nix
     ./programs/nh.nix
     ./programs/obsidian.nix
     ./programs/ssh.nix

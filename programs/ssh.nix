@@ -1,5 +1,3 @@
-{ ... }:
-
 {
   programs.ssh = {
     enable = true;
@@ -12,9 +10,12 @@
       serverAliveCountMax = 3;
       hashKnownHosts = false;
       userKnownHostsFile = "~/.ssh/known_hosts";
-      controlMaster = "no";
       controlPath = "~/.ssh/master-%r@%n:%p";
+      controlMaster = "no";
       controlPersist = "no";
+      setEnv = {
+        TERM = "xterm-256color";
+      };
       extraOptions."StrictHostKeyChecking" = "accept-new";
     };
   };
