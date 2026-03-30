@@ -23,7 +23,7 @@ in
       autosave.after_delay.milliseconds = 1000;
       agent_servers.claude-acp = {
         type = "registry";
-        env.CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}";
+        env.CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}/bin/claude";
       };
       ui_font_size = 16;
       buffer_font_size = 15;
