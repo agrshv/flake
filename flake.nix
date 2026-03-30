@@ -15,6 +15,10 @@
     millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
     catppuccin.url = "github:catppuccin/nix/release-25.11";
     nur.url = "github:nix-community/NUR";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -27,6 +31,7 @@
       millennium,
       catppuccin,
       nur,
+      sops-nix,
       ...
     }@inputs:
     let
@@ -62,10 +67,12 @@
           disko.nixosModules.disko
           home-manager.nixosModules.home-manager
           catppuccin.nixosModules.catppuccin
+          sops-nix.nixosModules.sops
           {
             nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ sops-nix.homeManagerModules.sops ];
             home-manager.users.d3spair.imports = [
               ./home.nix
               catppuccin.homeModules.catppuccin

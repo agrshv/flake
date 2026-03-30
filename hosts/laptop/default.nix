@@ -9,6 +9,11 @@
     ./hardware-configuration.nix
   ];
 
+  sops = {
+    defaultSopsFile = ../../secrets/workstation.yaml;
+    age.keyFile = "/home/d3spair/.config/sops/age/keys.txt";
+  };
+
   catppuccin.enable = true;
 
   nixpkgs.config.allowUnfree = true;

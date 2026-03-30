@@ -1,0 +1,17 @@
+keys:
+  # Run: nix run nixpkgs#ssh-to-age -- -private-key -i ~/personal_key > ~/.config/sops/age/keys.txt
+  # And: chmod 600 ~/.config/sops/age/keys.txt
+  # Then: nix shell nixpkgs#age -c age-keygen -y ~/.config/sops/age/keys.txt
+  - &personal_key age19ejemfxgq3eptdpycma3dwczjgek7j6jawdm7c9mkvev6kdwgegslfpcnr
+
+creation_rules:
+  - path_regex: secrets/workstation\.yaml$
+    key_groups:
+      - age:
+          - *personal_key
+
+  # Common secrets accessible by all hosts
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+      - age:
+          - *personal_key

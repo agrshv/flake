@@ -1,11 +1,13 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
     ./programs/bash.nix
     ./programs/claude-code.nix
+    ./programs/doctl.nix
     ./programs/firefox.nix
     ./programs/fuzzel.nix
+    ./programs/ghorg.nix
     ./programs/ghostty.nix
     ./programs/git.nix
     ./programs/keepassxc.nix
@@ -18,6 +20,11 @@
     ./programs/vesktop.nix
     ./programs/zed.nix
   ];
+
+  sops = {
+    age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+    defaultSopsFile = secrets/workstation.yaml;
+  };
 
   home.username = "d3spair";
   home.homeDirectory = "/home/d3spair";
