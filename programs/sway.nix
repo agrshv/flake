@@ -15,6 +15,10 @@
           xkb_options = "grp:alt_shift_toggle";
         };
         "type:pointer".accel_profile = "flat";
+        "type:touchpad" = {
+          natural_scroll = "enabled";
+          tap = "enabled";
+        };
       };
       output."*".bg = "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png fill";
       output."DP-4".mode = "1920x1080@239.757Hz";

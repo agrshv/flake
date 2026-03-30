@@ -14,6 +14,7 @@
     ./programs/ssh.nix
     ./programs/starship.nix
     ./programs/sway.nix
+    ./programs/vesktop.nix
     ./programs/zed.nix
   ];
 
