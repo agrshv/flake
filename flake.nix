@@ -120,9 +120,21 @@
                   set -euo pipefail
 
                   CONFIG_DIR="/etc/nixos-config"
+                  HOSTS=(desktop laptop)
 
                   echo "=== NixOS Installer ==="
                   echo "Config source: $CONFIG_DIR"
+                  echo ""
+
+                  # Select host
+                  echo "Available hosts:"
+                  for i in "''${!HOSTS[@]}"; do
+                    echo "  $((i+1))) ''${HOSTS[$i]}"
+                  done
+                  echo ""
+                  read -rp "Select host (1-''${#HOSTS[@]}): " HOST_NUM
+                  HOST="''${HOSTS[$((HOST_NUM-1))]}"
+                  echo "Selected: $HOST"
                   echo ""
 
                   # Show available disks
@@ -141,16 +153,16 @@
 
                   # Patch the disk device in disko config
                   sed -i "s|/dev/nvme0n1|$TARGET_DISK|g" \
-                    "$WORK/hosts/desktop/disko.nix"
+                    "$WORK/hosts/$HOST/disko.nix"
 
                   # Run disko
                   echo "Partitioning and formatting..."
                   nix run github:nix-community/disko -- \
-                    --mode disko "$WORK/hosts/desktop/disko.nix"
+                    --mode disko "$WORK/hosts/$HOST/disko.nix"
 
                   # Install
                   echo "Installing NixOS..."
-                  nixos-install --flake "$WORK#desktop" --no-root-passwd
+                  nixos-install --flake "$WORK#$HOST" --no-root-passwd
 
                   echo ""
                   echo "Done! You can reboot now."
