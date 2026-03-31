@@ -7,6 +7,8 @@ let
   };
 in
 {
+  home.sessionVariables.EDITOR = "${pkgs-unstable.zed-editor}/bin/zeditor -w";
+  
   programs.zed-editor = {
     enable = true;
     mutableUserDebug = false;
@@ -38,6 +40,7 @@ in
         show_onboarding_banner = true;
       };
       tabs.show_close_button = "hidden";
+      lsp.nil.settings.nil.nix.flake.autoArchive = true;
     };
   };
 }

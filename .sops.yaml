@@ -9,7 +9,10 @@ creation_rules:
     key_groups:
       - age:
           - *personal_key
-
+  - path_regex: secrets/kubeconfig\.yaml$
+    key_groups:
+      - age:
+          - *personal_key
   # Common secrets accessible by all hosts
   - path_regex: secrets/common\.yaml$
     key_groups:

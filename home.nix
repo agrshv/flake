@@ -10,6 +10,7 @@
     ./programs/ghorg.nix
     ./programs/ghostty.nix
     ./programs/git.nix
+    ./programs/k9s.nix
     ./programs/keepassxc.nix
     ./programs/mako.nix
     ./programs/nh.nix
