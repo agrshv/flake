@@ -46,10 +46,12 @@
           disko.nixosModules.disko
           home-manager.nixosModules.home-manager
           catppuccin.nixosModules.catppuccin
+          sops-nix.nixosModules.sops
           {
             nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ sops-nix.homeManagerModules.sops ];
             home-manager.users.d3spair.imports = [
               ./home.nix
               catppuccin.homeModules.catppuccin

@@ -21,7 +21,10 @@
         };
       };
       output."*".bg = "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png fill";
-      output."DP-4".mode = "1920x1080@239.757Hz";
+      output."DP-4" = {
+        mode = "1920x1080@239.757Hz";
+        adaptive_sync = "on";
+      };
       output."HDMI-A-1".position = "0 0";
       output."eDP-1".position = "0 1080";
       bars = [
