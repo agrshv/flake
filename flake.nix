@@ -152,7 +152,7 @@
                   set -euo pipefail
 
                   CONFIG_DIR="/etc/nixos-config"
-                  HOSTS=(desktop laptop)
+                  HOSTS=(home-desktop home-laptop work-laptop)
 
                   echo "=== NixOS Installer ==="
                   echo "Config source: $CONFIG_DIR"
