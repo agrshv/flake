@@ -20,6 +20,7 @@
     ./programs/starship.nix
     ./programs/sway.nix
     ./programs/vesktop.nix
+    ./programs/waybar.nix
     ./programs/zed.nix
   ];
 
@@ -54,7 +55,6 @@
     platformTheme.name = "kvantum";
     style = {
       name = "kvantum";
-      catppuccin.enable = true;
     };
   };
 

@@ -27,50 +27,7 @@
       };
       output."HDMI-A-1".position = "0 0";
       output."eDP-1".position = "0 1080";
-      bars = [
-        {
-          fonts = {
-            names = [ "monospace" ];
-            size = 8.0;
-          };
-          mode = "dock";
-          hiddenState = "hide";
-          position = "top";
-          statusCommand = "${pkgs.i3status}/bin/i3status";
-          workspaceButtons = true;
-          workspaceNumbers = true;
-          trayOutput = "*";
-          extraConfig = ''
-            icon_theme Papirus-Dark
-          '';
-          colors = {
-            background = "$base";
-            statusline = "$text";
-            focusedStatusline = "$text";
-            separator = "$base";
-            focusedWorkspace = {
-              border = "$base";
-              background = "$mauve";
-              text = "$crust";
-            };
-            activeWorkspace = {
-              border = "$base";
-              background = "$surface2";
-              text = "$text";
-            };
-            inactiveWorkspace = {
-              border = "$base";
-              background = "$base";
-              text = "$text";
-            };
-            urgentWorkspace = {
-              border = "$base";
-              background = "$red";
-              text = "$crust";
-            };
-          };
-        }
-      ];
+      bars = []; # Disabled in favor of waybar
       colors = {
         focused = {
           border = "$lavender";
