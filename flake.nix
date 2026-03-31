@@ -39,7 +39,7 @@
     in
     {
       # The actual installed system
-      nixosConfigurations.desktop = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.home-desktop = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs; };
         modules = [
@@ -58,11 +58,11 @@
             ];
             home-manager.extraSpecialArgs = { inherit inputs; };
           }
-          ./hosts/desktop
+          ./hosts/home-desktop
         ];
       };
 
-      nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.work-laptop = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs; };
         modules = [
@@ -81,7 +81,30 @@
             ];
             home-manager.extraSpecialArgs = { inherit inputs; };
           }
-          ./hosts/laptop
+          ./hosts/work-laptop
+        ];
+      };
+
+      nixosConfigurations.home-laptop = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = [
+          disko.nixosModules.disko
+          home-manager.nixosModules.home-manager
+          catppuccin.nixosModules.catppuccin
+          sops-nix.nixosModules.sops
+          {
+            nixpkgs.overlays = [ nur.overlays.default ];
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ sops-nix.homeManagerModules.sops ];
+            home-manager.users.d3spair.imports = [
+              ./home.nix
+              catppuccin.homeModules.catppuccin
+            ];
+            home-manager.extraSpecialArgs = { inherit inputs; };
+          }
+          ./hosts/home-laptop
         ];
       };
 

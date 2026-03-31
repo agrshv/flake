@@ -48,7 +48,7 @@
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
-  networking.hostName = "laptop";
+  networking.hostName = "work-laptop";
   networking.networkmanager.enable = true;
   time.timeZone = "Asia/Almaty";
 
