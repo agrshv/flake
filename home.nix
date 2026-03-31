@@ -65,6 +65,8 @@
     };
   };
 
+  services.network-manager-applet.enable = true;
+
   home.packages = with pkgs; [
     telegram-desktop
     teams-for-linux
