@@ -30,7 +30,7 @@
         };
 
         memory = {
-          format = "{}% nf-md-memory";
+          format = "{}% 󰍛";
         };
 
         battery = {
