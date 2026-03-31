@@ -37,7 +37,7 @@ in
       auto_update = false;
       title_bar = {
         show_sign_in = false;
-        show_onboarding_banner = true;
+        show_onboarding_banner = false;
       };
       tabs.show_close_button = "hidden";
       lsp.nil.settings.nil.nix.flake.autoArchive = true;
