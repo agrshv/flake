@@ -12,6 +12,7 @@
     ./programs/git.nix
     ./programs/k9s.nix
     ./programs/keepassxc.nix
+    ./programs/kubectl.nix
     ./programs/mako.nix
     ./programs/nh.nix
     ./programs/obsidian.nix
