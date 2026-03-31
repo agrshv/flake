@@ -1,5 +1,6 @@
 keys:
-  # Run: nix run nixpkgs#ssh-to-age -- -private-key -i ~/personal_key > ~/.config/sops/age/keys.txt
+  # Run: mkdir -p ~/.config/sops/age
+  # And: nix run nixpkgs#ssh-to-age -- -private-key -i ~/personal_key > ~/.config/sops/age/keys.txt
   # And: chmod 600 ~/.config/sops/age/keys.txt
   # Then: nix shell nixpkgs#age -c age-keygen -y ~/.config/sops/age/keys.txt
   - &personal_key age19ejemfxgq3eptdpycma3dwczjgek7j6jawdm7c9mkvev6kdwgegslfpcnr
