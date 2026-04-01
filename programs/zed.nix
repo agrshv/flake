@@ -8,7 +8,7 @@ let
 in
 {
   home.sessionVariables.EDITOR = "${pkgs-unstable.zed-editor}/bin/zeditor -w";
-  
+
   programs.zed-editor = {
     enable = true;
     mutableUserDebug = false;
@@ -19,6 +19,7 @@ in
     extensions = [
       "nix"
       "git-firefly"
+      "opentofu"
     ];
     extraPackages = with pkgs; [
       nixd
