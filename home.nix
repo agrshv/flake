@@ -19,6 +19,7 @@
     ./programs/ssh.nix
     ./programs/starship.nix
     ./programs/sway.nix
+    ./programs/swaylock.nix
     ./programs/vesktop.nix
     ./programs/waybar.nix
     ./programs/zed.nix

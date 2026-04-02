@@ -1,12 +1,15 @@
-{ pkgs, ... }:
+{ pkgs, lib, config, ... }:
 
-{
+let
+  modifier = config.wayland.windowManager.sway.config.modifier;
+in {
   wayland.windowManager.sway = {
     enable = true;
     config = {
-      terminal = "${pkgs.ghostty}/bin/ghostty";
-      menu = "${pkgs.fuzzel}/bin/fuzzel";
+      terminal = lib.getExe pkgs.ghostty;
+      menu = lib.getExe pkgs.fuzzel;
       modifier = "Mod4";
+      bindkeysToCode = true;
       input = {
         "type:keyboard" = {
           repeat_rate = "50";
@@ -20,14 +23,17 @@
           tap = "enabled";
         };
       };
-      output."*".bg = "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png fill";
-      output."DP-4" = {
-        mode = "1920x1080@239.757Hz";
-        adaptive_sync = "on";
+      output = {
+        "*".bg =
+          "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png fill";
+        "DP-4" = {
+          mode = "1920x1080@239.757Hz";
+          adaptive_sync = "on";
+        };
+        "HDMI-A-1".position = "0 0";
+        "eDP-1".position = "0 1080";
       };
-      output."HDMI-A-1".position = "0 0";
-      output."eDP-1".position = "0 1080";
-      bars = []; # Disabled in favor of waybar
+      bars = [ ]; # Disabled in favor of waybar
       colors = {
         focused = {
           border = "$lavender";
@@ -65,6 +71,10 @@
           childBorder = "$overlay0";
         };
         background = "$base";
+      };
+      keybindings = lib.mkOptionDefault {
+        "${modifier}+Shift+S" = ''exec ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png'';
+        "${modifier}+Escape" = "exec ${lib.getExe pkgs.swaylock}";
       };
     };
   };
