@@ -30,8 +30,11 @@ in {
           mode = "1920x1080@239.757Hz";
           adaptive_sync = "on";
         };
-        "HDMI-A-1".position = "0 0";
-        "eDP-1".position = "0 1080";
+        "HDMI-A-1" = {
+          mode = "2560x1440@99.946Hz";
+          position = "0 0";
+        };
+        "eDP-1".position = "0 1440";
       };
       bars = [ ]; # Disabled in favor of waybar
       colors = {
