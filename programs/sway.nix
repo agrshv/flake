@@ -6,6 +6,7 @@ in {
   wayland.windowManager.sway = {
     enable = true;
     config = {
+      defaultWorkspace = "workspace number 1";
       terminal = lib.getExe pkgs.ghostty;
       menu = lib.getExe pkgs.fuzzel;
       modifier = "Mod4";
