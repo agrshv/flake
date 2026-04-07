@@ -25,7 +25,7 @@
         background = false;
         args = [
           "-c"
-          ''suspended=$(${lib.getExe pkgs.kubectl} --context $CONTEXT get helmreleases -n $NAMESPACE $NAME -o=custom-columns=TYPE:.spec.suspend | tail -1); verb=$([ $suspended = "true" ] && echo "resume" || echo "suspend"); ${lib.getExe pkgs.flux} $verb helmrelease --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K''
+          ''suspended=$(${lib.getExe pkgs.kubectl} --context $CONTEXT get helmreleases -n $NAMESPACE $NAME -o=custom-columns=TYPE:.spec.suspend | tail -1); verb=$([ $suspended = "true" ] && echo "resume" || echo "suspend"); ${lib.getExe pkgs.fluxcd} $verb helmrelease --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K''
         ];
       };
       flux_toggle-kustomization = {
@@ -37,7 +37,7 @@
         background = false;
         args = [
           "-c"
-          ''suspended=$(${lib.getExe pkgs.kubectl} --context $CONTEXT get kustomizations -n $NAMESPACE $NAME -o=custom-columns=TYPE:.spec.suspend | tail -1); verb=$([ $suspended = "true" ] && echo "resume" || echo "suspend"); ${lib.getExe pkgs.flux} $verb kustomization --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K''
+          ''suspended=$(${lib.getExe pkgs.kubectl} --context $CONTEXT get kustomizations -n $NAMESPACE $NAME -o=custom-columns=TYPE:.spec.suspend | tail -1); verb=$([ $suspended = "true" ] && echo "resume" || echo "suspend"); ${lib.getExe pkgs.fluxcd} $verb kustomization --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K''
         ];
       };
       flux_reconcile-git = {
@@ -133,7 +133,7 @@
         background = false;
         args = [
           "-c"
-          ''if [ -n "$RESOURCE_GROUP" ]; then api_endpoint="/apis/$RESOURCE_GROUP/$RESOURCE_VERSION"; else api_endpoint="/api/$RESOURCE_VERSION"; fi; api_resource=$(${lib.getExe pkgs.kubectl} get --raw "''${api_endpoint}" | jq -r ".resources[] | select(.name==\"$RESOURCE_NAME\")"); kind=$(echo ''${api_resource} | jq -r '.kind'); namespace_arg=$(echo ''${api_resource} | jq -r "if .namespaced == true then \"--namespace $NAMESPACE\" else \"\" end"); [ -n "$RESOURCE_GROUP" ] && api_version=$RESOURCE_GROUP/; api_version=''${api_version}$RESOURCE_VERSION; ${lib.getExe pkgs.flux} trace --context $CONTEXT --kind ''${kind} --api-version ''${api_version} ''${namespace_arg} $NAME |& ${lib.getExe pkgs.less} -K''
+          ''if [ -n "$RESOURCE_GROUP" ]; then api_endpoint="/apis/$RESOURCE_GROUP/$RESOURCE_VERSION"; else api_endpoint="/api/$RESOURCE_VERSION"; fi; api_resource=$(${lib.getExe pkgs.kubectl} get --raw "''${api_endpoint}" | jq -r ".resources[] | select(.name==\"$RESOURCE_NAME\")"); kind=$(echo ''${api_resource} | jq -r '.kind'); namespace_arg=$(echo ''${api_resource} | jq -r "if .namespaced == true then \"--namespace $NAMESPACE\" else \"\" end"); [ -n "$RESOURCE_GROUP" ] && api_version=$RESOURCE_GROUP/; api_version=''${api_version}$RESOURCE_VERSION; ${lib.getExe pkgs.fluxcd} trace --context $CONTEXT --kind ''${kind} --api-version ''${api_version} ''${namespace_arg} $NAME |& ${lib.getExe pkgs.less} -K''
         ];
       };
       flux_get-suspended-helmreleases = {
