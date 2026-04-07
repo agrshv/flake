@@ -16,6 +16,7 @@
     ./programs/mako.nix
     ./programs/nh.nix
     ./programs/obsidian.nix
+    ./programs/remmina.nix
     ./programs/ssh.nix
     ./programs/starship.nix
     ./programs/sway.nix
