@@ -49,7 +49,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.flux} reconcile source git --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.fluxcd} reconcile source git --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-hr = {
@@ -61,7 +61,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.flux} reconcile helmrelease --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.fluxcd} reconcile helmrelease --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-helm-repo = {
@@ -73,7 +73,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.flux} reconcile source helm --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.fluxcd} reconcile source helm --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-oci-repo = {
@@ -85,7 +85,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.flux} reconcile source oci --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.fluxcd} reconcile source oci --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-ks = {
@@ -97,7 +97,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.flux} reconcile kustomization --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.fluxcd} reconcile kustomization --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-ir = {
@@ -109,7 +109,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.flux} reconcile image repository --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.fluxcd} reconcile image repository --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-iua = {
@@ -121,7 +121,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.flux} reconcile image update --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.fluxcd} reconcile image update --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_trace = {
