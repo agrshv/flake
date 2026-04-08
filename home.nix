@@ -10,6 +10,7 @@
     ./programs/ghorg.nix
     ./programs/ghostty.nix
     ./programs/git.nix
+    ./programs/glab.nix
     ./programs/k9s.nix
     ./programs/keepassxc.nix
     ./programs/kubectl.nix
