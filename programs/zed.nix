@@ -20,6 +20,7 @@ in
       "nix"
       "git-firefly"
       "opentofu"
+      "dockerfile"
     ];
     extraPackages = with pkgs; [
       nixd
