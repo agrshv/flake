@@ -22,6 +22,7 @@ in
       "opentofu"
       "dockerfile"
       "toml"
+      "rego"
     ];
     extraPackages = with pkgs; [
       nixd
