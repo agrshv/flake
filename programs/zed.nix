@@ -1,4 +1,9 @@
-{ pkgs, inputs, ... }:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 let
   pkgs-unstable = import inputs.nixpkgs-unstable {
@@ -33,7 +38,7 @@ in
       autosave.after_delay.milliseconds = 1000;
       agent_servers.claude-acp = {
         type = "registry";
-        env.CLAUDE_CODE_EXECUTABLE = "${pkgs.claude-code}/bin/claude";
+        env.CLAUDE_CODE_EXECUTABLE = "${lib.getExe pkgs-unstable.claude-code}";
       };
       ui_font_size = 16;
       buffer_font_size = 15;
