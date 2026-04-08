@@ -21,6 +21,7 @@ in
       "git-firefly"
       "opentofu"
       "dockerfile"
+      "toml"
     ];
     extraPackages = with pkgs; [
       nixd
