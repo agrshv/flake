@@ -137,5 +137,13 @@
     };
   };
 
+  virtualisation.docker = {
+    storageDriver = "btrfs";
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+  };
+
   system.stateVersion = "25.11";
 }
