@@ -30,7 +30,7 @@
       efi.canTouchEfiVariables = true;
       limine = {
         enable = true;
-        # secureBoot.enable = true;
+        secureBoot.enable = true;
       };
     };
     plymouth = {
@@ -97,7 +97,7 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --user-menu --issue --asterisks --remember --remember-user-session --time";
+        command = "${pkgs.tuigreet}/bin/tuigreet --user-menu --asterisks --remember --remember-user-session --time";
         user = "greeter";
       };
     };
