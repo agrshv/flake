@@ -108,6 +108,17 @@
         ];
       };
 
+      nixosConfigurations.home-server = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = [
+          disko.nixosModules.disko
+          catppuccin.nixosModules.catppuccin
+          sops-nix.nixosModules.sops
+          ./hosts/home-server
+        ];
+      };
+
       # Custom installer ISO
       # nix build .#nixosConfigurations.installer.config.system.build.isoImage
       nixosConfigurations.installer = nixpkgs.lib.nixosSystem {
@@ -144,6 +155,12 @@
               hardware.enableRedistributableFirmware = true;
               networking.networkmanager.enable = true;
 
+              services.openssh.enable = true;
+
+              users.users.nixos.openssh.authorizedKeys.keys = [
+                "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFoJfwlfB0GAnaPFj2oLVK0HA9uGWPwoTfsfTrIPHpgb @personal_key"
+              ];
+
               # Optional: include an install script
               environment.etc."install.sh" = {
                 mode = "0755";
@@ -152,7 +169,7 @@
                   set -euo pipefail
 
                   CONFIG_DIR="/etc/nixos-config"
-                  HOSTS=(home-desktop home-laptop work-laptop)
+                  HOSTS=(home-desktop home-laptop home-server work-laptop)
 
                   echo "=== NixOS Installer ==="
                   echo "Config source: $CONFIG_DIR"

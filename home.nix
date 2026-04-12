@@ -23,6 +23,7 @@
     ./programs/starship.nix
     ./programs/sway.nix
     ./programs/swaylock.nix
+    ./programs/udiskie.nix
     ./programs/vesktop.nix
     ./programs/waybar.nix
     ./programs/zed.nix
