@@ -106,5 +106,11 @@
   #   };
   # };
 
+  services.navidrome = {
+    enable = true;
+    openFirewall = true;
+    settings.Address = "0.0.0.0";
+  };
+
   system.stateVersion = "25.11";
 }
