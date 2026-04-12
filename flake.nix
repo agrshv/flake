@@ -108,7 +108,7 @@
         ];
       };
 
-      # nixos-rebuild switch --flake .#home-server --target-host 192.168.88.19 --use-remote-sudo
+      # nixos-rebuild switch --flake .#home-server --target-host 192.168.88.23 --sudo --ask-sudo-password
       nixosConfigurations.home-server = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs; };
