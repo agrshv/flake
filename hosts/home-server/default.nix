@@ -83,6 +83,17 @@
       EnableInsightsCollector = true;
     };
   };
+  services.miniflux = {
+    enable = true;
+    config = {
+      LISTEN_ADDR = "0.0.0.0:8080";
+      CREATE_ADMIN = false;
+    };
+  };
+
+  networking.firewall.allowedTCPPorts = [
+    8080
+  ];
 
   system.stateVersion = "25.11";
 }
