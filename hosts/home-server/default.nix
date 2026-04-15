@@ -1,12 +1,19 @@
 {
   pkgs,
-  inputs,
   ...
 }:
 {
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
+
+    ./miniflux.nix
+    ./navidrome.nix
+    ./nginx.nix
+    ./paperless.nix
+    ./postgresql.nix
+    ./readeck.nix
+    ./searx.nix
   ];
 
   sops = {
@@ -73,26 +80,6 @@
     "root"
     "@wheel"
     "d3spair"
-  ];
-
-  services.navidrome = {
-    enable = true;
-    openFirewall = true;
-    settings = {
-      Address = "0.0.0.0";
-      EnableInsightsCollector = true;
-    };
-  };
-  services.miniflux = {
-    enable = true;
-    config = {
-      LISTEN_ADDR = "0.0.0.0:8080";
-      CREATE_ADMIN = false;
-    };
-  };
-
-  networking.firewall.allowedTCPPorts = [
-    8080
   ];
 
   system.stateVersion = "25.11";
