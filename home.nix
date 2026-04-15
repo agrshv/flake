@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./programs/awscli.nix
     ./programs/bash.nix
     ./programs/claude-code.nix
     ./programs/doctl.nix
@@ -75,6 +76,7 @@
   home.packages = with pkgs; [
     telegram-desktop
     teams-for-linux
+    dig
   ];
 
   home.pointerCursor = {
