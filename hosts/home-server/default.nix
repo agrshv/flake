@@ -14,6 +14,7 @@
     ./postgresql.nix
     ./readeck.nix
     ./searx.nix
+    ./slskd.nix
   ];
 
   sops = {
