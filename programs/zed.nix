@@ -50,6 +50,9 @@ in
       };
       tabs.show_close_button = "hidden";
       lsp.nil.settings.nil.nix.flake.autoArchive = true;
+      show_whitespaces = "trailing";
+      use_system_path_prompts = false;
+      ensure_final_newline_on_save = true;
     };
   };
 }
