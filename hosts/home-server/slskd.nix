@@ -20,4 +20,6 @@
     "/var/lib/navidrome/music"."d".mode = lib.mkForce "0750";
     "/var/lib/navidrome"."d".mode = lib.mkForce "0710";
   };
+
+  networking.firewall.allowedTCPPorts = [ 50300 ];
 }
