@@ -78,8 +78,6 @@
     teams-for-linux
     dig
     ouch
-
-    nicotine-plus
   ];
 
   home.pointerCursor = {
