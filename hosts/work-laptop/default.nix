@@ -19,6 +19,7 @@
   nixpkgs.config.allowUnfree = true;
 
   boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
     initrd = {
       systemd.enable = true;
       luks.devices."cryptroot" = {
