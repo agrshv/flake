@@ -31,7 +31,14 @@
       "nix-command"
       "flakes"
     ];
+    # gc = {
+    #   automatic = true;
+    #   dates = "weekly";
+    #   options = "--delete-older-than 14d";
+    # };
+    channel.enable = false;
   };
+
 
   boot = {
     initrd = {
