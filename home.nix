@@ -4,6 +4,7 @@
   imports = [
     ./programs/awscli.nix
     ./programs/bash.nix
+    ./programs/chromium.nix
     ./programs/claude-code.nix
     ./programs/doctl.nix
     ./programs/firefox.nix
