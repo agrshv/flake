@@ -28,6 +28,7 @@
     ./programs/udiskie.nix
     ./programs/vesktop.nix
     ./programs/waybar.nix
+    ./programs/xdg.nix
     ./programs/zed.nix
   ];
 

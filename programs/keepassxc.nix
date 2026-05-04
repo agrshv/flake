@@ -1,19 +1,35 @@
 {
   programs.keepassxc = {
     enable = true;
-    # autostart = true;
+    autostart = true;
     settings = {
       General.ConfigVersion = 2;
-      Browser.Enabled = true;
-      SSHAgent.Enabled = true;
+      Browser = {
+        Enabled = true;
+        CustomProxyLocation = "";
+      };
       FdoSecrets.Enabled = true;
       GUI = {
-        TrayIconAppearance = "monochrome-light";
         ApplicationTheme = "dark";
-        ShowTrayIcon = true;
-        MinimizeToTray = true;
+        ColorPasswords = true;
         MinimizeOnClose = true;
+        MinimizeToTray = true;
+        ShowTrayIcon = true;
+        TrayIconAppearance = "monochrome-light";
       };
+      KeeShare = {
+        Active = "";
+        QuietSuccess = true;
+      };
+      PasswordGenerator = {
+        AdditionalChars = "";
+        AdvancedMode = false;
+        ExcludedChars = "";
+        Length = 32;
+        SpecialChars = false;
+      };
+      SSHAgent.Enabled = true;
+      Security.LockDatabaseIdleSeconds = 1800;
     };
   };
 }
