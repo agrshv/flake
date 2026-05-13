@@ -14,7 +14,10 @@
     age.keyFile = "/home/d3spair/.config/sops/age/keys.txt";
   };
 
-  catppuccin.enable = true;
+  catppuccin = {
+    enable = true;
+    cache.enable = true;
+  };
 
   nixpkgs.config.allowUnfree = true;
 

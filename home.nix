@@ -43,6 +43,7 @@
   catppuccin = {
     enable = true;
     cursors.enable = true;
+    cache.enable = true;
     flavor = "mocha";
   };
 
