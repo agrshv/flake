@@ -7,6 +7,7 @@
     ./programs/chromium.nix
     ./programs/claude-code.nix
     ./programs/doctl.nix
+    ./programs/eza.nix
     ./programs/firefox.nix
     ./programs/fuzzel.nix
     ./programs/ghorg.nix
@@ -37,8 +38,28 @@
     defaultSopsFile = secrets/workstation.yaml;
   };
 
-  home.username = "d3spair";
-  home.homeDirectory = "/home/d3spair";
+  home = {
+    username = "d3spair";
+    homeDirectory = "/home/d3spair";
+
+    shell = {
+      enableBashIntegration = true;
+    };
+
+    pointerCursor = {
+      enable = true;
+      gtk.enable = true;
+      sway.enable = true;
+      x11.enable = true;
+    };
+
+    packages = with pkgs; [
+      telegram-desktop
+      teams-for-linux
+      dig
+      ouch
+    ];
+  };
 
   catppuccin = {
     enable = true;
@@ -75,20 +96,6 @@
   };
 
   services.network-manager-applet.enable = true;
-
-  home.packages = with pkgs; [
-    telegram-desktop
-    teams-for-linux
-    dig
-    ouch
-  ];
-
-  home.pointerCursor = {
-    enable = true;
-    gtk.enable = true;
-    sway.enable = true;
-    x11.enable = true;
-  };
 
   # This value determines the Home Manager release that your
   # configuration is compatible with.
