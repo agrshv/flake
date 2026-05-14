@@ -12,7 +12,7 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
+    # millennium.url = "github:SteamClientHomebrew/Millennium/01a7f1f9?dir=packages/nix";
     catppuccin.url = "github:catppuccin/nix/release-25.11";
     nur.url = "github:nix-community/NUR";
     sops-nix = {
@@ -28,7 +28,7 @@
       nixpkgs-unstable,
       disko,
       home-manager,
-      millennium,
+      # millennium,
       catppuccin,
       nur,
       sops-nix,
