@@ -1,3 +1,5 @@
+{ lib, pkgs, ... }:
+
 {
   programs.waybar = {
     enable = true;
@@ -7,9 +9,19 @@
         layer = "top";
         position = "top";
         height = 30;
-        modules-left = [ "sway/workspaces" "sway/mode" ];
+        modules-left = [
+          "sway/workspaces"
+          "sway/mode"
+        ];
         modules-center = [ "sway/window" ];
-        modules-right = [ "pulseaudio" "cpu" "memory" "battery" "clock" "tray" ];
+        modules-right = [
+          "pulseaudio"
+          "cpu"
+          "memory"
+          "battery"
+          "clock"
+          "tray"
+        ];
 
         "sway/workspaces" = {
           disable-scroll = true;
@@ -39,8 +51,30 @@
           format = "{capacity}% {icon}";
           format-full = "";
           format-icons = {
-            default = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
-            charging = [ "󰢜" "󰂆" "󰂇" "󰂈" "󰢝" "󰂉" "󰢞" "󰂊" "󰂋" "󰂅" ];
+            default = [
+              "󰁺"
+              "󰁻"
+              "󰁼"
+              "󰁽"
+              "󰁾"
+              "󰁿"
+              "󰂀"
+              "󰂁"
+              "󰂂"
+              "󰁹"
+            ];
+            charging = [
+              "󰢜"
+              "󰂆"
+              "󰂇"
+              "󰂈"
+              "󰢝"
+              "󰂉"
+              "󰢞"
+              "󰂊"
+              "󰂋"
+              "󰂅"
+            ];
           };
         };
 
@@ -48,9 +82,14 @@
           format = "{volume}% {icon}";
           format-muted = "󰝟";
           format-icons = {
-            default = [ "󰖁" "󰕿" "󰖀" "󰕾" ];
+            default = [
+              "󰖁"
+              "󰕿"
+              "󰖀"
+              "󰕾"
+            ];
           };
-          on-click = "pavucontrol";
+          on-click = "${lib.getExe pkgs.pavucontrol}";
         };
 
         tray = {

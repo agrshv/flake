@@ -19,6 +19,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -32,6 +36,7 @@
       catppuccin,
       nur,
       sops-nix,
+      nix-index-database,
       ...
     }@inputs:
     let
@@ -51,7 +56,10 @@
             nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.sharedModules = [ sops-nix.homeManagerModules.sops ];
+            home-manager.sharedModules = [
+              sops-nix.homeManagerModules.sops
+              nix-index-database.homeModules.default
+            ];
             home-manager.users.d3spair.imports = [
               ./home.nix
               catppuccin.homeModules.catppuccin
@@ -74,7 +82,10 @@
             nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.sharedModules = [ sops-nix.homeManagerModules.sops ];
+            home-manager.sharedModules = [
+              sops-nix.homeManagerModules.sops
+              nix-index-database.homeModules.default
+            ];
             home-manager.users.d3spair.imports = [
               ./home.nix
               catppuccin.homeModules.catppuccin
@@ -97,7 +108,10 @@
             nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.sharedModules = [ sops-nix.homeManagerModules.sops ];
+            home-manager.sharedModules = [
+              sops-nix.homeManagerModules.sops
+              nix-index-database.homeModules.default
+            ];
             home-manager.users.d3spair.imports = [
               ./home.nix
               catppuccin.homeModules.catppuccin
