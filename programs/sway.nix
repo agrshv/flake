@@ -77,7 +77,7 @@ in {
         background = "$base";
       };
       keybindings = lib.mkOptionDefault {
-        "${modifier}+Shift+S" = ''exec ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png'';
+        "${modifier}+Shift+S" = ''exec pgrep -x slurp || ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png'';
         "${modifier}+Escape" = "exec ${lib.getExe pkgs.swaylock}";
       };
     };
