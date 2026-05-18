@@ -6,16 +6,16 @@
       enable = true;
       createDirectories = true;
 
-      download = "${config.home.homeDirectory}/downloads";
-      desktop = "${config.home.homeDirectory}/desktop";
-      documents = "${config.home.homeDirectory}/documents";
+      download = "${config.home.homeDirectory}/Downloads";
+      desktop = "${config.home.homeDirectory}/Desktop";
+      documents = "${config.home.homeDirectory}/Documents";
 
-      publicShare = "${config.home.homeDirectory}/.local/public";
-      templates = "${config.home.homeDirectory}/.local/templates";
+      publicShare = "${config.home.homeDirectory}/.local/Public";
+      templates = "${config.home.homeDirectory}/.local/Templates";
 
-      music = "${config.home.homeDirectory}/media/music";
-      pictures = "${config.home.homeDirectory}/media/pictures";
-      videos = "${config.home.homeDirectory}/media/videos";
+      music = "${config.home.homeDirectory}/Media/Music";
+      pictures = "${config.home.homeDirectory}/Media/Pictures";
+      videos = "${config.home.homeDirectory}/Media/Videos";
     };
     mimeApps = {
       enable = true;
