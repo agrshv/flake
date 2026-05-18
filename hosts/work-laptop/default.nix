@@ -81,6 +81,7 @@
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
+    extraPackages = [];
   };
 
   environment.systemPackages = with pkgs; [
@@ -93,6 +94,7 @@
     vim
     git
     btop
+    brightnessctl
   ];
 
   xdg.portal = {
