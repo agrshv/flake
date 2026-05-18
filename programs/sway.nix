@@ -76,6 +76,16 @@ in {
         };
         background = "$base";
       };
+      window.commands = [
+        {
+          command = "inhibit_idle focus";
+          criteria = { app_id = "forzahorizon6.exe"; };
+        }
+        {
+          command = "fullscreen enable";
+          criteria = { app_id = "forzahorizon6.exe"; };
+        }
+      ];
       keybindings = lib.mkOptionDefault {
         "${modifier}+Shift+S" = ''exec pgrep -x slurp || ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png'';
         "${modifier}+Escape" = "exec ${lib.getExe pkgs.swaylock}";
