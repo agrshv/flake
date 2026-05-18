@@ -25,6 +25,7 @@
     ./programs/ssh.nix
     ./programs/starship.nix
     ./programs/sway.nix
+    ./programs/swayidle.nix
     ./programs/swaylock.nix
     ./programs/udiskie.nix
     ./programs/vesktop.nix

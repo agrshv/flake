@@ -70,6 +70,7 @@
       "nix-command"
       "flakes"
     ];
+    settings.trusted-users = [ "root" "@wheel" ];
     gc = {
       automatic = true;
       dates = "weekly";
