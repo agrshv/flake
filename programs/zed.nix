@@ -1,16 +1,9 @@
 {
   pkgs,
   lib,
-  inputs,
+  pkgs-unstable,
   ...
 }:
-
-let
-  pkgs-unstable = import inputs.nixpkgs-unstable {
-    system = pkgs.system;
-    config.allowUnfree = true;
-  };
-in
 {
   home.sessionVariables.EDITOR = "${pkgs-unstable.zed-editor}/bin/zeditor -w";
 

@@ -41,6 +41,10 @@
     }@inputs:
     let
       system = "x86_64-linux";
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
     in
     {
       # The actual installed system
@@ -64,7 +68,7 @@
               ./home.nix
               catppuccin.homeModules.catppuccin
             ];
-            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }
           ./hosts/home-desktop
         ];
@@ -90,7 +94,7 @@
               ./home.nix
               catppuccin.homeModules.catppuccin
             ];
-            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }
           ./hosts/work-laptop
         ];
@@ -116,7 +120,7 @@
               ./home.nix
               catppuccin.homeModules.catppuccin
             ];
-            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }
           ./hosts/home-laptop
         ];
