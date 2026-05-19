@@ -28,7 +28,10 @@
       "nix-command"
       "flakes"
     ];
-    settings.trusted-users = [ "root" "@wheel" ];
+    settings.trusted-users = [
+      "root"
+      "@wheel"
+    ];
     gc = {
       automatic = true;
       dates = "weekly";
@@ -73,6 +76,8 @@
     noto-fonts
     noto-fonts-cjk-sans
     nerd-fonts.jetbrains-mono
+    jetbrains-mono
+    nerd-fonts.symbols-only
   ];
 
   services.syncthing = {

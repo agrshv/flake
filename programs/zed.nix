@@ -46,6 +46,8 @@
       show_whitespaces = "trailing";
       use_system_path_prompts = false;
       ensure_final_newline_on_save = true;
+      buffer_font_family = "JetBrains Mono";
+      ui_font_family = "JetBrains Mono";
     };
   };
 }
