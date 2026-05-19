@@ -14,7 +14,7 @@
     };
     # millennium.url = "github:SteamClientHomebrew/Millennium/01a7f1f9?dir=packages/nix";
     catppuccin.url = "github:catppuccin/nix/release-25.11";
-    nur.url = "github:nix-community/NUR";
+    # nur.url = "github:nix-community/NUR";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,7 +34,7 @@
       home-manager,
       # millennium,
       catppuccin,
-      nur,
+      # nur,
       sops-nix,
       nix-index-database,
       ...
@@ -53,7 +53,7 @@
           catppuccin.nixosModules.catppuccin
           sops-nix.nixosModules.sops
           {
-            nixpkgs.overlays = [ nur.overlays.default ];
+            # nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.sharedModules = [
@@ -79,7 +79,7 @@
           catppuccin.nixosModules.catppuccin
           sops-nix.nixosModules.sops
           {
-            nixpkgs.overlays = [ nur.overlays.default ];
+            # nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.sharedModules = [
@@ -105,7 +105,7 @@
           catppuccin.nixosModules.catppuccin
           sops-nix.nixosModules.sops
           {
-            nixpkgs.overlays = [ nur.overlays.default ];
+            # nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.sharedModules = [
