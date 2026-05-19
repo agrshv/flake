@@ -48,7 +48,7 @@
       ensure_final_newline_on_save = true;
       buffer_font_family = "JetBrains Mono";
       ui_font_family = "JetBrains Mono";
-      toolbar.breadcrumbs = false;
+      collaboration_panel.button = false;
     };
   };
 }
