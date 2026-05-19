@@ -59,6 +59,8 @@
       teams-for-linux
       dig
       ouch
+      btop
+      vim
     ];
   };
 

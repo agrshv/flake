@@ -46,15 +46,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    mako
-    grim
-    slurp
-    wl-clipboard
-    pavucontrol
-    networkmanagerapplet
-    vim
-    git
-    btop
   ];
 
   xdg.portal = {
