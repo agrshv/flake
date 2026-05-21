@@ -60,6 +60,7 @@
       ouch
       btop
       vim
+      wl-wl-clipboard
     ];
   };
 
