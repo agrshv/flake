@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   sops = {
     defaultSopsFile = ../../secrets/workstation.yaml;
@@ -24,20 +24,23 @@
   };
 
   nix = {
-    settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    settings.trusted-users = [
-      "root"
-      "@wheel"
-    ];
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      trusted-users = [
+        "root"
+        "@wheel"
+      ];
+    };
     gc = {
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than 14d";
     };
     channel.enable = false;
+    registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
   };
 
   networking.networkmanager.enable = true;
