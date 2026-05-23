@@ -1,8 +1,14 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
   modifier = config.wayland.windowManager.sway.config.modifier;
-in {
+in
+{
   wayland.windowManager.sway = {
     enable = true;
     config = {
@@ -79,16 +85,23 @@ in {
       window.commands = [
         {
           command = "inhibit_idle focus";
-          criteria = { app_id = "forzahorizon6.exe"; };
+          criteria = {
+            app_id = "forzahorizon6.exe";
+          };
         }
         {
           command = "fullscreen enable";
-          criteria = { app_id = "forzahorizon6.exe"; };
+          criteria = {
+            app_id = "forzahorizon6.exe";
+          };
         }
       ];
       keybindings = lib.mkOptionDefault {
-        "${modifier}+Shift+S" = ''exec pgrep -x slurp || ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png'';
+        "${modifier}+Shift+S" =
+          ''exec pgrep -x slurp || ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png'';
         "${modifier}+Escape" = "exec ${lib.getExe pkgs.swaylock}";
+        "XF86MonBrightnessDown" = "exec ${lib.getExe pkgs.brightnessctl} set 5%-";
+        "XF86MonBrightnessUp" = "exec ${lib.getExe pkgs.brightnessctl} set 5%+";
       };
     };
   };
