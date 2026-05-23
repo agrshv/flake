@@ -6,6 +6,7 @@
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
+    ../common/nixos.nix
 
     ./miniflux.nix
     ./navidrome.nix

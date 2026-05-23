@@ -1,0 +1,4 @@
+{ ... }:
+{
+  security.lockKernelModules = true;
+}

@@ -3,6 +3,7 @@
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
+    ../common/nixos.nix
     ../common/desktop.nix
     ../common/vpn-profiles.nix
   ];
