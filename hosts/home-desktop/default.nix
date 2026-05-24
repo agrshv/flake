@@ -10,7 +10,10 @@
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = [ "ntsync" ];
+    kernelModules = [
+      "ntsync"
+      "igc"
+    ];
     initrd = {
       systemd.enable = true;
       luks.devices."cryptroot" = {
