@@ -29,13 +29,9 @@
     };
   };
 
-  hardware.graphics = {
-    enable = true;
-    extraPackages = with pkgs; [
-      intel-media-driver
-      vpl-gpu-rt
-    ];
-  };
+  hardware.graphics.extraPackages = pkgs.intel-media-driver;
+  environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
+
   hardware.enableRedistributableFirmware = true;
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;

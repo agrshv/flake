@@ -64,6 +64,8 @@
     };
   };
 
+  hardware.graphics.enable = true;
+
   programs.ssh.startAgent = true;
 
   services.pipewire = {

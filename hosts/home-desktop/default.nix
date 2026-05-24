@@ -44,6 +44,12 @@
 
   hardware.i2c.enable = true;
 
+  hardware.graphics = {
+    extraPackages = pkgs.intel-media-driver;
+    extraPackages32 = pkgs.pkgsi686Linux.intel-media-driver;
+  };
+  environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
+
   networking.hostName = "home-desktop";
 
   users.users.d3spair.extraGroups = [
