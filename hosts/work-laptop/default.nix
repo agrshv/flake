@@ -29,7 +29,7 @@
     };
   };
 
-  hardware.graphics.extraPackages = pkgs.intel-media-driver;
+  hardware.graphics.extraPackages = [ pkgs.intel-media-driver ];
   environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
 
   hardware.enableRedistributableFirmware = true;
