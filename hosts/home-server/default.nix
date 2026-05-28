@@ -101,7 +101,5 @@
     "d3spair"
   ];
 
-  services.netbird.enable = true;
-
   system.stateVersion = "25.11";
 }
