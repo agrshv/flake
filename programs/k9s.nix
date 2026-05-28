@@ -133,7 +133,7 @@
         background = false;
         args = [
           "-c"
-          ''if [ -n "$RESOURCE_GROUP" ]; then api_endpoint="/apis/$RESOURCE_GROUP/$RESOURCE_VERSION"; else api_endpoint="/api/$RESOURCE_VERSION"; fi; api_resource=$(${lib.getExe pkgs.kubectl} get --raw "''${api_endpoint}" | jq -r ".resources[] | select(.name==\"$RESOURCE_NAME\")"); kind=$(echo ''${api_resource} | jq -r '.kind'); namespace_arg=$(echo ''${api_resource} | jq -r "if .namespaced == true then \"--namespace $NAMESPACE\" else \"\" end"); [ -n "$RESOURCE_GROUP" ] && api_version=$RESOURCE_GROUP/; api_version=''${api_version}$RESOURCE_VERSION; ${lib.getExe pkgs.fluxcd} trace --context $CONTEXT --kind ''${kind} --api-version ''${api_version} ''${namespace_arg} $NAME |& ${lib.getExe pkgs.less} -K''
+          ''if [ -n "$RESOURCE_GROUP" ]; then api_endpoint="/apis/$RESOURCE_GROUP/$RESOURCE_VERSION"; else api_endpoint="/api/$RESOURCE_VERSION"; fi; api_resource=$(${lib.getExe pkgs.kubectl} get --raw "''${api_endpoint}" | ${lib.getExe pkgs.jq} -r ".resources[] | select(.name==\"$RESOURCE_NAME\")"); kind=$(echo ''${api_resource} | ${lib.getExe pkgs.jq} -r '.kind'); namespace_arg=$(echo ''${api_resource} | ${lib.getExe pkgs.jq} -r "if .namespaced == true then \"--namespace $NAMESPACE\" else \"\" end"); [ -n "$RESOURCE_GROUP" ] && api_version=$RESOURCE_GROUP/; api_version=''${api_version}$RESOURCE_VERSION; ${lib.getExe pkgs.fluxcd} trace --context $CONTEXT --kind ''${kind} --api-version ''${api_version} ''${namespace_arg} $NAME |& ${lib.getExe pkgs.less} -K''
         ];
       };
       flux_get-suspended-helmreleases = {
@@ -145,7 +145,9 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces helmreleases.helm.toolkit.fluxcd.io -o json | ${lib.getExe pkgs.jq} -r '.items[] | select(.spec.suspend==true) | [.metadata.namespace,.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces helmreleases.helm.toolkit.fluxcd.io -o json | ${
+            lib.getExe pkgs.${lib.getExe pkgs.jq}
+          } -r '.items[] | select(.spec.suspend==true) | [.metadata.namespace,.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_get-suspended-kustomizations = {
@@ -157,7 +159,9 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces kustomizations.kustomize.toolkit.fluxcd.io -o json | ${lib.getExe pkgs.jq} -r '.items[] | select(.spec.suspend==true) | [.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces kustomizations.kustomize.toolkit.fluxcd.io -o json | ${
+            lib.getExe pkgs.${lib.getExe pkgs.jq}
+          } -r '.items[] | select(.spec.suspend==true) | [.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
         ];
       };
     };
