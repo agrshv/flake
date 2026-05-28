@@ -146,7 +146,7 @@
         args = [
           "-c"
           "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces helmreleases.helm.toolkit.fluxcd.io -o json | ${
-            lib.getExe pkgs.${lib.getExe pkgs.jq}
+            lib.getExe pkgs.jq
           } -r '.items[] | select(.spec.suspend==true) | [.metadata.namespace,.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
         ];
       };
@@ -160,7 +160,7 @@
         args = [
           "-c"
           "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces kustomizations.kustomize.toolkit.fluxcd.io -o json | ${
-            lib.getExe pkgs.${lib.getExe pkgs.jq}
+            lib.getExe pkgs.jq
           } -r '.items[] | select(.spec.suspend==true) | [.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
         ];
       };
