@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
 
 {
   imports = [
@@ -8,7 +13,6 @@
     ./programs/claude-code.nix
     ./programs/doctl.nix
     ./programs/eza.nix
-    ./programs/firefox.nix
     ./programs/fuzzel.nix
     ./programs/ghorg.nix
     ./programs/ghostty.nix
@@ -54,13 +58,14 @@
     };
 
     packages = with pkgs; [
-      telegram-desktop
+      pkgs-unstable.telegram-desktop
       teams-for-linux
       dig
       ouch
       btop
       vim
       wl-clipboard
+      pkgs-unstable.fluxcd
     ];
   };
 

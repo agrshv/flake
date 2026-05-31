@@ -1,8 +1,14 @@
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  pkgs-unstable,
+  lib,
+  ...
+}:
 
 {
   programs.k9s = {
     enable = true;
+    package = pkgs-unstable.k9s;
     settings.k9s = {
       liveViewAutoRefresh = true;
       defaultView = "apps/v1/deployments";
@@ -25,7 +31,7 @@
         background = false;
         args = [
           "-c"
-          ''suspended=$(${lib.getExe pkgs.kubectl} --context $CONTEXT get helmreleases -n $NAMESPACE $NAME -o=custom-columns=TYPE:.spec.suspend | tail -1); verb=$([ $suspended = "true" ] && echo "resume" || echo "suspend"); ${lib.getExe pkgs.fluxcd} $verb helmrelease --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K''
+          ''suspended=$(${lib.getExe pkgs.kubectl} --context $CONTEXT get helmreleases -n $NAMESPACE $NAME -o=custom-columns=TYPE:.spec.suspend | tail -1); verb=$([ $suspended = "true" ] && echo "resume" || echo "suspend"); ${lib.getExe pkgs-unstable.fluxcd} $verb helmrelease --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K''
         ];
       };
       flux_toggle-kustomization = {
@@ -37,7 +43,7 @@
         background = false;
         args = [
           "-c"
-          ''suspended=$(${lib.getExe pkgs.kubectl} --context $CONTEXT get kustomizations -n $NAMESPACE $NAME -o=custom-columns=TYPE:.spec.suspend | tail -1); verb=$([ $suspended = "true" ] && echo "resume" || echo "suspend"); ${lib.getExe pkgs.fluxcd} $verb kustomization --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K''
+          ''suspended=$(${lib.getExe pkgs.kubectl} --context $CONTEXT get kustomizations -n $NAMESPACE $NAME -o=custom-columns=TYPE:.spec.suspend | tail -1); verb=$([ $suspended = "true" ] && echo "resume" || echo "suspend"); ${lib.getExe pkgs-unstable.fluxcd} $verb kustomization --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K''
         ];
       };
       flux_reconcile-git = {
@@ -49,7 +55,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.fluxcd} reconcile source git --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs-unstable.fluxcd} reconcile source git --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-hr = {
@@ -61,7 +67,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.fluxcd} reconcile helmrelease --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs-unstable.fluxcd} reconcile helmrelease --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-helm-repo = {
@@ -73,7 +79,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.fluxcd} reconcile source helm --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs-unstable.fluxcd} reconcile source helm --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-oci-repo = {
@@ -85,7 +91,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.fluxcd} reconcile source oci --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs-unstable.fluxcd} reconcile source oci --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-ks = {
@@ -97,7 +103,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.fluxcd} reconcile kustomization --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs-unstable.fluxcd} reconcile kustomization --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-ir = {
@@ -109,7 +115,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.fluxcd} reconcile image repository --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs-unstable.fluxcd} reconcile image repository --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_reconcile-iua = {
@@ -121,7 +127,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.fluxcd} reconcile image update --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs-unstable.fluxcd} reconcile image update --context $CONTEXT -n $NAMESPACE $NAME | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_trace = {
@@ -133,7 +139,7 @@
         background = false;
         args = [
           "-c"
-          ''if [ -n "$RESOURCE_GROUP" ]; then api_endpoint="/apis/$RESOURCE_GROUP/$RESOURCE_VERSION"; else api_endpoint="/api/$RESOURCE_VERSION"; fi; api_resource=$(${lib.getExe pkgs.kubectl} get --raw "''${api_endpoint}" | ${lib.getExe pkgs.jq} -r ".resources[] | select(.name==\"$RESOURCE_NAME\")"); kind=$(echo ''${api_resource} | ${lib.getExe pkgs.jq} -r '.kind'); namespace_arg=$(echo ''${api_resource} | ${lib.getExe pkgs.jq} -r "if .namespaced == true then \"--namespace $NAMESPACE\" else \"\" end"); [ -n "$RESOURCE_GROUP" ] && api_version=$RESOURCE_GROUP/; api_version=''${api_version}$RESOURCE_VERSION; ${lib.getExe pkgs.fluxcd} trace --context $CONTEXT --kind ''${kind} --api-version ''${api_version} ''${namespace_arg} $NAME |& ${lib.getExe pkgs.less} -K''
+          ''if [ -n "$RESOURCE_GROUP" ]; then api_endpoint="/apis/$RESOURCE_GROUP/$RESOURCE_VERSION"; else api_endpoint="/api/$RESOURCE_VERSION"; fi; api_resource=$(${lib.getExe pkgs.kubectl} get --raw "''${api_endpoint}" | ${lib.getExe pkgs.jq} -r ".resources[] | select(.name==\"$RESOURCE_NAME\")"); kind=$(echo ''${api_resource} | ${lib.getExe pkgs.jq} -r '.kind'); namespace_arg=$(echo ''${api_resource} | ${lib.getExe pkgs.jq} -r "if .namespaced == true then \"--namespace $NAMESPACE\" else \"\" end"); [ -n "$RESOURCE_GROUP" ] && api_version=$RESOURCE_GROUP/; api_version=''${api_version}$RESOURCE_VERSION; ${lib.getExe pkgs-unstable.fluxcd} trace --context $CONTEXT --kind ''${kind} --api-version ''${api_version} ''${namespace_arg} $NAME |& ${lib.getExe pkgs.less} -K''
         ];
       };
       flux_get-suspended-helmreleases = {
@@ -145,9 +151,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces helmreleases.helm.toolkit.fluxcd.io -o json | ${
-            lib.getExe pkgs.jq
-          } -r '.items[] | select(.spec.suspend==true) | [.metadata.namespace,.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces helmreleases.helm.toolkit.fluxcd.io -o json | ${lib.getExe pkgs.jq} -r '.items[] | select(.spec.suspend==true) | [.metadata.namespace,.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
         ];
       };
       flux_get-suspended-kustomizations = {
@@ -159,9 +163,7 @@
         background = false;
         args = [
           "-c"
-          "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces kustomizations.kustomize.toolkit.fluxcd.io -o json | ${
-            lib.getExe pkgs.jq
-          } -r '.items[] | select(.spec.suspend==true) | [.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
+          "${lib.getExe pkgs.kubectl} get --context $CONTEXT --all-namespaces kustomizations.kustomize.toolkit.fluxcd.io -o json | ${lib.getExe pkgs.jq} -r '.items[] | select(.spec.suspend==true) | [.metadata.name,.spec.suspend] | @tsv' | ${lib.getExe pkgs.less} -K"
         ];
       };
     };

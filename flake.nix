@@ -2,19 +2,18 @@
   description = "NixOS system config";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # millennium.url = "github:SteamClientHomebrew/Millennium/01a7f1f9?dir=packages/nix";
-    catppuccin.url = "github:catppuccin/nix/release-25.11";
-    # nur.url = "github:nix-community/NUR";
+    catppuccin.url = "github:catppuccin/nix/release-26.05";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,7 +33,6 @@
       home-manager,
       # millennium,
       catppuccin,
-      # nur,
       sops-nix,
       nix-index-database,
       ...
@@ -57,7 +55,6 @@
           catppuccin.nixosModules.catppuccin
           sops-nix.nixosModules.sops
           {
-            # nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.sharedModules = [
@@ -83,7 +80,6 @@
           catppuccin.nixosModules.catppuccin
           sops-nix.nixosModules.sops
           {
-            # nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.sharedModules = [
@@ -109,7 +105,6 @@
           catppuccin.nixosModules.catppuccin
           sops-nix.nixosModules.sops
           {
-            # nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.sharedModules = [
