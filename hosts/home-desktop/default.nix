@@ -15,6 +15,7 @@
       "igc"
     ];
     initrd = {
+      kernelModules = [ "amdgpu" ];
       systemd.enable = true;
       luks.devices."cryptroot" = {
         device = "/dev/disk/by-partlabel/disk-main-luks";
@@ -48,6 +49,8 @@
   hardware.i2c.enable = true;
 
   hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
     extraPackages = [ pkgs.intel-media-driver ];
     extraPackages32 = [ pkgs.pkgsi686Linux.intel-media-driver ];
   };
