@@ -33,7 +33,7 @@ in
       output = {
         "*".bg =
           "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png fill";
-        "DP-4" = {
+        "DP-2" = {
           mode = "1920x1080@239.757Hz";
           adaptive_sync = "on";
         };
