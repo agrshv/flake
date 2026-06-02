@@ -21,6 +21,7 @@
       "dockerfile"
       "toml"
       "rego"
+      "sql"
     ];
     extraPackages = with pkgs; [
       nixd
