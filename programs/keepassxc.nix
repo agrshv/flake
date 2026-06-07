@@ -8,7 +8,6 @@
         Enabled = true;
         CustomProxyLocation = "";
       };
-      FdoSecrets.Enabled = true;
       GUI = {
         ApplicationTheme = "dark";
         ColorPasswords = true;
