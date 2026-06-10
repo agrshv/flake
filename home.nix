@@ -25,7 +25,6 @@
     ./programs/nh.nix
     ./programs/obsidian.nix
     ./programs/remmina.nix
-    ./programs/secret-service.nix
     ./programs/ssh.nix
     ./programs/starship.nix
     ./programs/sway.nix
