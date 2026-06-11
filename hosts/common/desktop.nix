@@ -97,6 +97,7 @@
         "tyd4h-e2mdp" = {
           path = "/home/d3spair/Documents/Obsidian Vault";
           devices = [ "phone" ];
+          ignorePatterns = [ ".obsidian/" ];
         };
       };
     };
