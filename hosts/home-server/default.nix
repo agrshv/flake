@@ -8,6 +8,7 @@
     ./hardware-configuration.nix
     ../common/nixos.nix
 
+    ./immich.nix
     ./miniflux.nix
     ./navidrome.nix
     ./nginx.nix
@@ -42,7 +43,6 @@
     # };
     channel.enable = false;
   };
-
 
   boot = {
     initrd = {

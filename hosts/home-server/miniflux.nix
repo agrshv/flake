@@ -7,13 +7,9 @@
     };
   };
 
-  services.nginx = {
-    virtualHosts = {
-      "news.agrshv.dev" = {
-        forceSSL = true;
-        useACMEHost = "agrshv.dev";
-        locations."/".proxyPass = "http://127.0.0.1:8080";
-      };
-    };
+  services.nginx.virtualHosts."news.agrshv.dev" = {
+    forceSSL = true;
+    useACMEHost = "agrshv.dev";
+    locations."/".proxyPass = "http://127.0.0.1:8080";
   };
 }
