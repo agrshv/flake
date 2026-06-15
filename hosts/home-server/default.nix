@@ -74,7 +74,10 @@
     hostName = "home-server";
   };
 
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = false;
+  };
 
   time.timeZone = "Asia/Almaty";
 
