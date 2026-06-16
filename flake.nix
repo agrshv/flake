@@ -22,6 +22,10 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -64,6 +68,7 @@
             home-manager.users.d3spair.imports = [
               ./home.nix
               catppuccin.homeModules.catppuccin
+              inputs.noctalia.homeModules.default
             ];
             home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }
@@ -89,6 +94,7 @@
             home-manager.users.d3spair.imports = [
               ./home.nix
               catppuccin.homeModules.catppuccin
+              inputs.noctalia.homeModules.default
             ];
             home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }
@@ -114,6 +120,7 @@
             home-manager.users.d3spair.imports = [
               ./home.nix
               catppuccin.homeModules.catppuccin
+              inputs.noctalia.homeModules.default
             ];
             home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }

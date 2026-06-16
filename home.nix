@@ -23,6 +23,7 @@
     ./programs/kubectl.nix
     ./programs/mako.nix
     ./programs/nh.nix
+    ./programs/noctalia.nix
     ./programs/obsidian.nix
     ./programs/remmina.nix
     ./programs/ssh.nix
