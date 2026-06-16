@@ -83,6 +83,12 @@
     };
   };
 
+  # NetworkManager secret agent: bridges agent-owned VPN secrets (password-flags=1)
+  # from gnome-keyring to NetworkManager. Noctalia provides a network UI but no
+  # secret agent, so VPN connections fail silently ("No agents were available")
+  # without this. Runs headless (no --indicator) so no tray icon appears.
+  services.network-manager-applet.enable = true;
+
   # Qt dark mode
   qt = {
     enable = true;

@@ -14,6 +14,37 @@
     mutableUserSettings = false;
     mutableUserTasks = false;
     package = pkgs-unstable.zed-editor;
+    userKeymaps = [
+      {
+        # ctrl-tab cycles tabs in visible left-to-right order instead of Zed's
+        # default MRU tab switcher (tab_switcher::Toggle), which feels unintuitive.
+        context = "Pane";
+        bindings = {
+          "ctrl-tab" = "pane::ActivateNextItem";
+          "ctrl-shift-tab" = "pane::ActivatePreviousItem";
+        };
+      }
+      {
+        # Disable the collaboration ("GitHub") panel toggle so it stops opening.
+        # Scoped to Workspace so the terminal's ctrl-shift-c copy still works.
+        context = "Workspace";
+        bindings = {
+          "ctrl-shift-c" = null;
+        };
+      }
+      {
+        # shift-enter sends ESC+CR (meta-enter) in the terminal, for REPLs/TUIs
+        # that expect that escape sequence. Nix double-quoted strings have no unicode escape, so decode
+        # the exact JSON string ("\u001b\r") via fromJSON.
+        context = "Terminal";
+        bindings = {
+          "shift-enter" = [
+            "terminal::SendText"
+            (builtins.fromJSON ''"\u001b\r"'')
+          ];
+        };
+      }
+    ];
     extensions = [
       "nix"
       "git-firefly"
@@ -23,12 +54,14 @@
       "rego"
       "sql"
     ];
-    extraPackages = with pkgs; [
-      nixd
-      nil
-      package-version-server
-    ];
     userSettings = {
+      # NixOS can't run Zed's auto-downloaded generic-linux node binary
+      # (~/.local/share/zed/node/...); point Zed at the Nix-provided one.
+      node = {
+        ignore_system_version = false;
+        path = lib.getExe pkgs.nodejs;
+        npm_path = "${pkgs.nodejs}/bin/npm";
+      };
       autosave.after_delay.milliseconds = 1000;
       agent_servers.claude-acp = {
         type = "registry";
@@ -43,7 +76,28 @@
         show_onboarding_banner = false;
       };
       tabs.show_close_button = "hidden";
-      lsp.nil.settings.nil.nix.flake.autoArchive = true;
+      lsp.nil = {
+        binary.path = "${pkgs.nil}/bin/nil";
+        settings.nil.nix.flake.autoArchive = true;
+      };
+      lsp.nixd.binary.path = "${pkgs.nixd}/bin/nixd";
+      lsp.package-version-server.binary.path = "${pkgs.package-version-server}/bin/package-version-server";
+      lsp.yaml-language-server = {
+        binary.path = "${pkgs.yaml-language-server}/bin/yaml-language-server";
+        settings.yaml = {
+          # Auto-associate well-known files (kustomization.yaml, Helm Chart.yaml,
+          # GitHub Actions, compose, ...) with schemas from the JSON Schema Store.
+          schemaStore.enable = true;
+          # Apply the bundled Kubernetes schema only within manifest dirs, so
+          # plain k8s resources get completions without redlining other YAML.
+          schemas.kubernetes = [
+            "k8s/**/*.{yaml,yml}"
+            "manifests/**/*.{yaml,yml}"
+            "deploy/**/*.{yaml,yml}"
+            "kube/**/*.{yaml,yml}"
+          ];
+        };
+      };
       show_whitespaces = "trailing";
       use_system_path_prompts = false;
       ensure_final_newline_on_save = true;

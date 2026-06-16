@@ -1,5 +1,8 @@
 { pkgs, inputs, ... }:
 {
+  imports = [
+    inputs.noctalia-greeter.nixosModules.default
+  ];
   sops = {
     defaultSopsFile = ../../secrets/workstation.yaml;
     age.keyFile = "/home/d3spair/.config/sops/age/keys.txt";
@@ -58,11 +61,15 @@
     extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
   };
 
-  services.greetd = {
+  programs.noctalia-greeter = {
     enable = true;
-    settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --user-menu --asterisks --remember --remember-user-session --time";
-      user = "greeter";
+    package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    settings = {
+      cursor = {
+        theme = "Adwaita";
+        size = 24;
+        package = pkgs.adwaita-icon-theme;
+      };
     };
   };
 
