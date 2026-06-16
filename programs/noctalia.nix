@@ -8,6 +8,9 @@
         source = "builtin";
         builtin = "Catppuccin";
       };
+      location = {
+        address = "Almaty, Kazakhstan";
+      };
     };
   };
 }

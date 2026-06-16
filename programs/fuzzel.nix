@@ -1,6 +1,6 @@
 {
   programs.fuzzel = {
-    enable = true;
+    enable = false;
     settings = {
       border.radius = 0;
     };

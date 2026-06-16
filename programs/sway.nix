@@ -31,8 +31,8 @@ in
         };
       };
       output = {
-        "*".bg =
-          "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png fill";
+        # "*".bg =
+        #   "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png fill";
         "DP-2" = {
           mode = "1920x1080@239.757Hz";
           adaptive_sync = "on";
@@ -99,10 +99,18 @@ in
       keybindings = lib.mkOptionDefault {
         "${modifier}+Shift+S" =
           ''exec pgrep -x slurp || ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png'';
-        "${modifier}+Escape" = "exec ${lib.getExe pkgs.swaylock}";
-        "XF86MonBrightnessDown" = "exec ${lib.getExe pkgs.brightnessctl} set 5%-";
-        "XF86MonBrightnessUp" = "exec ${lib.getExe pkgs.brightnessctl} set 5%+";
+        "${modifier}+Escape" = "exec noctalia msg session lock";
+        "${modifier}+D" = "exec noctalia msg panel-toggle launcher";
+        "${modifier}+S" = "exec noctalia msg panel-toggle control-center";
+        "${modifier}+Comma" = "exec noctalia msg settings-toggle";
       };
+      extraConfig = ''
+        bindsym --locked XF86AudioRaiseVolume exec noctalia msg volume-up
+        bindsym --locked XF86AudioLowerVolume exec noctalia msg volume-down
+        bindsym --locked XF86AudioMute exec noctalia msg volume-mute
+        bindsym --locked XF86MonBrightnessUp exec noctalia msg brightness-up
+        bindsym --locked XF86MonBrightnessDown exec noctalia msg brightness-down
+      '';
     };
   };
 }
