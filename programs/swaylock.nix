@@ -1,3 +1,3 @@
 {
-  programs.swaylock.enable = true;
+  programs.swaylock.enable = false;
 }

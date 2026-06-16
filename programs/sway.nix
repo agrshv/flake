@@ -100,17 +100,15 @@ in
         "${modifier}+Shift+S" =
           ''exec pgrep -x slurp || ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp})" - | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png'';
         "${modifier}+Escape" = "exec noctalia msg session lock";
-        "${modifier}+D" = "exec noctalia msg panel-toggle launcher";
-        "${modifier}+S" = "exec noctalia msg panel-toggle control-center";
-        "${modifier}+Comma" = "exec noctalia msg settings-toggle";
+        "${modifier}+d" = "exec noctalia msg panel-toggle launcher";
+        "${modifier}+s" = "exec noctalia msg panel-toggle control-center";
+        "${modifier}+comma" = "exec noctalia msg settings-toggle";
+        "--locked XF86AudioRaiseVolume" = "exec noctalia msg volume-up";
+        "--locked XF86AudioLowerVolume" = "exec noctalia msg volume-down";
+        "--locked XF86AudioMute" = "exec noctalia msg volume-mute";
+        "--locked XF86MonBrightnessUp" = "exec noctalia msg brightness-up";
+        "--locked XF86MonBrightnessDown" = "exec noctalia msg brightness-down";
       };
-      extraConfig = ''
-        bindsym --locked XF86AudioRaiseVolume exec noctalia msg volume-up
-        bindsym --locked XF86AudioLowerVolume exec noctalia msg volume-down
-        bindsym --locked XF86AudioMute exec noctalia msg volume-mute
-        bindsym --locked XF86MonBrightnessUp exec noctalia msg brightness-up
-        bindsym --locked XF86MonBrightnessDown exec noctalia msg brightness-down
-      '';
     };
   };
 }
