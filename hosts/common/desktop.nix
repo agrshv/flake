@@ -37,7 +37,9 @@
         "@wheel"
       ];
       extra-substituters = [ "https://noctalia.cachix.org" ];
-      extra-trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
+      extra-trusted-public-keys = [
+        "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+      ];
     };
     gc = {
       automatic = true;
@@ -126,4 +128,6 @@
     gnome-keyring.enable = true;
     gcr-ssh-agent.enable = false;
   };
+
+  services.upower.enable = true;
 }
