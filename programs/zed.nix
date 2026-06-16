@@ -84,6 +84,10 @@
       lsp.package-version-server.binary.path = "${lib.getExe pkgs.package-version-server}";
       lsp.yaml-language-server = {
         binary.path = "${lib.getExe pkgs.yaml-language-server}";
+        # The Nix binary is the raw vscode-languageserver entrypoint, which
+        # refuses to start without a transport flag. Zed only injects --stdio
+        # for its bundled server, not for an overridden binary.path.
+        binary.arguments = [ "--stdio" ];
         settings.yaml = {
           # Auto-associate well-known files (kustomization.yaml, Helm Chart.yaml,
           # GitHub Actions, compose, ...) with schemas from the JSON Schema Store.
