@@ -105,8 +105,6 @@
     };
   };
 
-  services.network-manager-applet.enable = true;
-
   # This value determines the Home Manager release that your
   # configuration is compatible with.
   home.stateVersion = "25.11";
