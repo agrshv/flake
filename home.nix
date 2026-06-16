@@ -13,7 +13,6 @@
     ./programs/claude-code.nix
     ./programs/doctl.nix
     ./programs/eza.nix
-    ./programs/fuzzel.nix
     ./programs/ghorg.nix
     ./programs/ghostty.nix
     ./programs/git.nix
@@ -21,7 +20,6 @@
     ./programs/k9s.nix
     ./programs/keepassxc.nix
     ./programs/kubectl.nix
-    ./programs/mako.nix
     ./programs/nh.nix
     ./programs/noctalia.nix
     ./programs/obsidian.nix
@@ -29,12 +27,8 @@
     ./programs/ssh.nix
     ./programs/starship.nix
     ./programs/sway.nix
-    ./programs/swayidle.nix
-    ./programs/swaylock.nix
     ./programs/udiskie.nix
     ./programs/vesktop.nix
-    ./programs/waybar.nix
-    ./programs/wlsunset.nix
     ./programs/xdg.nix
     ./programs/zed.nix
   ];
