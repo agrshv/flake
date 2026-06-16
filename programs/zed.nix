@@ -60,7 +60,7 @@
       node = {
         ignore_system_version = false;
         path = lib.getExe pkgs.nodejs;
-        npm_path = "${pkgs.nodejs}/bin/npm";
+        npm_path = "${lib.getExe' pkgs.nodejs "npm"}";
       };
       autosave.after_delay.milliseconds = 1000;
       agent_servers.claude-acp = {
@@ -77,13 +77,13 @@
       };
       tabs.show_close_button = "hidden";
       lsp.nil = {
-        binary.path = "${pkgs.nil}/bin/nil";
+        binary.path = "${lib.getExe pkgs.nil}";
         settings.nil.nix.flake.autoArchive = true;
       };
-      lsp.nixd.binary.path = "${pkgs.nixd}/bin/nixd";
-      lsp.package-version-server.binary.path = "${pkgs.package-version-server}/bin/package-version-server";
+      lsp.nixd.binary.path = "${lib.getExe pkgs.nixd}";
+      lsp.package-version-server.binary.path = "${lib.getExe pkgs.package-version-server}";
       lsp.yaml-language-server = {
-        binary.path = "${pkgs.yaml-language-server}/bin/yaml-language-server";
+        binary.path = "${lib.getExe pkgs.yaml-language-server}";
         settings.yaml = {
           # Auto-associate well-known files (kustomization.yaml, Helm Chart.yaml,
           # GitHub Actions, compose, ...) with schemas from the JSON Schema Store.
