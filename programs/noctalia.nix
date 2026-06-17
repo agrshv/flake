@@ -38,7 +38,11 @@
       lockscreen_widgets = {
         enabled = true;
         schema_version = 2;
-        widget_order = [ "lockscreen-login-box@eDP-1" "lockscreen-login-box@DP-2" ];
+        widget_order = [
+          "lockscreen-login-box@eDP-1"
+          "lockscreen-login-box@DP-2"
+          "lockscreen-widget-clock"
+        ];
         grid = {
           cell_size = 16;
           major_interval = 4;
@@ -61,6 +65,15 @@
             input_opacity = 1.0;
             input_radius = 6.0;
             show_login_button = true;
+          };
+          "lockscreen-widget-clock" = {
+            box_height = 160.0;
+            box_width = 288.0;
+            cx = 960.0;
+            cy = 220.0;
+            output = "eDP-1";
+            rotation = 0.0;
+            type = "clock";
           };
         };
       };
