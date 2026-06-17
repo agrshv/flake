@@ -4,6 +4,10 @@
     enable = true;
     systemd.enable = true;
     settings = {
+      bar.default.start = [
+        "launcher"
+        "workspaces"
+      ];
       brightness.enable_ddcutil = true;
       idle = {
         behavior_order = [
@@ -32,9 +36,9 @@
       };
       location.address = "Almaty, Kazakhstan";
       lockscreen_widgets = {
-        enabled = false;
+        enabled = true;
         schema_version = 2;
-        widget_order = [ "lockscreen-login-box@DP-2" ];
+        widget_order = [ "lockscreen-login-box@eDP-1" "lockscreen-login-box@DP-2" ];
         grid = {
           cell_size = 16;
           major_interval = 4;
@@ -60,6 +64,7 @@
           };
         };
       };
+      nightlight.enabled = true;
       shell.launch_apps_as_systemd_services = true;
       theme = {
         mode = "dark";
@@ -69,6 +74,10 @@
       wallpaper = {
         enabled = true;
         default.path = "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png";
+      };
+      widget = {
+        media.hide_when_no_media = true;
+        tray.hidden = [ "nm-applet" ];
       };
     };
   };
