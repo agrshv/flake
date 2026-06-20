@@ -85,15 +85,15 @@ in
       window.commands = [
         {
           command = "inhibit_idle focus";
-          criteria = {
-            app_id = "forzahorizon6.exe";
-          };
+          criteria.app_id = "forzahorizon6.exe";
         }
         {
           command = "fullscreen enable";
-          criteria = {
-            app_id = "forzahorizon6.exe";
-          };
+          criteria.app_id = "forzahorizon6.exe";
+        }
+        {
+          command = "fullscreen enable";
+          criteria.app_id = "overwatch.exe";
         }
       ];
       keybindings = lib.mkOptionDefault {
