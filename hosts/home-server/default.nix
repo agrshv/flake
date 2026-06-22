@@ -8,6 +8,7 @@
     ./hardware-configuration.nix
     ../common/nixos.nix
 
+    ./actual.nix
     ./immich.nix
     ./miniflux.nix
     ./navidrome.nix
@@ -15,6 +16,7 @@
     ./paperless.nix
     ./postgresql.nix
     ./readeck.nix
+    ./restic.nix
     ./searx.nix
     ./slskd.nix
   ];
