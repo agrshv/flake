@@ -19,6 +19,7 @@
     ./restic.nix
     ./searx.nix
     ./slskd.nix
+    ./wrtag.nix
   ];
 
   sops = {
