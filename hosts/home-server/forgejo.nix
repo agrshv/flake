@@ -27,11 +27,11 @@
         # SSH_PORT 22). Stated explicitly for clarity.
         SSH_PORT = 22;
       };
-      # Personal instance: no open sign-ups. Create the first admin after the
-      # initial deploy with:
-      #   sudo -u forgejo forgejo admin user create \
-      #     --admin --username d3spair --email you@agrshv.dev --random-password
       service.DISABLE_REGISTRATION = true;
+      repository = {
+        FORCE_PRIVATE = true;
+        DEFAULT_BRANCH = "master";
+      };
     };
   };
 
