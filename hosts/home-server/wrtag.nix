@@ -56,6 +56,12 @@ in
       # there by another user (e.g. a `nix shell` run as root/d3spair), which
       # otherwise causes "permission denied" on that path.
       PrivateTmp = true;
+      # Create dirs 2775 and files 0664 so any navidrome-group member can write
+      # into a path another one made. The default 0022 yields dirs 2755 (group
+      # r-x, no write), so a release dir created by one import blocks the next
+      # one that lands inside it. Combined with the setgid on music/ (which
+      # forces group navidrome), new paths become navidrome:navidrome 2775.
+      UMask = "0002";
       ExecStart = "${pkgs-unstable.wrtag}/bin/wrtagweb";
       Restart = "on-failure";
     };
