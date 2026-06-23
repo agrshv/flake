@@ -9,6 +9,7 @@
     ../common/nixos.nix
 
     ./actual.nix
+    ./forgejo.nix
     ./immich.nix
     ./miniflux.nix
     ./navidrome.nix
