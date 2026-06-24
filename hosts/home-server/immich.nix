@@ -2,6 +2,7 @@
 {
   services.immich = {
     enable = true;
+    settings.backup.database.enabled = false;
   };
 
   services.nginx.virtualHosts."immich.agrshv.dev" = {

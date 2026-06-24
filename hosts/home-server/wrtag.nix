@@ -67,9 +67,35 @@ in
     };
   };
 
+  # Behind Authelia forward-auth (see authelia.nix). Only the public vhost is
+  # gated; the slskd post-download hook talks to 127.0.0.1:7373 directly, so
+  # automated imports bypass nginx and are unaffected.
   services.nginx.virtualHosts."wrtag.agrshv.dev" = {
     forceSSL = true;
     useACMEHost = "agrshv.dev";
-    locations."/".proxyPass = "http://127.0.0.1:7373";
+
+    # Internal endpoint nginx queries to decide whether a request is authorized.
+    locations."/internal/authelia/authz" = {
+      proxyPass = "http://127.0.0.1:9091/api/authz/auth-request";
+      extraConfig = ''
+        internal;
+        proxy_set_header X-Original-Method $request_method;
+        proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
+        proxy_set_header Content-Length "";
+        proxy_pass_request_body off;
+      '';
+    };
+
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:7373";
+      extraConfig = ''
+        auth_request /internal/authelia/authz;
+        auth_request_set $user   $upstream_http_remote_user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-User   $user;
+        proxy_set_header Remote-Groups $groups;
+        error_page 401 =302 https://auth.agrshv.dev/?rd=$scheme://$http_host$request_uri;
+      '';
+    };
   };
 }

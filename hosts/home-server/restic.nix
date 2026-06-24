@@ -15,11 +15,14 @@
     initialize = true;
 
     # Credentials live outside the repo, matching the other services here.
-    #   /root/restic-repository : repo URL, e.g. "b2:my-bucket:home-server"
+    # Backblaze B2 via its S3-compatible API (not the native b2: backend):
+    #   /root/restic-repository : repo URL, e.g.
+    #       "s3:https://s3.us-west-004.backblazeb2.com/my-bucket/home-server"
+    #       (use the endpoint host B2 shows for the bucket; region varies)
     #   /root/restic-password   : the repo encryption password
-    #   /root/restic.env        : backend creds, e.g.
-    #                               B2_ACCOUNT_ID=...
-    #                               B2_ACCOUNT_KEY=...
+    #   /root/restic.env        : S3 creds — the B2 application key, e.g.
+    #                               AWS_ACCESS_KEY_ID=<keyID>
+    #                               AWS_SECRET_ACCESS_KEY=<applicationKey>
     repositoryFile = "/root/restic-repository";
     passwordFile = "/root/restic-password";
     environmentFile = "/root/restic.env";

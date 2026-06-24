@@ -1,7 +1,6 @@
 {
   services.navidrome = {
     enable = true;
-    openFirewall = true;
     settings = {
       EnableInsightsCollector = true;
       BaseUrl = "https://music.agrshv.dev";

@@ -42,12 +42,32 @@
       "nix-command"
       "flakes"
     ];
-    # gc = {
-    #   automatic = true;
-    #   dates = "weekly";
-    #   options = "--delete-older-than 14d";
-    # };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 14d";
+    };
+    # Hard-link identical files in the store to reclaim space after each build.
+    optimise.automatic = true;
     channel.enable = false;
+  };
+
+  # Scheduled `nixos-rebuild switch --flake` against the remote repo, so the
+  # server only ever builds what's committed and lockfile bumps stay deliberate
+  # (run `nix flake update` + push to actually advance package versions).
+  #
+  # Disabled for now: flip `enable = true` to activate. Keep `allowReboot =
+  # false` until the headless LUKS box has remote/TPM unlock — an auto-reboot
+  # would otherwise strand it at the passphrase prompt.
+  system.autoUpgrade = {
+    enable = false;
+    # Self-hosted Forgejo repo. The unit runs as root, so root needs an SSH key
+    # authorized for the `forgejo` user (the repo is private + signin-required).
+    # Alternatively point this at a local checkout path on the host.
+    flake = "git+ssh://forgejo@git.agrshv.dev/d3spair/flake.git#home-server";
+    dates = "04:00";
+    randomizedDelaySec = "45min";
+    allowReboot = false;
   };
 
   boot = {
