@@ -18,6 +18,7 @@
     ./paperless.nix
     ./postgresql.nix
     ./readeck.nix
+    ./redis.nix
     ./restic.nix
     ./searx.nix
     ./slskd.nix
