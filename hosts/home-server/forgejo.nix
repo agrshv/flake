@@ -33,6 +33,22 @@
         FORCE_PRIVATE = true;
         DEFAULT_BRANCH = "master";
       };
+      # OAuth2/OIDC login via Authelia. This only configures client behaviour;
+      # the authentication source itself lives in Forgejo's DB (no app.ini key
+      # for it), so add it once via Site Administration → Authentication
+      # Sources → OAuth2 (provider: OpenID Connect), or:
+      #   forgejo admin auth add-oauth --name authelia --provider openidConnect \
+      #     --key forgejo --secret '<plaintext>' \
+      #     --auto-discover-url https://auth.agrshv.dev/.well-known/openid-configuration \
+      #     --scopes openid --scopes email --scopes profile
+      # The source name ("authelia") must match the redirect_uri configured in
+      # authelia.nix.
+      oauth2_client = {
+        ENABLE_AUTO_REGISTRATION = true;
+        ACCOUNT_LINKING = "auto";
+        USERNAME = "preferred_username";
+        UPDATE_AVATAR = true;
+      };
     };
   };
 

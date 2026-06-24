@@ -1,4 +1,4 @@
-{ config, ... }:
+{ ... }:
 let
   # Where Authelia keeps its runtime state. systemd's StateDirectory creates
   # this as authelia-main:authelia-main 0700 on start.
@@ -33,6 +33,18 @@ in
   #   chown -R authelia-main:authelia-main /var/lib/authelia-main
   #   chmod 600 /var/lib/authelia-main/{jwt-secret,session-secret,storage-encryption-key,users.yml}
   # ────────────────────────────────────────────────────────────────────────────
+  #
+  # ── OIDC provider bootstrap (for the identity_providers.oidc clients) ───────
+  #   authelia crypto rand --length 64 > /var/lib/authelia-main/oidc-hmac-secret
+  #   authelia crypto pair rsa generate --directory /tmp/oidc \
+  #     && mv /tmp/oidc/private.pem /var/lib/authelia-main/oidc-issuer.pem
+  #   # Per client: keep the plaintext for the relying party, put the HASH here.
+  #   SECRET=$(authelia crypto rand --length 72 --charset rfc3986)
+  #   echo "plaintext (give to the client): $SECRET"
+  #   authelia crypto hash generate pbkdf2 --variant sha512 --password "$SECRET"
+  #   chown authelia-main:authelia-main /var/lib/authelia-main/oidc-*
+  #   chmod 600 /var/lib/authelia-main/oidc-*
+  # ────────────────────────────────────────────────────────────────────────────
   services.authelia.instances.main = {
     enable = true;
 
@@ -40,6 +52,10 @@ in
       jwtSecretFile = "${stateDir}/jwt-secret";
       sessionSecretFile = "${stateDir}/session-secret";
       storageEncryptionKeyFile = "${stateDir}/storage-encryption-key";
+      # OIDC provider secrets (see the OIDC bootstrap note below). The module
+      # turns the issuer private key into the JWKS config automatically.
+      oidcHmacSecretFile = "${stateDir}/oidc-hmac-secret";
+      oidcIssuerPrivateKeyFile = "${stateDir}/oidc-issuer.pem";
     };
 
     settings = {
@@ -48,6 +64,30 @@ in
       log.level = "info";
 
       authentication_backend.file.path = "${stateDir}/users.yml";
+
+      # ── OIDC provider ─────────────────────────────────────────────────────
+      # Lets services delegate login to Authelia. Each client below trusts
+      # Authelia for SSO. `client_secret` is the PBKDF2 hash of the plaintext
+      # secret (the plaintext is configured on the relying party's side).
+      identity_providers.oidc.clients = [
+        {
+          client_id = "forgejo";
+          client_name = "Forgejo";
+          client_secret = "$pbkdf2-sha512$310000$D4UjzihhYqjAirDA8JdSwQ$RibLaLsf9SKiJL8zRv8YgZm9J8b8cp0ZbnTB.LKRpuN6HYTi1LahJP9gnLnMPyPQSazWEE.CPw0EB4GGI7I42w";
+          public = false;
+          authorization_policy = "one_factor";
+          # The last path segment ("authelia") must match the auth-source name
+          # created in Forgejo (Site Admin → Authentication Sources).
+          redirect_uris = [ "https://git.agrshv.dev/user/oauth2/authelia/callback" ];
+          scopes = [
+            "openid"
+            "email"
+            "profile"
+            "groups"
+          ];
+          token_endpoint_auth_method = "client_secret_basic";
+        }
+      ];
 
       access_control = {
         default_policy = "deny";
