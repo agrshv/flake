@@ -27,6 +27,7 @@
       service = {
         DISABLE_REGISTRATION = true;
         DISABLE_HTTP_GIT = true;
+        REQUIRE_SIGNIN_VIEW = true;
       };
       repository = {
         FORCE_PRIVATE = true;

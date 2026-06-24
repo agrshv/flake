@@ -10,7 +10,6 @@
 
     ./actual.nix
     ./authelia.nix
-    ./crowdsec.nix
     ./forgejo.nix
     ./immich.nix
     ./miniflux.nix

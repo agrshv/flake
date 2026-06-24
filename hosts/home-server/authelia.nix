@@ -20,12 +20,12 @@ in
   #     openssl rand -base64 64 > /var/lib/authelia-main/$s
   #   done
   #   # Create a user (interactive prompt for the password):
-  #   HASH=$(authelia crypto hash generate argon2 --random.length 0 --password 'CHANGEME' | sed 's/^Digest: //')
+  #   HASH=$(authelia crypto hash generate argon2 --password 'CHANGEME' | sed 's/^Digest: //')
   #   cat > /var/lib/authelia-main/users.yml <<EOF
   #   users:
   #     d3spair:
   #       disabled: false
-  #       displayname: "Anton"
+  #       displayname: "d3spair"
   #       password: "$HASH"
   #       email: d3spair@agrshv.dev
   #       groups: [admins]
@@ -63,7 +63,6 @@ in
         {
           domain = "agrshv.dev";
           authelia_url = "https://auth.agrshv.dev";
-          default_redirection_url = "https://auth.agrshv.dev";
         }
       ];
 
