@@ -7,9 +7,9 @@ in
 {
   # Authelia SSO / forward-auth portal, reachable at auth.agrshv.dev.
   #
-  # Single instance, file-based user database, local SQLite storage, one-factor
-  # auth. It protects nothing by itself — a vhost opts in via the nginx
-  # auth_request wiring at the bottom of this file.
+  # Single instance, file-based user database, PostgreSQL storage backend and
+  # Redis-backed sessions, one-factor auth. It protects nothing by itself — a
+  # vhost opts in via the nginx auth_request wiring at the bottom of this file.
   #
   # ── One-time bootstrap on the server (before the first deploy) ──────────────
   # The three secret files and the user database must exist before Authelia
@@ -75,10 +75,10 @@ in
           client_name = "Forgejo";
           client_secret = "$pbkdf2-sha512$310000$D4UjzihhYqjAirDA8JdSwQ$RibLaLsf9SKiJL8zRv8YgZm9J8b8cp0ZbnTB.LKRpuN6HYTi1LahJP9gnLnMPyPQSazWEE.CPw0EB4GGI7I42w";
           public = false;
-          authorization_policy = "one_factor";
+          authorization_policy = "two_factor";
           # The last path segment ("authelia") must match the auth-source name
           # created in Forgejo (Site Admin → Authentication Sources).
-          redirect_uris = [ "https://git.agrshv.dev/user/oauth2/authelia/callback" ];
+          redirect_uris = [ "https://git.agrshv.dev/user/oauth2/Authelia/callback" ];
           scopes = [
             "openid"
             "email"
@@ -106,15 +106,64 @@ in
         }
       ];
 
+      # Persist sessions in Redis (over a unix socket; provisioned below) so
+      # they survive Authelia restarts. sessionSecretFile encrypts this data.
+      session.redis = {
+        host = "/run/redis-authelia/redis.sock";
+        port = 0;
+      };
+
       regulation = {
         max_retries = 3;
         find_time = "2m";
         ban_time = "5m";
       };
 
-      storage.local.path = "${stateDir}/db.sqlite3";
+      # PostgreSQL storage backend over the local socket (peer auth, role
+      # authelia-main — provisioned below). Authelia creates its schema on
+      # first start. If validation insists on a password, set one on the role
+      # and pass environmentVariables.AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE.
+      storage.postgres = {
+        address = "unix:///run/postgresql";
+        database = "authelia";
+        username = "authelia-main";
+      };
       notifier.filesystem.filename = "${stateDir}/notification.txt";
     };
+  };
+
+  # Dedicated Redis for Authelia sessions (socket-only, no TCP). Runs as
+  # user/group redis-authelia; authelia-main joins that group to read the
+  # socket.
+  services.redis.servers.authelia = {
+    enable = true;
+    port = 0;
+    unixSocket = "/run/redis-authelia/redis.sock";
+    unixSocketPerm = 660;
+  };
+  users.users.authelia-main.extraGroups = [ "redis-authelia" ];
+
+  # Storage backend database, peer-authenticated over the local socket.
+  services.postgresql = {
+    ensureDatabases = [ "authelia" ];
+    ensureUsers = [
+      {
+        name = "authelia-main";
+        ensureDBOwnership = true;
+      }
+    ];
+  };
+
+  # Don't start Authelia before its datastores are up.
+  systemd.services.authelia-main = {
+    after = [
+      "postgresql.service"
+      "redis-authelia.service"
+    ];
+    wants = [
+      "postgresql.service"
+      "redis-authelia.service"
+    ];
   };
 
   # The Authelia portal itself.
