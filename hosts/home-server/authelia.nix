@@ -125,7 +125,9 @@ in
       # and pass environmentVariables.AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE.
       storage.postgres = {
         address = "unix:///run/postgresql";
-        database = "authelia";
+        # DB name matches the role (peer auth maps OS user authelia-main -> role
+        # authelia-main; ensureDBOwnership requires the db to share that name).
+        database = "authelia-main";
         username = "authelia-main";
       };
       notifier.filesystem.filename = "${stateDir}/notification.txt";
@@ -145,7 +147,7 @@ in
 
   # Storage backend database, peer-authenticated over the local socket.
   services.postgresql = {
-    ensureDatabases = [ "authelia" ];
+    ensureDatabases = [ "authelia-main" ];
     ensureUsers = [
       {
         name = "authelia-main";
