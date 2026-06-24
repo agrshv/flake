@@ -13,9 +13,6 @@
     # socket via peer auth — no password/secret to manage.
     database.type = "postgres";
 
-    # Git LFS for large binaries.
-    lfs.enable = true;
-
     settings = {
       server = {
         DOMAIN = "git.agrshv.dev";
@@ -27,7 +24,10 @@
         # SSH_PORT 22). Stated explicitly for clarity.
         SSH_PORT = 22;
       };
-      service.DISABLE_REGISTRATION = true;
+      service = {
+        DISABLE_REGISTRATION = true;
+        DISABLE_HTTP_GIT = true;
+      };
       repository = {
         FORCE_PRIVATE = true;
         DEFAULT_BRANCH = "master";
@@ -39,7 +39,5 @@
     forceSSL = true;
     useACMEHost = "agrshv.dev";
     locations."/".proxyPass = "http://127.0.0.1:3001";
-    # Allow large pushes / LFS uploads through the proxy.
-    extraConfig = "client_max_body_size 512M;";
   };
 }
