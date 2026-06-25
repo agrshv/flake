@@ -91,7 +91,17 @@ in
 
       access_control = {
         default_policy = "deny";
+        # Rules are first-match-wins, so the narrow slskd rule must precede the
+        # catch-all below. Only user d3spair may reach slskd; the subject list
+        # is OR'd, so add e.g. "group:admins" here to widen access.
         rules = [
+          {
+            domain = "slskd.agrshv.dev";
+            policy = "one_factor";
+            subject = [
+              "user:d3spair"
+            ];
+          }
           {
             domain = "*.agrshv.dev";
             policy = "one_factor";
