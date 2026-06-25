@@ -31,6 +31,8 @@ let
     "slskd.agrshv.dev"
     "wrtag.agrshv.dev"
     "auth.agrshv.dev"
+    "monica.agrshv.dev"
+    "dawarich.agrshv.dev"
   ];
 in
 {

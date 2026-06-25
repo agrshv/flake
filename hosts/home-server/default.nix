@@ -10,9 +10,11 @@
 
     ./actual.nix
     ./authelia.nix
+    ./dawarich.nix
     ./forgejo.nix
     ./immich.nix
     ./miniflux.nix
+    ./monica.nix
     ./navidrome.nix
     ./nginx.nix
     ./paperless.nix
