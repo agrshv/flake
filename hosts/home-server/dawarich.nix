@@ -15,6 +15,9 @@
   services.dawarich = {
     enable = true;
     localDomain = "dawarich.agrshv.dev";
+    # Default webPort is 3000, which collides with paperless's gotenberg sidecar
+    # (also binds 127.0.0.1:3000). 3001 is forgejo; use 3002.
+    webPort = 3002;
     # nginx terminates TLS; tell Dawarich to emit https URLs (default is http).
     environment.APPLICATION_PROTOCOL = "https";
   };
