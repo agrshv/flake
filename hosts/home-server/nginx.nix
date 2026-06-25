@@ -97,7 +97,9 @@ in
         }
 
         # Loopback + RFC1918 are always allowed (the DB returns no country for
-        # them), so local and LAN access is never geo-blocked.
+        # them), so local and LAN access is never geo-blocked. The NetBird
+        # overlay (wt0, 100.78.0.0/16) is likewise trusted so VPN peers aren't
+        # dropped by the country gate (MaxMind returns no country for it).
         geo $geo_internal {
           default        block;
           127.0.0.0/8    allow;
@@ -105,6 +107,7 @@ in
           10.0.0.0/8     allow;
           172.16.0.0/12  allow;
           192.168.0.0/16 allow;
+          100.78.0.0/16  allow;
         }
 
         map $geoip2_country_iso $geo_country_allowed {
