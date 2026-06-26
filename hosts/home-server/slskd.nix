@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, authelia, ... }:
 let
   # Fires on slskd's DownloadDirectoryComplete event. slskd stringifies the
   # event to JSON in $SLSKD_SCRIPT_DATA; we pull out the finished folder and
@@ -56,26 +56,10 @@ in
   # further restricted to user d3spair / group admins by the access_control rule
   # in authelia.nix.
   services.nginx.virtualHosts."slskd.agrshv.dev" = {
-    # Internal endpoint nginx queries to decide whether a request is authorized.
-    locations."/internal/authelia/authz" = {
-      proxyPass = "http://127.0.0.1:9091/api/authz/auth-request";
-      extraConfig = ''
-        internal;
-        proxy_set_header X-Original-Method $request_method;
-        proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
-        proxy_set_header Content-Length "";
-        proxy_pass_request_body off;
-      '';
-    };
-
-    locations."/".extraConfig = ''
-      auth_request /internal/authelia/authz;
-      auth_request_set $user   $upstream_http_remote_user;
-      auth_request_set $groups $upstream_http_remote_groups;
-      proxy_set_header Remote-User   $user;
-      proxy_set_header Remote-Groups $groups;
-      error_page 401 =302 https://auth.agrshv.dev/?rd=$scheme://$http_host$request_uri;
-    '';
+    locations."/internal/authelia/authz" = authelia.authzLocation;
+    # The slskd module already defines this vhost's "/" proxyPass; only layer
+    # the forward-auth guard onto it.
+    locations."/".extraConfig = authelia.guard;
   };
 
   users.users.slskd.extraGroups = [ "navidrome" ];

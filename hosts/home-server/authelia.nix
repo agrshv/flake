@@ -5,6 +5,37 @@ let
   stateDir = "/var/lib/authelia-main";
 in
 {
+  # Reusable nginx forward-auth wiring, consumed by any vhost that opts into
+  # SSO (see slskd.nix / wrtag.nix). Exposed as a module arg so protected
+  # modules just splice these in rather than re-deriving the snippets — see the
+  # "How to protect a service" note at the bottom of this file.
+  _module.args.authelia = {
+    # Internal endpoint nginx queries to decide whether a request is authorized.
+    # Splice into a vhost as `locations."/internal/authelia/authz" = ...`.
+    authzLocation = {
+      proxyPass = "http://127.0.0.1:9091/api/authz/auth-request";
+      extraConfig = ''
+        internal;
+        proxy_set_header X-Original-Method $request_method;
+        proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
+        proxy_set_header Content-Length "";
+        proxy_pass_request_body off;
+      '';
+    };
+
+    # Guard for a protected location's extraConfig: require a passing
+    # auth_request, forward the resolved identity upstream, and bounce
+    # unauthenticated browsers to the portal.
+    guard = ''
+      auth_request /internal/authelia/authz;
+      auth_request_set $user   $upstream_http_remote_user;
+      auth_request_set $groups $upstream_http_remote_groups;
+      proxy_set_header Remote-User   $user;
+      proxy_set_header Remote-Groups $groups;
+      error_page 401 =302 https://auth.agrshv.dev/?rd=$scheme://$http_host$request_uri;
+    '';
+  };
+
   # Authelia SSO / forward-auth portal, reachable at auth.agrshv.dev.
   #
   # Single instance, file-based user database, PostgreSQL storage backend and
@@ -193,32 +224,24 @@ in
   };
 
   # ── How to protect a service ────────────────────────────────────────────────
-  # Add the auth_request endpoint + guard to any vhost you want behind SSO.
-  # Reusable snippets, then an example applied to a (commented) vhost.
+  # Take the `authelia` module arg (defined via _module.args at the top of this
+  # file) and splice its two pieces into the vhost you want behind SSO:
   #
-  #   # internal endpoint that asks Authelia whether the request is allowed
-  #   locations."/internal/authelia/authz" = {
-  #     proxyPass = "http://127.0.0.1:9091/api/authz/auth-request";
-  #     extraConfig = ''
-  #       internal;
-  #       proxy_set_header X-Original-Method $request_method;
-  #       proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
-  #       proxy_set_header Content-Length "";
-  #       proxy_pass_request_body off;
-  #     '';
-  #   };
-  #   # guard placed in the protected location's extraConfig:
-  #   locations."/" = {
-  #     proxyPass = "http://127.0.0.1:PORT";
-  #     extraConfig = ''
-  #       auth_request /internal/authelia/authz;
-  #       auth_request_set $user  $upstream_http_remote_user;
-  #       auth_request_set $groups $upstream_http_remote_groups;
-  #       proxy_set_header Remote-User  $user;
-  #       proxy_set_header Remote-Groups $groups;
-  #       error_page 401 =302 https://auth.agrshv.dev/?rd=$scheme://$http_host$request_uri;
-  #     '';
-  #   };
+  #   { authelia, ... }:
+  #   {
+  #     services.nginx.virtualHosts."app.agrshv.dev" = {
+  #       forceSSL = true;
+  #       useACMEHost = "agrshv.dev";
+  #       locations."/internal/authelia/authz" = authelia.authzLocation;
+  #       locations."/" = {
+  #         proxyPass = "http://127.0.0.1:PORT";
+  #         extraConfig = authelia.guard;
+  #       };
+  #     };
+  #   }
+  #
+  # When another module already defines the vhost's "/" proxyPass (e.g. the
+  # slskd module), only add the guard: `locations."/".extraConfig = authelia.guard;`
   #
   # Note: don't gate services with mobile apps or API clients that can't follow
   # the redirect (e.g. Immich, Forgejo git/API) unless you add bypass rules.

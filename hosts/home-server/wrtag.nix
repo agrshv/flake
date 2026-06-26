@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ inputs, pkgs, authelia, ... }:
 let
   pkgs-unstable = import inputs.nixpkgs-unstable {
     inherit (pkgs.stdenv.hostPlatform) system;
@@ -37,6 +37,12 @@ in
     environment = wrtagEnv // {
       WRTAG_WEB_LISTEN_ADDR = "127.0.0.1:7373";
       WRTAG_WEB_DB_PATH = "/var/lib/wrtag/wrtag.db";
+      # Drop wrtag's own web-UI login: access to the "/" UI is gated by Authelia
+      # forward-auth on the nginx vhost below instead. Note this only disables
+      # auth on the UI handler; the external "/op/" API has a separate key check
+      # that's always on, so WRTAG_WEB_API_KEY (below) is still required for the
+      # slskd post-download hook.
+      WRTAG_WEB_AUTH = "disabled";
     };
 
     path = [ pkgs-unstable.rsgain ]; # wrtag's replaygain addon shells out to it
@@ -48,7 +54,9 @@ in
       User = "slskd";
       Group = "slskd";
       SupplementaryGroups = [ "navidrome" ];
-      # Provides WRTAG_WEB_API_KEY=... (create this file out of band).
+      # Provides WRTAG_WEB_API_KEY=... (create this file out of band). Still
+      # needed even with WRTAG_WEB_AUTH=disabled: the "/op/" API key check is
+      # independent of the UI auth mode and the slskd hook authenticates with it.
       EnvironmentFile = "/root/wrtag.env";
       StateDirectory = "wrtag";
       # wrtag's go-taglib-wasm backend extracts a wazero runtime into
@@ -74,28 +82,11 @@ in
     forceSSL = true;
     useACMEHost = "agrshv.dev";
 
-    # Internal endpoint nginx queries to decide whether a request is authorized.
-    locations."/internal/authelia/authz" = {
-      proxyPass = "http://127.0.0.1:9091/api/authz/auth-request";
-      extraConfig = ''
-        internal;
-        proxy_set_header X-Original-Method $request_method;
-        proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
-        proxy_set_header Content-Length "";
-        proxy_pass_request_body off;
-      '';
-    };
+    locations."/internal/authelia/authz" = authelia.authzLocation;
 
     locations."/" = {
       proxyPass = "http://127.0.0.1:7373";
-      extraConfig = ''
-        auth_request /internal/authelia/authz;
-        auth_request_set $user   $upstream_http_remote_user;
-        auth_request_set $groups $upstream_http_remote_groups;
-        proxy_set_header Remote-User   $user;
-        proxy_set_header Remote-Groups $groups;
-        error_page 401 =302 https://auth.agrshv.dev/?rd=$scheme://$http_host$request_uri;
-      '';
+      extraConfig = authelia.guard;
     };
   };
 }
