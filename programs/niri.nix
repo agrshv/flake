@@ -22,6 +22,8 @@ in
 
   xdg.configFile."niri/config.kdl".text = ''
     input {
+        warp-mouse-to-focus
+        focus-follows-mouse
         keyboard {
             xkb {
                 layout "us,ru"
@@ -67,7 +69,7 @@ in
 
     binds {
         Mod+Return { spawn "${ghostty}"; }
-        Mod+Q { close-window; }
+        Mod+Shift+Q { close-window; }
 
         Mod+Escape { spawn "noctalia" "msg" "session" "lock"; }
         Mod+D { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
