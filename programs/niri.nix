@@ -112,5 +112,25 @@ in
 
         Mod+Shift+E { quit; }
     }
+
+    window-rule {
+      // Rounded corners for a modern look.
+      geometry-corner-radius 20
+
+      // Clips window contents to the rounded corner boundaries.
+      clip-to-geometry true
+    }
+
+    window-rule {
+      match app-id="dev.noctalia.Noctalia.Settings"
+      open-floating true
+      default-column-width { fixed 1080; }
+      default-window-height { fixed 920; }
+    }
+
+    debug {
+      // Allows notification actions and window activation from Noctalia.
+      honor-xdg-activation-with-invalid-serial
+    }
   '';
 }
