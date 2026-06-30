@@ -60,6 +60,8 @@
     wrapperFeatures.gtk = true;
     extraPackages = [ ];
   };
+  programs.niri.enable = true;
+  programs.mangowc.enable = true;
 
   xdg.portal = {
     enable = true;

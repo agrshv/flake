@@ -21,6 +21,7 @@
     ./programs/keepassxc.nix
     ./programs/kubectl.nix
     ./programs/nh.nix
+    ./programs/niri.nix
     ./programs/noctalia.nix
     ./programs/obsidian.nix
     ./programs/remmina.nix
