@@ -119,6 +119,12 @@ in
 
       // Clips window contents to the rounded corner boundaries.
       clip-to-geometry true
+
+      // Apps: blur them all without xray so it looks more realistic.
+      background-effect {
+        blur true
+        xray false
+      }
     }
 
     window-rule {
@@ -126,6 +132,19 @@ in
       open-floating true
       default-column-width { fixed 1080; }
       default-window-height { fixed 920; }
+    }
+
+    /*
+      Noctalia
+      Disable xray on all our surfaces so it looks more realistic.
+      Noctalia publishes blur regions automatically when ext-background-effects is available.
+    */
+    layer-rule {
+      match namespace="^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
+      background-effect {
+        xray false
+        // blur false
+      }
     }
 
     debug {
