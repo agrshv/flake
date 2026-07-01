@@ -22,14 +22,11 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    noctalia = {
-      url = "github:noctalia-dev/noctalia";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    noctalia-greeter = {
-      url = "github:noctalia-dev/noctalia-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # Do NOT set inputs.nixpkgs.follows here: noctalia's cachix builds are keyed
+    # to its own pinned nixpkgs, so overriding it forces a from-source rebuild
+    # (cache miss). Track the `cachix` branch to stay on cached commits.
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
+    noctalia-greeter.url = "github:noctalia-dev/noctalia-greeter";
   };
 
   outputs =
