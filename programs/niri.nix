@@ -18,6 +18,7 @@ in
   home.packages = [
     pkgs.grim
     pkgs.slurp
+    pkgs.xwayland-satellite
   ];
 
   xdg.configFile."niri/config.kdl".text = ''
