@@ -17,6 +17,7 @@
     ./monica.nix
     ./navidrome.nix
     ./nginx.nix
+    ./nixflix.nix
     ./paperless.nix
     ./postgresql.nix
     ./readeck.nix

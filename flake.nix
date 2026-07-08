@@ -27,6 +27,10 @@
     # (cache miss). Track the `cachix` branch to stay on cached commits.
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
     noctalia-greeter.url = "github:noctalia-dev/noctalia-greeter";
+    nixflix = {
+      url = "github:kiriwalawren/nixflix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -40,6 +44,7 @@
       catppuccin,
       sops-nix,
       nix-index-database,
+      nixflix,
       ...
     }@inputs:
     let
@@ -137,6 +142,7 @@
           disko.nixosModules.disko
           catppuccin.nixosModules.catppuccin
           sops-nix.nixosModules.sops
+          nixflix.nixosModules.default
           ./hosts/home-server
         ];
       };
