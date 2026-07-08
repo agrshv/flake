@@ -1,6 +1,10 @@
 { pkgs, ... }: {
   nixflix = {
     enable = true;
+    theme = {
+      enable = true;
+      name = "catppuccin-mocha";
+    };
     nginx = {
       enable = true;
       domain = "agrshv.dev";
@@ -21,8 +25,28 @@
       enable = true;
       apiKey._secret = "/root/nixflix/jellyfin/api_key";
       users.d3spair = {
+        mutable = false;
         policy.isAdministrator = true;
         password._secret = "/root/nixflix/jellyfin/d3spair_password";
+      };
+      # Hardware transcoding on the Ryzen 5 4600G (Vega 7, VCN 2.1) via VAAPI.
+      encoding = {
+        enableHardwareEncoding = true;
+        hardwareAccelerationType = "vaapi"; # AMF is Windows-only; do not use it
+        vaapiDevice = "/dev/dri/renderD128";
+        # Codecs the VCN 2.1 engine can decode. No AV1 — Renoir has no AV1 decoder.
+        hardwareDecodingCodecs = [
+          "h264"
+          "hevc"
+          "mpeg2video"
+          "vc1"
+          "vp9"
+        ];
+        # VCN 2.1 can encode H.264 and HEVC. No AV1 encode on this hardware.
+        allowHevcEncoding = true;
+        allowAv1Encoding = false;
+        enableDecodingColorDepth10Hevc = true;
+        enableDecodingColorDepth10Vp9 = true;
       };
     };
     prowlarr = {

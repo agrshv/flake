@@ -99,6 +99,15 @@
 
   hardware.enableRedistributableFirmware = true;
 
+  # VAAPI hardware transcoding for Jellyfin on the Ryzen 5 4600G (Vega 7 iGPU).
+  # Mesa's radeonsi provides the VAAPI driver; the render node is /dev/dri/renderD128.
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      libva-utils # provides `vainfo` to verify the driver from the CLI
+    ];
+  };
+
   networking = {
     hostName = "home-server";
   };
