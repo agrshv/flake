@@ -21,6 +21,11 @@
         RootFolder = "${pkgs.vuetorrent}/share/vuetorrent";
       };
     };
+    recyclarr = {
+      enable = true;
+      cleanupUnmanagedProfiles.enable = true;
+    };
+    flaresolverr.enable = true;
     jellyfin = {
       enable = true;
       apiKey._secret = "/root/nixflix/jellyfin/api_key";
@@ -64,8 +69,14 @@
       libraries =
         let
           subtitleSettings = {
-            subtitleFetcherOrder = [ "Open Subtitles" "subbuzz" ];
-            subtitleDownloadLanguages = [ "eng" "rus" ];
+            subtitleFetcherOrder = [
+              "Open Subtitles"
+              "subbuzz"
+            ];
+            subtitleDownloadLanguages = [
+              "eng"
+              "rus"
+            ];
             saveSubtitlesWithMedia = true;
             allowEmbeddedSubtitles = "AllowAll";
             requirePerfectSubtitleMatch = true;
@@ -141,8 +152,9 @@
             baseUrl = "https://nyaa.si/";
           }
           {
-            name = "LimeTorrents";
-            baseUrl = "https://www.limetorrents.fun/";
+            name = "1337x";
+            baseUrl = "https://1337x.st/";
+            tags = [ "flaresolverr" ];
           }
         ];
       };
