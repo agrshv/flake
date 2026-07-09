@@ -75,7 +75,12 @@
         in
         {
           Shows = subtitleSettings;
-          Anime = subtitleSettings;
+          # Anime rarely has a "perfect" release match on OpenSubtitles, and
+          # often ships embedded soft-subs; relax both so fetching actually runs.
+          Anime = subtitleSettings // {
+            requirePerfectSubtitleMatch = false;
+            skipSubtitlesIfEmbeddedSubtitlesPresent = false;
+          };
           Movies = subtitleSettings;
         };
       # Hardware transcoding on the Ryzen 5 4600G (Vega 7, VCN 2.1) via VAAPI.
