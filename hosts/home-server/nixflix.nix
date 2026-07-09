@@ -29,6 +29,55 @@
         policy.isAdministrator = true;
         password._secret = "/root/nixflix/jellyfin/d3spair_password";
       };
+
+      # Subtitle plugins. Requires an opensubtitles.com account: put the
+      # account password and REST API key in the referenced secret files.
+      plugins = {
+        subbuzz = {
+          enable = true;
+          config = {
+            OpenSubUserName = "prescribe2222"; # must match your opensubtitles.com login
+            OpenSubPassword._secret = "/root/nixflix/jellyfin/opensubtitles_password";
+            OpenSubApiKey._secret = "/root/nixflix/jellyfin/opensubtitles_api_key";
+            EnableOpenSubtitles = true;
+            EnableYifySubtitles = true;
+            Cache.SubLifeInMinutes = "Always"; # Default is "1 week"
+          };
+        };
+
+        "Open Subtitles" = {
+          enable = true;
+          config = {
+            Username = "prescribe2222";
+            Password._secret = "/root/nixflix/jellyfin/opensubtitles_password";
+          };
+        };
+
+        "Subtitle Extract" = {
+          enable = true;
+          config.ExtractionDuringLibraryScan = true;
+        };
+      };
+
+      # Per-library subtitle behaviour. Keys must match your actual Jellyfin
+      # library display names.
+      libraries =
+        let
+          subtitleSettings = {
+            subtitleFetcherOrder = [ "Open Subtitles" "subbuzz" ];
+            subtitleDownloadLanguages = [ "eng" "rus" ];
+            saveSubtitlesWithMedia = true;
+            allowEmbeddedSubtitles = "AllowAll";
+            requirePerfectSubtitleMatch = true;
+            skipSubtitlesIfAudioTrackMatches = false;
+            skipSubtitlesIfEmbeddedSubtitlesPresent = true;
+          };
+        in
+        {
+          Shows = subtitleSettings;
+          Anime = subtitleSettings;
+          Movies = subtitleSettings;
+        };
       # Hardware transcoding on the Ryzen 5 4600G (Vega 7, VCN 2.1) via VAAPI.
       encoding = {
         enableHardwareEncoding = true;
@@ -49,6 +98,18 @@
         enableDecodingColorDepth10Vp9 = true;
       };
     };
+    # Media discovery & request frontend. sonarr/radarr/jellyfin instances are
+    # auto-configured from the nixflix config above. Exposed at seerr.agrshv.dev.
+    seerr = {
+      enable = true;
+      apiKey._secret = "/root/nixflix/seerr/api_key";
+      externalUrlScheme = "https";
+      jellyfin = {
+        adminUsername = "d3spair";
+        adminPassword._secret = "/root/nixflix/jellyfin/d3spair_password";
+      };
+    };
+
     prowlarr = {
       enable = true;
       config = {
