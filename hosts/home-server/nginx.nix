@@ -20,6 +20,7 @@ let
   # (paperless, slskd, immich, …). extraConfig is `types.lines`, so this
   # merges with each vhost's own definition rather than clobbering it.
   guardedHosts = [
+    "agrshv.dev"
     "read.agrshv.dev"
     "docs.agrshv.dev"
     "search.agrshv.dev"
@@ -33,6 +34,7 @@ let
     "auth.agrshv.dev"
     "monica.agrshv.dev"
     "dawarich.agrshv.dev"
+    "tube.agrshv.dev"
   ];
 in
 {

@@ -12,6 +12,7 @@
     ./authelia.nix
     ./dawarich.nix
     ./forgejo.nix
+    ./homepage.nix
     ./immich.nix
     ./miniflux.nix
     ./monica.nix
@@ -19,6 +20,7 @@
     ./nginx.nix
     ./nixflix.nix
     ./paperless.nix
+    ./pinchflat.nix
     ./postgresql.nix
     ./readeck.nix
     ./redis.nix
