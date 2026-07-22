@@ -45,6 +45,12 @@
     };
   };
 
+  # The data volume's host path must exist before podman bind-mounts it,
+  # otherwise the container fails with `statfs /var/lib/nocodb: no such file`.
+  systemd.tmpfiles.rules = [
+    "d /var/lib/nocodb 0700 root root -"
+  ];
+
   # Don't start the container before the database (and its socket) exist.
   systemd.services.podman-nocodb = {
     after = [ "postgresql.service" ];
