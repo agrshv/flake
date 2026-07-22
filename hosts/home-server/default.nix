@@ -12,7 +12,9 @@
     ./authelia.nix
     ./dawarich.nix
     ./forgejo.nix
+    ./forgejo-runner.nix
     ./homepage.nix
+    ./nocodb.nix
     ./immich.nix
     ./miniflux.nix
     ./monica.nix

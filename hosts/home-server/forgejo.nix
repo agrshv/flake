@@ -33,6 +33,10 @@
         FORCE_PRIVATE = true;
         DEFAULT_BRANCH = "master";
       };
+      # Forgejo Actions (Gitea-Actions-compatible CI). The runner that actually
+      # executes jobs lives in ./forgejo-runner.nix; this just turns the feature
+      # on so runners can register and `.forgejo/workflows/*` files are picked up.
+      actions.ENABLED = true;
       # OAuth2/OIDC login via Authelia. This only configures client behaviour;
       # the authentication source itself lives in Forgejo's DB (no app.ini key
       # for it), so add it once via Site Administration → Authentication

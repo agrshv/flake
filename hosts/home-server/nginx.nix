@@ -35,6 +35,7 @@ let
     "monica.agrshv.dev"
     "dawarich.agrshv.dev"
     "tube.agrshv.dev"
+    "nocodb.agrshv.dev"
   ];
 in
 {
