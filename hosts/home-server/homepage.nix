@@ -128,6 +128,7 @@
         "Infrastructure" = [
           { "Forgejo" = { href = "https://git.agrshv.dev"; description = "Git forge"; icon = "forgejo.png"; }; }
           { "NocoDB" = { href = "https://nocodb.agrshv.dev"; description = "No-code database"; icon = "nocodb.png"; }; }
+          { "Grist" = { href = "https://grist.agrshv.dev"; description = "Spreadsheet database"; icon = "grist.png"; }; }
           { "Authelia" = { href = "https://auth.agrshv.dev"; description = "SSO / auth"; icon = "authelia.png"; }; }
           { "SearXNG" = { href = "https://search.agrshv.dev"; description = "Metasearch"; icon = "searxng.png"; }; }
         ];

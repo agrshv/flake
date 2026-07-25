@@ -36,6 +36,7 @@ let
     "dawarich.agrshv.dev"
     "tube.agrshv.dev"
     "nocodb.agrshv.dev"
+    "grist.agrshv.dev"
   ];
 in
 {
@@ -72,6 +73,14 @@ in
       EditionIDs = [ "GeoLite2-Country" ];
     };
   };
+
+  # Workaround for a bug in this nixpkgs' geoipupdate module: its ExecStartPre
+  # runs `chown geoip <dbdir>` with full privileges (`+`), but with
+  # PrivateUsers = true the dynamically-allocated `geoip` user isn't resolvable
+  # by name in that context, so the chown fails with `invalid user: 'geoip'` and
+  # the unit aborts. Dropping PrivateUsers for this unit makes the dynamic user
+  # host-visible so the chown resolves. (No secrets are handed to this unit.)
+  systemd.services.geoipupdate.serviceConfig.PrivateUsers = lib.mkForce false;
 
   # nginx's geoip2 module opens the .mmdb at startup, so make sure the DB has
   # been fetched first. `wants` (not `requires`) so a failed update doesn't hard

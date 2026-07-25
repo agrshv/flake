@@ -13,6 +13,7 @@
     ./dawarich.nix
     ./forgejo.nix
     ./forgejo-runner.nix
+    ./grist.nix
     ./homepage.nix
     ./nocodb.nix
     ./immich.nix
