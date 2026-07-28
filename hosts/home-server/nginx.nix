@@ -146,6 +146,12 @@ in
         "docs.agrshv.dev" = {
           forceSSL = true;
           useACMEHost = "agrshv.dev";
+          # Paperless' nginx vhost inherits the global 10m clientMaxBodySize,
+          # which rejects larger scans/PDFs with 413 before they reach the app.
+          # Raise it just for this vhost (merges with the geo-guard extraConfig).
+          extraConfig = ''
+            client_max_body_size 100m;
+          '';
         };
         "search.agrshv.dev" = {
           forceSSL = true;
