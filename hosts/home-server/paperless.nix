@@ -10,8 +10,11 @@
     database.createLocally = true;
     configureTika = true;
     configureNginx = true;
+    exporter.enable = true;
     settings = {
       PAPERLESS_OCR_LANGUAGE = "rus+kaz";
+      PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ created }}_{{ title }}_{{ doc_pk }}";
+      PAPERLESS_FILENAME_FORMAT_REMOVE_NONE = true;
     };
   };
 }
