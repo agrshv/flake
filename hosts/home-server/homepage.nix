@@ -115,6 +115,7 @@
           { "Dawarich" = { href = "https://dawarich.agrshv.dev"; description = "Location history"; icon = "dawarich.png"; }; }
           { "Monica" = { href = "https://monica.agrshv.dev"; description = "Personal CRM"; icon = "monica.png"; }; }
           { "Actual" = { href = "https://budget.agrshv.dev"; description = "Budget"; icon = "actual-budget.png"; }; }
+          { "Mealie" = { href = "https://recipes.agrshv.dev"; description = "Recipes & meal planning"; icon = "mealie.png"; }; }
         ];
       }
       {

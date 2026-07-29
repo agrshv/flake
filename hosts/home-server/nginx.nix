@@ -37,6 +37,7 @@ let
     "tube.agrshv.dev"
     "nocodb.agrshv.dev"
     "grist.agrshv.dev"
+    "recipes.agrshv.dev"
   ];
 in
 {

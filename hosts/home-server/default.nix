@@ -17,6 +17,7 @@
     ./homepage.nix
     ./nocodb.nix
     ./immich.nix
+    ./mealie.nix
     ./miniflux.nix
     ./monica.nix
     ./navidrome.nix
