@@ -10,6 +10,7 @@
 
     ./actual.nix
     ./authelia.nix
+    ./bulwark.nix
     ./dawarich.nix
     ./forgejo.nix
     ./forgejo-runner.nix

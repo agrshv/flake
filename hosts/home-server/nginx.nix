@@ -38,6 +38,7 @@ let
     "nocodb.agrshv.dev"
     "grist.agrshv.dev"
     "recipes.agrshv.dev"
+    "webmail.agrshv.dev"
   ];
 in
 {
