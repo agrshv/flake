@@ -67,6 +67,12 @@
   services.nginx.virtualHosts."webmail.agrshv.dev" = {
     forceSSL = true;
     useACMEHost = "agrshv.dev";
+    # The global 10m clientMaxBodySize rejects larger mail attachments and Files
+    # uploads with 413 before they reach Bulwark. Raise it just for this vhost
+    # (merges with the geo-guard extraConfig, as with docs.agrshv.dev).
+    extraConfig = ''
+      client_max_body_size 100m;
+    '';
     locations."/" = {
       proxyPass = "http://127.0.0.1:3456";
       proxyWebsockets = true;
