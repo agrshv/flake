@@ -5,59 +5,142 @@ LUKS2 root, btrfs subvolumes) and is installed from this flake on GitHub. The
 ISO is only a bootstrap: it boots the hardware, joins the network and accepts
 the personal SSH key. It never embeds the config, so it does not go stale.
 
+The private `work` input (`git+ssh://git@github.com/agrshv/flake-work.git`) is
+fetched during evaluation, so wherever the evaluation runs needs your GitHub
+SSH key — that is what decides which path below you take.
+
 ## 0. Build and boot the ISO (once per release)
 
 ```sh
 nix build .#installer-iso
-sudo dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress oflag=sync
+lsblk -d -o NAME,SIZE,MODEL,TRAN      # identify the USB stick
+sudo dd if=result/iso/nixos-minimal-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ```
 
-Boot it. The `nixos` user is auto-logged-in on the console and reachable as
-`ssh nixos@<ip>` (key only, passwordless sudo). Wi-Fi: `nmtui`.
-
-## Path A — from a workstation with nixos-anywhere (preferred)
-
-Works for anything on the LAN, headless or not. The closure is **built here and
-pushed over SSH**, so the target needs no internet and the private `work`
-input is evaluated on this machine, where the GitHub key lives.
+Firmware: **disable Secure Boot** (the ISO is not Microsoft-signed; ASUS: F2 →
+Security → Secure Boot). Boot the stick. The `nixos` user is auto-logged-in on
+the console and reachable as `ssh nixos@<ip>` (key only, passwordless sudo).
 
 ```sh
-# LUKS passphrase file: exact bytes are the passphrase — no trailing newline.
+nmtui          # join Wi-Fi if not on a cable
+ip -4 a        # note the IP
+```
+
+## Path A — from a second machine with nixos-anywhere (preferred)
+
+The closure is **built on the driving machine and pushed over SSH**: the target
+needs no internet access of its own and no GitHub key. The driving machine
+needs the flake checked out, Bitwarden unlocked with its SSH agent enabled
+(`ssh-add -l` lists the personal key), and to be on the same network.
+
+```sh
+cd ~/flake && git pull
+
+# LUKS passphrase file: the exact bytes are the passphrase — no trailing newline.
 read -rs pw && printf '%s' "$pw" > /tmp/disk.key && unset pw
 
 nix run github:nix-community/nixos-anywhere -- \
   --flake .#home-laptop \
+  --generate-hardware-config nixos-generate-config ./hosts/home-laptop/hardware-configuration.nix \
   --disk-encryption-keys /tmp/disk.key /tmp/disk.key \
-  --target-host nixos@<ip>
+  --target-host nixos@<target-ip>
+
 shred -u /tmp/disk.key
+git commit -am "home-laptop: regenerate hardware config" && git push
 ```
+
+`--generate-hardware-config` runs `nixos-generate-config` on the live target and
+writes the result into the checkout before installing — use it whenever the
+hardware changed since the file was last generated.
 
 Target disk is `disko.devices.disk.main.device` (default `/dev/nvme0n1`); pin
 the real `/dev/disk/by-id/…` in the host's `default.nix` if it differs.
 
-## Path B — at the console with disko-install
+nixos-anywhere cannot install the machine it runs on, and its no-USB kexec mode
+needs a **wired** interface on the target (the RAM installer has no Wi-Fi
+credentials). Wi-Fi-only laptop → boot the ISO and use Path A from another
+machine, or Path B.
 
-For when only the target machine is at hand. `disko-install` (same pinned
-disko as the hosts) formats and installs in one step; `--disk main <dev>`
-overrides the device in the config.
+## Path B — single machine, at the console with disko-install
+
+`disko-install` (same pinned disko as the hosts) formats and installs in one
+step; `--disk main <dev>` overrides the device in the config. Evaluation runs
+on the target, so it needs the `work` input: carry a copy of the `flake-work`
+repo on a stick (it holds only sops-encrypted secrets) and point the lock at it.
 
 ```sh
-# The `work` input is fetched over SSH, so bring your agent along:
-ssh -A nixos@<ip>            # or use the console with a key on a USB stick
+git clone https://github.com/agrshv/flake && cd flake
+nix flake lock --override-input work path:/run/media/nixos/<stick>/flake-work
+
+# refresh the hardware config from this machine
+sudo nixos-generate-config --no-filesystems --show-hardware-config > hosts/home-laptop/hardware-configuration.nix
+git add -A
 
 read -rs pw && printf '%s' "$pw" | sudo tee /tmp/disk.key >/dev/null && unset pw
 lsblk -d -o NAME,SIZE,MODEL
-sudo -E disko-install --flake github:agrshv/flake#home-laptop --disk main /dev/nvme0n1
+sudo disko-install --flake .#home-laptop --disk main /dev/nvme0n1
 ```
 
-`sudo -E` keeps `SSH_AUTH_SOCK` so root can reach the forwarded agent.
+Alternative to the stick: `ssh -A nixos@<ip>` from a machine whose agent has
+the GitHub key, then `sudo -E disko-install --flake github:agrshv/flake#home-laptop --disk main /dev/nvme0n1`
+(`-E` keeps `SSH_AUTH_SOCK` for root). Commit the regenerated hardware config
+from the installed system afterwards.
 
 ## First boot
 
+Log in as `agrshv` with `changeme`, then, in this order:
+
 ```sh
-passwd                                   # initialPassword is "changeme"
-sudo systemd-cryptenroll /dev/disk/by-partlabel/disk-main-luks \
-  --tpm2-device=auto --tpm2-pcrs=0+7     # TPM2 unlock; must be done from the
-                                         # installed system, not the ISO (PCR 7)
-git clone git@github.com:agrshv/flake.git ~/flake   # `nh` expects ~/flake
+passwd
+
+# 1. Bitwarden Desktop autostarts: Settings → enable "SSH agent". Then:
+ssh-add -l                                   # personal key served from the vault
+echo $SSH_AUTH_SOCK                          # ~/.bitwarden-ssh-agent.sock
+
+# 2. sops age key. It is derived from the personal SSH *private key file*, not
+#    the agent: export the key from Bitwarden to tmpfs, convert, delete.
+mkdir -p ~/.config/sops/age
+nix run nixpkgs#ssh-to-age -- -private-key -i /run/user/1000/personal_key > ~/.config/sops/age/keys.txt
+chmod 600 ~/.config/sops/age/keys.txt
+shred -u /run/user/1000/personal_key
+
+# 3. The flake checkout `nh` expects
+git clone git@github.com:agrshv/flake.git ~/flake
+nh os switch                                 # applies sops secrets now that the key exists
+
+# 4. TPM2 unlock as a second LUKS slot. Must run from the installed system, not
+#    the ISO: PCR 7 (Secure Boot state) differs between the two.
+sudo systemd-cryptenroll /dev/disk/by-partlabel/disk-main-luks --tpm2-device=auto --tpm2-pcrs=0+7
 ```
+
+If the passphrase prompt still appears on the next boot, add
+`crypttabExtraOpts = [ "tpm2-device=auto" ];` to
+`boot.initrd.luks.devices.cryptroot` in the host's `default.nix` and switch.
+
+Browser: enable Bitwarden's browser integration in the app (it installs its own
+native-messaging manifest for Brave).
+
+## Renaming the login user on an existing host
+
+The workstations use `me.user` (`hosts/common/me.nix`, uid 1000). Switching a
+live host to a new name **without** the step below creates a second user and
+leaves the old one untouched. Do it from a root shell that is not the user's
+own session (e.g. `ssh root@host`, or a tty as root):
+
+```sh
+usermod -l agrshv -d /home/agrshv -m d3spair
+groupmod -n agrshv d3spair
+# then, as agrshv:
+nh os switch
+```
+
+`home-server` still declares `d3spair` for this reason.
+
+## Day-2 deploys
+
+```sh
+nh os switch                                                    # local, as your user
+nixos-rebuild switch --flake ~/flake#home-server --target-host home-server.agrshv.dev --sudo --ask-sudo-password
+```
+
+Run these as your user, not root: the `work` input is fetched with your agent.

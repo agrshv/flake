@@ -1,6 +1,6 @@
 { pkgs, ... }:
 let
-  keys = import ../common/keys.nix;
+  me = import ../common/me.nix;
 in
 {
   imports = [
@@ -118,6 +118,8 @@ in
 
   time.timeZone = "Asia/Almaty";
 
+  # Still the old login name: renaming a live headless host needs the manual
+  # usermod step in INSTALL.md first. Workstations use me.user.
   users.users.d3spair = {
     isNormalUser = true;
     extraGroups = [
@@ -125,7 +127,7 @@ in
     ];
     initialPassword = "changeme";
     openssh.authorizedKeys.keys = [
-      keys.personal
+      me.sshKey
     ];
   };
 

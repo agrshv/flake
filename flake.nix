@@ -47,6 +47,7 @@
     }@inputs:
     let
       system = "x86_64-linux";
+      me = import ./hosts/common/me.nix;
 
       # Evaluated once here and handed to every host (NixOS and home-manager) so
       # no module needs to `import nixpkgs-unstable` again.
@@ -56,7 +57,7 @@
       };
       specialArgs = { inherit inputs pkgs-unstable; };
 
-      # A graphical workstation: NixOS + home-manager for d3spair with the shared
+      # A graphical workstation: NixOS + home-manager for me.user with the shared
       # desktop/work modules wired in. `host` names a directory under ./hosts.
       mkWorkstation =
         host:
@@ -76,7 +77,7 @@
                   inputs.sops-nix.homeManagerModules.sops
                   inputs.nix-index-database.homeModules.default
                 ];
-                users.d3spair.imports = [
+                users.${me.user}.imports = [
                   ./home.nix
                   inputs.catppuccin.homeModules.catppuccin
                   inputs.noctalia.homeModules.default

@@ -1,12 +1,12 @@
 { pkgs, inputs, ... }:
 let
-  keys = import ./keys.nix;
+  me = import ./me.nix;
 in
 {
   imports = [
     inputs.noctalia-greeter.nixosModules.default
   ];
-  sops.age.keyFile = "/home/d3spair/.config/sops/age/keys.txt";
+  sops.age.keyFile = "/home/${me.user}/.config/sops/age/keys.txt";
 
   catppuccin = {
     enable = true;
@@ -22,15 +22,16 @@ in
 
   time.timeZone = "Asia/Almaty";
 
-  users.users.d3spair = {
+  users.users.${me.user} = {
     isNormalUser = true;
+    uid = 1000;
     extraGroups = [
       "wheel"
       "networkmanager"
     ];
     initialPassword = "changeme";
     openssh.authorizedKeys.keys = [
-      keys.personal
+      me.sshKey
     ];
   };
 
@@ -108,14 +109,14 @@ in
 
   services.syncthing = {
     enable = true;
-    user = "d3spair";
-    dataDir = "/home/d3spair";
+    user = me.user;
+    dataDir = "/home/${me.user}";
     openDefaultPorts = true;
     settings = {
       devices."phone".id = "ERU7IIB-SSIQSQB-F242ET4-WG6TYCY-NSXQ5KZ-ET7PZZX-HYDMHLA-TNYP3AF";
       folders = {
         "tyd4h-e2mdp" = {
-          path = "/home/d3spair/Documents/Obsidian Vault";
+          path = "/home/${me.user}/Documents/Obsidian Vault";
           devices = [ "phone" ];
           ignorePatterns = [ ".obsidian/" ];
         };

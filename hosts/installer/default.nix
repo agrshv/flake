@@ -6,7 +6,7 @@
   ...
 }:
 let
-  keys = import ../common/keys.nix;
+  me = import ../common/me.nix;
   system = pkgs.stdenv.hostPlatform.system;
 in
 {
@@ -38,7 +38,7 @@ in
       KbdInteractiveAuthentication = false;
     };
   };
-  users.users.nixos.openssh.authorizedKeys.keys = [ keys.personal ];
+  users.users.nixos.openssh.authorizedKeys.keys = [ me.sshKey ];
 
   environment.systemPackages = [
     pkgs.git

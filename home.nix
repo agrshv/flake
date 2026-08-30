@@ -4,7 +4,9 @@
   pkgs-unstable,
   ...
 }:
-
+let
+  me = import ./hosts/common/me.nix;
+in
 {
   imports = [
     ./programs/bash.nix
@@ -32,8 +34,8 @@
   sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
   home = {
-    username = "d3spair";
-    homeDirectory = "/home/d3spair";
+    username = me.user;
+    homeDirectory = "/home/${me.user}";
 
     shell = {
       enableBashIntegration = true;

@@ -1,4 +1,7 @@
 { pkgs, ... }:
+let
+  me = import ../common/me.nix;
+in
 {
   imports = [
     ../common/disko.nix
@@ -57,7 +60,7 @@
 
   networking.hostName = "home-desktop";
 
-  users.users.d3spair.extraGroups = [
+  users.users.${me.user}.extraGroups = [
     "tss"
     "i2c"
   ];
