@@ -52,6 +52,7 @@ in
     }
     output "eDP-1" {
         position x=0 y=1440
+        scale 1
     }
 
     layout {
