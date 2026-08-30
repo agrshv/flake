@@ -8,13 +8,13 @@
 {
   imports = [
     ./programs/bash.nix
+    ./programs/bitwarden.nix
     ./programs/chromium.nix
     ./programs/claude-code.nix
     ./programs/eza.nix
     ./programs/ghostty.nix
     ./programs/git.nix
     ./programs/k9s.nix
-    ./programs/keepassxc.nix
     ./programs/nh.nix
     ./programs/niri.nix
     ./programs/noctalia.nix

@@ -13,7 +13,12 @@ in
     cache.enable = true;
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    # bitwarden-desktop (programs/bitwarden.nix) is pinned upstream to an Electron
+    # release nixpkgs marks insecure; permit exactly that build. Revisit on bumps.
+    permittedInsecurePackages = [ "electron-39.8.10" ];
+  };
 
   time.timeZone = "Asia/Almaty";
 
@@ -83,7 +88,9 @@ in
 
   hardware.graphics.enable = true;
 
-  programs.ssh.startAgent = true;
+  # SSH_AUTH_SOCK is Bitwarden Desktop's agent (programs/bitwarden.nix); the
+  # system ssh-agent would shadow it.
+  programs.ssh.startAgent = false;
 
   services.pipewire = {
     enable = true;
@@ -107,10 +114,6 @@ in
     settings = {
       devices."phone".id = "ERU7IIB-SSIQSQB-F242ET4-WG6TYCY-NSXQ5KZ-ET7PZZX-HYDMHLA-TNYP3AF";
       folders = {
-        "r6uge-vvagb" = {
-          path = "/home/d3spair/Documents/KeePass";
-          devices = [ "phone" ];
-        };
         "tyd4h-e2mdp" = {
           path = "/home/d3spair/Documents/Obsidian Vault";
           devices = [ "phone" ];

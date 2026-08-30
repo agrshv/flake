@@ -9,6 +9,4 @@
       ];
     })
   ];
-
-  programs.brave.nativeMessagingHosts = [ pkgs.keepassxc ];
 }
