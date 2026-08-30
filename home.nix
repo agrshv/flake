@@ -7,19 +7,14 @@
 
 {
   imports = [
-    ./programs/awscli.nix
     ./programs/bash.nix
     ./programs/chromium.nix
     ./programs/claude-code.nix
-    ./programs/doctl.nix
     ./programs/eza.nix
-    ./programs/ghorg.nix
     ./programs/ghostty.nix
     ./programs/git.nix
-    ./programs/glab.nix
     ./programs/k9s.nix
     ./programs/keepassxc.nix
-    ./programs/kubectl.nix
     ./programs/nh.nix
     ./programs/niri.nix
     ./programs/noctalia.nix
@@ -34,10 +29,7 @@
     ./programs/zed.nix
   ];
 
-  sops = {
-    age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
-    defaultSopsFile = secrets/workstation.yaml;
-  };
+  sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
   home = {
     username = "d3spair";

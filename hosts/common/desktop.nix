@@ -3,10 +3,7 @@
   imports = [
     inputs.noctalia-greeter.nixosModules.default
   ];
-  sops = {
-    defaultSopsFile = ../../secrets/workstation.yaml;
-    age.keyFile = "/home/d3spair/.config/sops/age/keys.txt";
-  };
+  sops.age.keyFile = "/home/d3spair/.config/sops/age/keys.txt";
 
   catppuccin = {
     enable = true;

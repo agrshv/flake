@@ -31,6 +31,10 @@
       url = "github:kiriwalawren/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Private work-specific modules (VPN profiles, work SSH/git identity, cloud
+    # CLIs and their sops secrets). Fetched over SSH from a private GitHub repo;
+    # drop this input and its two import sites if you are reusing this flake.
+    work.url = "git+ssh://git@github.com/agrshv/flake-work.git";
   };
 
   outputs =
@@ -75,6 +79,7 @@
               ./home.nix
               catppuccin.homeModules.catppuccin
               inputs.noctalia.homeModules.default
+              inputs.work.homeModules.default
             ];
             home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }
@@ -101,6 +106,7 @@
               ./home.nix
               catppuccin.homeModules.catppuccin
               inputs.noctalia.homeModules.default
+              inputs.work.homeModules.default
             ];
             home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }
@@ -127,6 +133,7 @@
               ./home.nix
               catppuccin.homeModules.catppuccin
               inputs.noctalia.homeModules.default
+              inputs.work.homeModules.default
             ];
             home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           }
