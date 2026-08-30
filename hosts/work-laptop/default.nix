@@ -7,6 +7,9 @@
     ../common/desktop.nix
   ];
 
+  # Pinned so an install can't land on the Ventoy stick it was booted from.
+  disko.devices.disk.main.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLQ512HALU-00000_S4Y4NS0R633464";
+
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     initrd = {

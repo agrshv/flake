@@ -93,7 +93,6 @@
     {
       nixosConfigurations = {
         home-desktop = mkWorkstation "home-desktop";
-        home-laptop = mkWorkstation "home-laptop";
         work-laptop = mkWorkstation "work-laptop";
 
         # Headless. Deploy with:

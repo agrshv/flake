@@ -40,21 +40,24 @@ cd ~/flake && git pull
 read -rs pw && printf '%s' "$pw" > /tmp/disk.key && unset pw
 
 nix run github:nix-community/nixos-anywhere -- \
-  --flake .#home-laptop \
-  --generate-hardware-config nixos-generate-config ./hosts/home-laptop/hardware-configuration.nix \
+  --flake .#work-laptop \
+  --generate-hardware-config nixos-generate-config ./hosts/work-laptop/hardware-configuration.nix \
   --disk-encryption-keys /tmp/disk.key /tmp/disk.key \
   --target-host nixos@<target-ip>
 
 shred -u /tmp/disk.key
-git commit -am "home-laptop: regenerate hardware config" && git push
+git commit -am "work-laptop: regenerate hardware config" && git push
 ```
 
 `--generate-hardware-config` runs `nixos-generate-config` on the live target and
 writes the result into the checkout before installing — use it whenever the
 hardware changed since the file was last generated.
 
-Target disk is `disko.devices.disk.main.device` (default `/dev/nvme0n1`); pin
-the real `/dev/disk/by-id/…` in the host's `default.nix` if it differs.
+Target disk is `disko.devices.disk.main.device`. The shared default is
+`/dev/nvme0n1`; a host whose disk differs — or that gets installed next to a
+removable stick worth not formatting — pins its real `/dev/disk/by-id/…` in its
+own `default.nix`, as `work-laptop` does. Find the path on the live target with
+`ls -l /dev/disk/by-id/ | grep -v -e part -e wwn -e eui`.
 
 nixos-anywhere cannot install the machine it runs on, and its no-USB kexec mode
 needs a **wired** interface on the target (the RAM installer has no Wi-Fi
@@ -73,16 +76,16 @@ git clone https://github.com/agrshv/flake && cd flake
 nix flake lock --override-input work path:/run/media/nixos/<stick>/flake-work
 
 # refresh the hardware config from this machine
-sudo nixos-generate-config --no-filesystems --show-hardware-config > hosts/home-laptop/hardware-configuration.nix
+sudo nixos-generate-config --no-filesystems --show-hardware-config > hosts/work-laptop/hardware-configuration.nix
 git add -A
 
 read -rs pw && printf '%s' "$pw" | sudo tee /tmp/disk.key >/dev/null && unset pw
-lsblk -d -o NAME,SIZE,MODEL
-sudo disko-install --flake .#home-laptop --disk main /dev/nvme0n1
+lsblk -d -o NAME,SIZE,MODEL,SERIAL
+sudo disko-install --flake .#work-laptop      # host pins its disk; no --disk needed
 ```
 
 Alternative to the stick: `ssh -A nixos@<ip>` from a machine whose agent has
-the GitHub key, then `sudo -E disko-install --flake github:agrshv/flake#home-laptop --disk main /dev/nvme0n1`
+the GitHub key, then `sudo -E disko-install --flake github:agrshv/flake#work-laptop`
 (`-E` keeps `SSH_AUTH_SOCK` for root). Commit the regenerated hardware config
 from the installed system afterwards.
 
