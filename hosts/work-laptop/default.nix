@@ -23,7 +23,13 @@
       efi.canTouchEfiVariables = true;
       limine = {
         enable = true;
-        secureBoot.enable = true;
+        secureBoot = {
+          enable = true;
+          # Without this the very first bootloader install aborts: signing needs
+          # /var/lib/sbctl, which only exists once keys have been made. Enrolling
+          # them is still manual (firmware Setup Mode) — see INSTALL.md.
+          autoGenerateKeys = true;
+        };
       };
     };
     plymouth = {
