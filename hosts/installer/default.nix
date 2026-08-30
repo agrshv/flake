@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   inputs,
   modulesPath,
   ...
@@ -22,8 +21,9 @@ in
     "flakes"
   ];
 
-  # The minimal ISO ships wpa_supplicant; NetworkManager can't coexist with it.
-  networking.wireless.enable = lib.mkForce false;
+  # NetworkManager drives wpa_supplicant over D-Bus (the networkmanager module
+  # turns it on itself); disabling networking.wireless here would leave the Wi-Fi
+  # device stuck in "unavailable" with no supplicant behind it.
   networking.networkmanager.enable = true;
   hardware.enableRedistributableFirmware = true;
 
