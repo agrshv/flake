@@ -238,7 +238,8 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
-        "sops-nix": "sops-nix"
+        "sops-nix": "sops-nix",
+        "work": "work"
       }
     },
     "sops-nix": {
@@ -295,6 +296,21 @@
         "owner": "Maroka-chan",
         "repo": "VPN-Confinement",
         "type": "github"
+      }
+    },
+    "work": {
+      "locked": {
+        "lastModified": 1788075257,
+        "narHash": "sha256-r8nH8nZBBLLhBuJvLE0dwVVUwZZvhQZosm0qb96jIGU=",
+        "ref": "refs/heads/master",
+        "rev": "729989daca19cc2150c0ff39805e330bcb339bcd",
+        "revCount": 2,
+        "type": "git",
+        "url": "ssh://git@github.com/agrshv/flake-work.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/agrshv/flake-work.git"
       }
     }
   },
