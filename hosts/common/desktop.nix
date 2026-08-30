@@ -1,4 +1,7 @@
 { pkgs, inputs, ... }:
+let
+  keys = import ./keys.nix;
+in
 {
   imports = [
     inputs.noctalia-greeter.nixosModules.default
@@ -22,7 +25,7 @@
     ];
     initialPassword = "changeme";
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFoJfwlfB0GAnaPFj2oLVK0HA9uGWPwoTfsfTrIPHpgb @personal_key"
+      keys.personal
     ];
   };
 

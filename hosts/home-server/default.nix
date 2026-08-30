@@ -1,10 +1,10 @@
-{
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
+let
+  keys = import ../common/keys.nix;
+in
 {
   imports = [
-    ./disko.nix
+    ../common/disko.nix
     ./hardware-configuration.nix
     ../common/nixos.nix
 
@@ -125,7 +125,7 @@
     ];
     initialPassword = "changeme";
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFoJfwlfB0GAnaPFj2oLVK0HA9uGWPwoTfsfTrIPHpgb @personal_key"
+      keys.personal
     ];
   };
 

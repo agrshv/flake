@@ -1,11 +1,10 @@
-{ pkgs, inputs, ... }:
+{ pkgs, ... }:
 {
   imports = [
-    ./disko.nix
+    ../common/disko.nix
     ./hardware-configuration.nix
     ../common/nixos.nix
     ../common/desktop.nix
-    inputs.work.nixosModules.default
   ];
 
   boot = {

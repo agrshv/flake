@@ -1,10 +1,10 @@
-{ inputs, pkgs, authelia, ... }:
+{
+  pkgs,
+  pkgs-unstable,
+  authelia,
+  ...
+}:
 let
-  pkgs-unstable = import inputs.nixpkgs-unstable {
-    inherit (pkgs.stdenv.hostPlatform) system;
-    config.allowUnfree = true;
-  };
-
   # Shared with the slskd post-download hook (see slskd.nix). Defines how
   # releases are laid out in the Navidrome library and what extra metadata
   # wrtag writes.
