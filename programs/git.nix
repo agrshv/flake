@@ -20,16 +20,24 @@
       {
         condition = "hasconfig:remote.*.url:ssh://git@codeberg.org/*/**";
         contents.user = {
-          name = "d3spair";
-          email = "git@agrshv.dev";
+          name = "agrshv";
+          email = "anton@agrshv.dev";
           signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFoJfwlfB0GAnaPFj2oLVK0HA9uGWPwoTfsfTrIPHpgb";
         };
       }
       {
         condition = "hasconfig:remote.*.url:ssh://forgejo@git.agrshv.dev/*/**";
         contents.user = {
-          name = "d3spair";
-          email = "git@agrshv.dev";
+          name = "agrshv";
+          email = "anton@agrshv.dev";
+          signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFoJfwlfB0GAnaPFj2oLVK0HA9uGWPwoTfsfTrIPHpgb";
+        };
+      }
+      {
+        condition = "hasconfig:remote.*.url:ssh://git@github.com/*/**";
+        contents.user = {
+          name = "agrshv";
+          email = "anton@agrshv.dev";
           signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFoJfwlfB0GAnaPFj2oLVK0HA9uGWPwoTfsfTrIPHpgb";
         };
       }

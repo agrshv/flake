@@ -1,8 +1,8 @@
-{ pkgs, ... }:
+{ pkgs-unstable, ... }:
 
 {
   home.packages = [
-    (pkgs.brave.override {
+    (pkgs-unstable.brave-origin.override {
       commandLineArgs = [
         "--enable-features=TouchpadOverscrollHistoryNavigation"
         "--ozone-platform=wayland"
