@@ -78,7 +78,7 @@ in
         Mod+S { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
         Mod+Comma { spawn "noctalia" "msg" "settings-toggle"; }
 
-        Mod+Shift+S { spawn "sh" "-c" "${grim} -g \"$(${slurp})\" - | ${wlCopy} -t image/png"; }
+        Mod+Shift+S { spawn "noctalia" "msg" "screenshot-region"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-up"; }
         XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-down"; }
