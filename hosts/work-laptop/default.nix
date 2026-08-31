@@ -1,4 +1,7 @@
 { pkgs, ... }:
+let
+  me = import ../common/me.nix;
+in
 {
   imports = [
     ../common/disko.nix
@@ -38,6 +41,8 @@
     };
   };
 
+  hardware.i2c.enable = true;
+
   hardware.graphics.extraPackages = [ pkgs.intel-media-driver ];
   environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
 
@@ -47,8 +52,11 @@
 
   networking.hostName = "work-laptop";
 
+  users.users.${me.user}.extraGroups = [ "i2c" ];
+
   environment.systemPackages = with pkgs; [
     brightnessctl
+    ddcutil
   ];
 
   system.stateVersion = "25.11";
