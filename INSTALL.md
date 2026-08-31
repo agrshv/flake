@@ -34,7 +34,7 @@ needs the flake checked out, Bitwarden unlocked with its SSH agent enabled
 (`ssh-add -l` lists the personal key), and to be on the same network.
 
 ```sh
-cd ~/flake && git pull
+cd ~/Documents/flake && git pull
 
 # LUKS passphrase file: the exact bytes are the passphrase — no trailing newline.
 read -rs pw && printf '%s' "$pw" > /tmp/disk.key && unset pw
@@ -108,7 +108,7 @@ chmod 600 ~/.config/sops/age/keys.txt
 shred -u /run/user/1000/personal_key
 
 # 3. The flake checkout `nh` expects
-git clone git@github.com:agrshv/flake.git ~/flake
+git clone git@github.com:agrshv/flake.git ~/Documents/flake
 nh os switch                                 # applies sops secrets now that the key exists
 
 # 4. TPM2 unlock as a second LUKS slot. Must run from the installed system, not
@@ -143,7 +143,7 @@ nh os switch
 
 ```sh
 nh os switch                                                    # local, as your user
-nixos-rebuild switch --flake ~/flake#home-server --target-host home-server.agrshv.dev --sudo --ask-sudo-password
+nixos-rebuild switch --flake ~/Documents/flake#home-server --target-host home-server.agrshv.dev --sudo --ask-sudo-password
 ```
 
 Run these as your user, not root: the `work` input is fetched with your agent.

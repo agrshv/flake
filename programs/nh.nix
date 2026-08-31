@@ -3,6 +3,6 @@
 {
   programs.nh = {
     enable = true;
-    flake = "${config.home.homeDirectory}/flake";
+    flake = "${config.xdg.userDirs.documents}/flake";
   };
 }

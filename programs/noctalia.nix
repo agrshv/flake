@@ -102,7 +102,7 @@
           name = "Personal Calendar";
           password_file = config.sops.secrets."stalwart/noctalia".path;
           provider = "custom";
-          server_url = "https://mail.agrshv.dev/dav/";
+          server_url = "https://mail.agrshv.dev/dav/cal";
           type = "caldav";
           username = "d3spair@agrshv.dev";
         };
