@@ -1,5 +1,7 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
+  sops.secrets."stalwart/noctalia".sopsFile = ../secrets/common.yaml;
+
   programs.noctalia = {
     enable = true;
     systemd.enable = true;
@@ -91,6 +93,19 @@
       widget = {
         media.hide_when_no_media = true;
         tray.hidden = [ "nm-applet" ];
+      };
+      calendar = {
+        enabled = true;
+        account.stalwart = {
+          color = "primary";
+          credential_source = "file";
+          name = "Personal Calendar";
+          password_file = config.sops.secrets."stalwart/noctalia".path;
+          provider = "custom";
+          server_url = "https://mail.agrshv.dev/dav/";
+          type = "caldav";
+          username = "d3spair@agrshv.dev";
+        };
       };
     };
   };

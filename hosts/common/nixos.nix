@@ -26,4 +26,6 @@
   security.sudo.extraConfig = ''
     Defaults pwfeedback
   '';
+
+  i18n.defaultLocale = "en_GB.UTF-8";
 }
