@@ -52,6 +52,7 @@ in
       pkgs-unstable.telegram-desktop
       teams-for-linux
       dig
+      gh
       ouch
       btop
       vim
