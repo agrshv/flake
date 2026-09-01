@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 let
   # Units whose on-disk SQLite databases are in the restic path set; paused
   # while the backup runs (see backupPrepareCommand below).
@@ -29,24 +29,30 @@ in
     calendar = "02:00:00";
   };
 
+  sops.secrets = {
+    "restic/repository" = { };
+    "restic/password" = { };
+    "restic/env" = { };
+  };
+
   services.restic.backups.home-server = {
     # Create the repo on first run if it doesn't exist yet.
     initialize = true;
 
-    # Credentials live outside the repo, matching the other services here.
-    # Backblaze B2 via its S3-compatible API (not the native b2: backend):
-    #   /root/restic-repository : repo URL, e.g.
+    # Credentials come from secrets/home-server.yaml. Backblaze B2 via its
+    # S3-compatible API (not the native b2: backend):
+    #   restic/repository : repo URL, e.g.
     #       "s3:https://s3.us-west-004.backblazeb2.com/my-bucket/home-server"
     #       (use the endpoint host B2 shows for the bucket; region varies)
-    #   /root/restic-password   : the repo encryption password
-    #   /root/restic.env        : S3 creds — the B2 application key, e.g.
-    #                               AWS_ACCESS_KEY_ID=<keyID>
-    #                               AWS_SECRET_ACCESS_KEY=<applicationKey>
-    # Keep an off-box copy of restic-password too: it is backed up below as
-    # part of /root, but that copy is only readable *with* the password.
-    repositoryFile = "/root/restic-repository";
-    passwordFile = "/root/restic-password";
-    environmentFile = "/root/restic.env";
+    #   restic/password   : the repo encryption password
+    #   restic/env        : S3 creds — the B2 application key, e.g.
+    #                         AWS_ACCESS_KEY_ID=<keyID>
+    #                         AWS_SECRET_ACCESS_KEY=<applicationKey>
+    # Keep an off-box copy of restic/password: recovering the box needs it
+    # before sops can be of any help.
+    repositoryFile = config.sops.secrets."restic/repository".path;
+    passwordFile = config.sops.secrets."restic/password".path;
+    environmentFile = config.sops.secrets."restic/env".path;
 
     # NOTE: restic does not follow symlinks. Services with DynamicUser=true
     # (readeck, mealie, gitea-runner) expose /var/lib/<name> only as a symlink
@@ -73,8 +79,8 @@ in
       "/var/lib/authelia-main" # storage-encryption-key, jwt/session secrets, OIDC key, users.yml
       "/var/lib/bulwark" # admin config + password hash from the setup wizard
       "/var/lib/private/gitea-runner" # registration token + .runner identity
-      "/root" # every out-of-band *.env / secret file referenced by the modules
-      "/etc/ssh" # host keys (Forgejo clone URLs pin them)
+      "/root" # anything left out-of-band; service creds now live in sops
+      "/etc/ssh" # host keys — Forgejo clone URLs pin them AND sops decrypts with them
       "/var/lib/nixos" # uid/gid maps — restored files must land on the same numeric ids
     ];
 

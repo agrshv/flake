@@ -1,4 +1,7 @@
+{ config, ... }:
 {
+  sops.secrets."bulwark/env".restartUnits = [ "podman-bulwark.service" ];
+
   # Bulwark — modern JMAP webmail client (mail/calendar/contacts/files) for a
   # Stalwart Mail Server. Run as a podman OCI container (podman is enabled in
   # ./forgejo-runner.nix), matching how the other containerised services here are
@@ -14,12 +17,8 @@
   #
   # SESSION_SECRET encrypts session cookies / stored credentials and MUST be
   # stable across restarts (a changing secret invalidates every login). It's
-  # supplied out-of-band via /root/bulwark.env — the same host-file pattern used
-  # by slskd here — rather than being committed. Create it once on the host:
-  #   echo "SESSION_SECRET=$(openssl rand -base64 32)" > /root/bulwark.env
-  #   chmod 600 /root/bulwark.env
-  # (or move it into sops via the sops.templates env-file pattern noted in
-  # ./homepage.nix if you'd rather keep it in the repo).
+  # supplied via sops as `bulwark/env`, an environment file holding:
+  #   SESSION_SECRET=<openssl rand -base64 32>
   #
   # First launch: with JMAP_SERVER_URL preset, Bulwark still runs a one-time
   # web setup wizard (server probe, auth mode, admin account). Visit
@@ -39,7 +38,7 @@
         JMAP_SERVER_URL = "https://mail.agrshv.dev";
       };
       # SESSION_SECRET (and any other secrets) live here, off the repo.
-      environmentFiles = [ "/root/bulwark.env" ];
+      environmentFiles = [ config.sops.secrets."bulwark/env".path ];
       volumes = [
         # Admin config: config.json, policy.json, admin.json (passwordHash),
         # themes, branding uploads — written by the first-launch wizard.

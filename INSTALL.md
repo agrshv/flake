@@ -125,19 +125,24 @@ native-messaging manifest for Brave).
 
 ## Renaming the login user on an existing host
 
-The workstations use `me.user` (`hosts/common/me.nix`, uid 1000). Switching a
-live host to a new name **without** the step below creates a second user and
+Every host uses `me.user` (`hosts/common/me.nix`, uid 1000). Switching a live
+host to a new name **without** the step below creates a second user and
 leaves the old one untouched. Do it from a root shell that is not the user's
 own session (e.g. `ssh root@host`, or a tty as root):
 
 ```sh
 usermod -l agrshv -d /home/agrshv -m d3spair
-groupmod -n agrshv d3spair
-# then, as agrshv:
+# `isNormalUser` puts the account in the shared `users` group, so there is no
+# per-user group to rename. Then, as agrshv:
 nh os switch
 ```
 
-`home-server` still declares `d3spair` for this reason.
+`usermod` refuses while the account still has running processes, so on a
+headless box either work from the physical console or clear the sessions first:
+
+```sh
+loginctl terminate-user d3spair && pkill -u d3spair
+```
 
 ## Day-2 deploys
 

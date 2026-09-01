@@ -1,4 +1,49 @@
-{ pkgs, ... }: {
+{ config, pkgs, ... }:
+let
+  # The *arr services read their own API key at start-up as their own user, and
+  # recyclarr reads all three of sonarr/sonarr-anime/radarr. Everything else
+  # here is read by a root oneshot, so it keeps the sops default of 0400 root.
+  arrReaders = {
+    group = "nixflix-secrets";
+    mode = "0440";
+  };
+in
+{
+  users.groups.nixflix-secrets = { };
+  users.users = builtins.listToAttrs (
+    map
+      (u: {
+        name = u;
+        value.extraGroups = [ "nixflix-secrets" ];
+      })
+      [
+        "prowlarr"
+        "sonarr"
+        "sonarr-anime"
+        "radarr"
+        "recyclarr"
+      ]
+  );
+
+  sops.secrets = {
+    "nixflix/qbittorrent/webui_password" = { };
+    "nixflix/jellyfin/api_key" = { };
+    "nixflix/jellyfin/admin_password" = { };
+    "nixflix/jellyfin/opensubtitles_password" = { };
+    "nixflix/jellyfin/opensubtitles_api_key" = { };
+    "nixflix/seerr/api_key" = { };
+    "nixflix/prowlarr/api_key" = arrReaders;
+    "nixflix/prowlarr/admin_password" = { };
+    "nixflix/prowlarr/milkie_api_key" = { };
+    "nixflix/prowlarr/rutracker_password" = { };
+    "nixflix/sonarr/api_key" = arrReaders;
+    "nixflix/sonarr/admin_password" = { };
+    "nixflix/sonarr-anime/api_key" = arrReaders;
+    "nixflix/sonarr-anime/admin_password" = { };
+    "nixflix/radarr/api_key" = arrReaders;
+    "nixflix/radarr/admin_password" = { };
+  };
+
   nixflix = {
     enable = true;
     theme = {
@@ -14,7 +59,7 @@
     postgres.enable = true;
     torrentClients.qbittorrent = {
       enable = true;
-      password._secret = "/root/nixflix/qbittorrent/webui_password";
+      password._secret = config.sops.secrets."nixflix/qbittorrent/webui_password".path;
       serverConfig.Preferences.WebUI = {
         Username = "d3spair";
         AlternativeUIEnabled = true;
@@ -28,11 +73,11 @@
     flaresolverr.enable = true;
     jellyfin = {
       enable = true;
-      apiKey._secret = "/root/nixflix/jellyfin/api_key";
+      apiKey._secret = config.sops.secrets."nixflix/jellyfin/api_key".path;
       users.d3spair = {
         mutable = false;
         policy.isAdministrator = true;
-        password._secret = "/root/nixflix/jellyfin/d3spair_password";
+        password._secret = config.sops.secrets."nixflix/jellyfin/admin_password".path;
       };
 
       # Subtitle plugins. Requires an opensubtitles.com account: put the
@@ -42,8 +87,8 @@
           enable = true;
           config = {
             OpenSubUserName = "prescribe2222"; # must match your opensubtitles.com login
-            OpenSubPassword._secret = "/root/nixflix/jellyfin/opensubtitles_password";
-            OpenSubApiKey._secret = "/root/nixflix/jellyfin/opensubtitles_api_key";
+            OpenSubPassword._secret = config.sops.secrets."nixflix/jellyfin/opensubtitles_password".path;
+            OpenSubApiKey._secret = config.sops.secrets."nixflix/jellyfin/opensubtitles_api_key".path;
             EnableOpenSubtitles = true;
             EnableYifySubtitles = true;
             Cache.SubLifeInMinutes = "Always"; # Default is "1 week"
@@ -54,7 +99,7 @@
           enable = true;
           config = {
             Username = "prescribe2222";
-            Password._secret = "/root/nixflix/jellyfin/opensubtitles_password";
+            Password._secret = config.sops.secrets."nixflix/jellyfin/opensubtitles_password".path;
           };
         };
 
@@ -118,34 +163,34 @@
     # auto-configured from the nixflix config above. Exposed at seerr.agrshv.dev.
     seerr = {
       enable = true;
-      apiKey._secret = "/root/nixflix/seerr/api_key";
+      apiKey._secret = config.sops.secrets."nixflix/seerr/api_key".path;
       externalUrlScheme = "https";
       jellyfin = {
         adminUsername = "d3spair";
-        adminPassword._secret = "/root/nixflix/jellyfin/d3spair_password";
+        adminPassword._secret = config.sops.secrets."nixflix/jellyfin/admin_password".path;
       };
     };
 
     prowlarr = {
       enable = true;
       config = {
-        apiKey._secret = "/root/nixflix/prowlarr/api_key";
+        apiKey._secret = config.sops.secrets."nixflix/prowlarr/api_key".path;
         hostConfig = {
           username = "d3spair";
-          password._secret = "/root/nixflix/prowlarr/d3spair_password";
+          password._secret = config.sops.secrets."nixflix/prowlarr/admin_password".path;
         };
         indexers = [
           {
             name = "Milkie";
             baseUrl = "https://milkie.cc/";
-            apikey._secret = "/root/nixflix/prowlarr/milkie_api_key";
+            apikey._secret = config.sops.secrets."nixflix/prowlarr/milkie_api_key".path;
           }
           {
             name = "RuTracker.org";
             enable = false;
             baseUrl = "https://rutracker.org/";
             username = "MadAndSlowly";
-            password._secret = "/root/nixflix/prowlarr/rutracker_password";
+            password._secret = config.sops.secrets."nixflix/prowlarr/rutracker_password".path;
           }
           {
             name = "Nyaa.si";
@@ -163,10 +208,10 @@
     sonarr = {
       enable = true;
       config = {
-        apiKey._secret = "/root/nixflix/sonarr/api_key";
+        apiKey._secret = config.sops.secrets."nixflix/sonarr/api_key".path;
         hostConfig = {
           username = "d3spair";
-          password._secret = "/root/nixflix/sonarr/d3spair_password";
+          password._secret = config.sops.secrets."nixflix/sonarr/admin_password".path;
         };
       };
     };
@@ -174,10 +219,10 @@
     sonarr-anime = {
       enable = true;
       config = {
-        apiKey._secret = "/root/nixflix/sonarr-anime/api_key";
+        apiKey._secret = config.sops.secrets."nixflix/sonarr-anime/api_key".path;
         hostConfig = {
           username = "d3spair";
-          password._secret = "/root/nixflix/sonarr-anime/d3spair_password";
+          password._secret = config.sops.secrets."nixflix/sonarr-anime/admin_password".path;
         };
       };
     };
@@ -185,10 +230,10 @@
     radarr = {
       enable = true;
       config = {
-        apiKey._secret = "/root/nixflix/radarr/api_key";
+        apiKey._secret = config.sops.secrets."nixflix/radarr/api_key".path;
         hostConfig = {
           username = "d3spair";
-          password._secret = "/root/nixflix/radarr/d3spair_password";
+          password._secret = config.sops.secrets."nixflix/radarr/admin_password".path;
         };
       };
     };

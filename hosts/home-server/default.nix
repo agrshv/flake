@@ -35,7 +35,15 @@ in
     ./wrtag.nix
   ];
 
-  sops.age.keyFile = "/home/d3spair/.config/sops/age/keys.txt";
+  disko.devices.disk.main.device = "/dev/disk/by-id/ata-Apacer_AST280_480GB_0E4080B001124";
+
+  # home-server decrypts with its own SSH host key, so no human identity has to
+  # live on the box (see .sops.yaml for the derived age recipient). /etc/ssh is
+  # in the restic path set precisely so this survives a rebuild.
+  sops = {
+    defaultSopsFile = ../../secrets/home-server.yaml;
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  };
 
   catppuccin = {
     enable = true;
@@ -96,7 +104,11 @@ in
       efi.canTouchEfiVariables = true;
       limine = {
         enable = true;
-        # secureBoot.enable = true;
+        secureBoot = {
+          enable = true;
+          autoGenerateKeys = true;
+          autoEnrollKeys.enable = true;
+        };
       };
     };
   };
@@ -118,9 +130,7 @@ in
 
   time.timeZone = "Asia/Almaty";
 
-  # Still the old login name: renaming a live headless host needs the manual
-  # usermod step in INSTALL.md first. Workstations use me.user.
-  users.users.d3spair = {
+  users.users.${me.user} = {
     isNormalUser = true;
     extraGroups = [
       "wheel"
@@ -140,7 +150,7 @@ in
   nix.settings.trusted-users = [
     "root"
     "@wheel"
-    "d3spair"
+    me.user
   ];
 
   system.stateVersion = "25.11";

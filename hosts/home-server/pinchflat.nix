@@ -1,4 +1,7 @@
+{ config, ... }:
 {
+  sops.secrets."pinchflat/env".restartUnits = [ "pinchflat.service" ];
+
   # Pinchflat — "Sonarr for YouTube". Subscribes to channels/playlists, runs
   # yt-dlp on a schedule, and writes videos + NFO/thumbnail sidecars that
   # Jellyfin indexes as a normal library. Bound to 127.0.0.1:8945, fronted by
@@ -25,12 +28,12 @@
     mediaDir = "/data/media/youtube";
 
     # Real SECRET_KEY_BASE (>= 64 bytes) rather than the weak `selfhosted` dev
-    # secret. Create /root/pinchflat.env on the host (root-only), e.g.:
+    # secret. Supplied via sops as `pinchflat/env`, an environment file holding:
     #   SECRET_KEY_BASE=$(openssl rand -hex 64)
     # Optional HTTP basic auth on top of the geo gate (Pinchflat has no SSO):
     #   BASIC_AUTH_USERNAME=d3spair
     #   BASIC_AUTH_PASSWORD=...
-    secretsFile = "/root/pinchflat.env";
+    secretsFile = config.sops.secrets."pinchflat/env".path;
 
     # yt-dlp uses this dir for cookies/config if you need to pass a cookies file
     # for age-gated / members-only content later. Defaults are otherwise fine.

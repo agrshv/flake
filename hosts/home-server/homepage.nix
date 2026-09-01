@@ -4,10 +4,10 @@
   # gate — see the guardedHosts list in ./nginx.nix).
   #
   # This first pass is links + system resource widgets only. The upstream module
-  # runs the service under `DynamicUser = true`, so it CANNOT read the existing
-  # /root/nixflix/**/api_key secret files — live *arr/Jellyfin widgets need their
-  # own reachable secret. See the commented block at the bottom for how to wire
-  # those in via sops once you want them.
+  # runs the service under `DynamicUser = true`, so it cannot read the
+  # `nixflix/**/api_key` sops secrets (0400 root, or 0440 nixflix-secrets) —
+  # live *arr/Jellyfin widgets need their own reachable copy. See the commented
+  # block at the bottom for how to wire those in.
   services.homepage-dashboard = {
     enable = true;
     listenPort = 8082;
@@ -159,8 +159,8 @@
   # ── Live service widgets (opt-in, requires secret plumbing) ────────────────
   # Homepage can show queue depth / library counts by calling each service's API,
   # but the widget config needs the API key inline. Because the unit is a
-  # DynamicUser it can't read /root/nixflix/**, so:
-  #   1. Add the keys to secrets/workstation.yaml (sops) as e.g. HOMEPAGE_VAR_SONARR.
+  # DynamicUser it cannot read the `nixflix/**` secrets directly, so:
+  #   1. Add the keys to secrets/home-server.yaml as e.g. HOMEPAGE_VAR_SONARR.
   #   2. sops.templates."homepage.env".content = "HOMEPAGE_VAR_SONARR=${...}";
   #      with owner = "homepage-dashboard" (or mode 0440 + supplementary group).
   #   3. services.homepage-dashboard.environmentFiles = [ config.sops.templates."homepage.env".path ];

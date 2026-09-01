@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   pkgs-unstable,
   authelia,
@@ -25,6 +26,8 @@ let
   };
 in
 {
+  sops.secrets."wrtag/env".restartUnits = [ "wrtagweb.service" ];
+
   # Long-running importer with a job queue and a web UI for resolving
   # low-confidence MusicBrainz matches. slskd POSTs finished download dirs to
   # it; perfect matches import automatically, the rest wait for review.
@@ -57,7 +60,7 @@ in
       # Provides WRTAG_WEB_API_KEY=... (create this file out of band). Still
       # needed even with WRTAG_WEB_AUTH=disabled: the "/op/" API key check is
       # independent of the UI auth mode and the slskd hook authenticates with it.
-      EnvironmentFile = "/root/wrtag.env";
+      EnvironmentFile = config.sops.secrets."wrtag/env".path;
       StateDirectory = "wrtag";
       # wrtag's go-taglib-wasm backend extracts a wazero runtime into
       # /tmp/go-taglib-wasm; a private /tmp avoids clashing with a copy left

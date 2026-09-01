@@ -1,4 +1,10 @@
-{ lib, pkgs, authelia, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  authelia,
+  ...
+}:
 let
   # Fires on slskd's DownloadDirectoryComplete event. slskd stringifies the
   # event to JSON in $SLSKD_SCRIPT_DATA; we pull out the finished folder and
@@ -28,9 +34,11 @@ let
   };
 in
 {
+  sops.secrets."slskd/env".restartUnits = [ "slskd.service" ];
+
   services.slskd = {
     enable = true;
-    environmentFile = "/root/slskd.env";
+    environmentFile = config.sops.secrets."slskd/env".path;
     settings = {
       shares.directories = [ "/var/lib/navidrome/music" ];
       # Drop slskd's built-in login: access is gated by Authelia forward-auth on

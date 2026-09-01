@@ -5,6 +5,13 @@ keys:
   # Then: nix shell nixpkgs#age -c age-keygen -y ~/.config/sops/age/keys.txt
   - &personal_key age19ejemfxgq3eptdpycma3dwczjgek7j6jawdm7c9mkvev6kdwgegslfpcnr
 
+  # home-server decrypts with its own SSH host key, so no human identity has to
+  # live on the box. Derived from /etc/ssh/ssh_host_ed25519_key.pub:
+  #   ssh-keyscan -t ed25519 <host> | nix run nixpkgs#ssh-to-age
+  # Regenerating the host key invalidates this — re-derive it and run
+  # `sops updatekeys secrets/home-server.yaml`.
+  - &home_server age1lujgj3d30l3fnacj3vfxe5430mwc3qdvwewgjf86k7egr7kujpvqshgsqs
+
 creation_rules:
   # Secrets shared by every host. Work-related secrets live in the private
   # `work` flake input, not here.
@@ -12,3 +19,10 @@ creation_rules:
     key_groups:
       - age:
           - *personal_key
+
+  # home-server service credentials. Readable by the host itself and by me.
+  - path_regex: secrets/home-server\.yaml$
+    key_groups:
+      - age:
+          - *personal_key
+          - *home_server

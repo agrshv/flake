@@ -49,13 +49,18 @@ in
 
   users.users.nginx.extraGroups = [ "acme" ];
 
+  sops.secrets = {
+    "acme/env".restartUnits = [ "acme-agrshv.dev.service" ];
+    "maxmind/license_key".restartUnits = [ "geoipupdate.service" ];
+  };
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "acme@agrshv.dev";
     certs."agrshv.dev" = {
       extraDomainNames = [ "*.agrshv.dev" ];
       dnsProvider = "cloudflare";
-      environmentFile = "/root/acme.env";
+      environmentFile = config.sops.secrets."acme/env".path;
     };
   };
 
@@ -63,7 +68,7 @@ in
   # Replaces CrowdSec's role of keeping hostile traffic off the web stack.
   # MaxMind GeoLite2 needs a (free) account: sign up, create a license key, then
   #   1. set AccountID below to your numeric MaxMind account ID,
-  #   2. write the license key to /root/maxmind on the host (root-only),
+  #   2. put the license key in sops as `maxmind/license_key`,
   #   3. run `systemctl start geoipupdate` once so the DB exists before nginx
   #      starts (nginx fails to load if the .mmdb is missing — see ordering
   #      below). After that the timer refreshes it weekly.
@@ -71,7 +76,7 @@ in
     enable = true;
     settings = {
       AccountID = 1368186;
-      LicenseKey = "/root/maxmind";
+      LicenseKey = config.sops.secrets."maxmind/license_key".path;
       EditionIDs = [ "GeoLite2-Country" ];
     };
   };

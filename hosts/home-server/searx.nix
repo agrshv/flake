@@ -1,7 +1,10 @@
+{ config, ... }:
 {
+  sops.secrets."searx/env".restartUnits = [ "searx.service" ];
+
   services.searx = {
     enable = true;
-    environmentFile = "/root/searx.env";
+    environmentFile = config.sops.secrets."searx/env".path;
     settings = {
       server = {
         bind_address = "127.0.0.1";

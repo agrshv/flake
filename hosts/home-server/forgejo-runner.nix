@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   # Forgejo Actions runner (forgejo-runner, the maintained `act` fork). Registers
   # against the local Forgejo at git.agrshv.dev and runs workflow jobs in
@@ -14,17 +14,19 @@
   # 1. Grab a runner registration token from Forgejo, either:
   #      • Site admin → Actions → Runners → "Create new runner"  (instance-wide), or
   #      • as the forgejo user:  forgejo actions generate-runner-token
-  # 2. The NixOS module loads `tokenFile` as a systemd EnvironmentFile, so the file
-  #    must be in KEY=VALUE form (not the bare token):
-  #        echo 'TOKEN=<registration-token>' > /var/lib/gitea-runner/token
-  #        chmod 600 /var/lib/gitea-runner/token
+  # 2. The NixOS module loads `tokenFile` as a systemd EnvironmentFile, so the
+  #    secret must be in KEY=VALUE form, not the bare token. Put it in sops:
+  #        sops secrets/home-server.yaml
+  #    under `forgejo-runner: token: "TOKEN=<registration-token>"`.
   #    (Changing the token or labels later triggers automatic re-registration.)
-  # 3. systemctl restart gitea-runner-home-server
+  # 3. Deploy, then: systemctl restart gitea-runner-home-server
   # ────────────────────────────────────────────────────────────────────────────
 
   # Container runtime for job execution. The runner module auto-detects podman,
   # points DOCKER_HOST at /run/podman/podman.sock, and adds the runner to the
   # `podman` group. Rootful is fine — this is a headless single-user box.
+  sops.secrets."forgejo-runner/token".restartUnits = [ "gitea-runner-home-server.service" ];
+
   virtualisation.podman = {
     enable = true;
     autoPrune.enable = true;
@@ -37,7 +39,7 @@
       enable = true;
       name = "home-server";
       url = "https://git.agrshv.dev";
-      tokenFile = "/var/lib/gitea-runner/token";
+      tokenFile = config.sops.secrets."forgejo-runner/token".path;
       # "<label>:docker://<image>" — a job's `runs-on: <label>` runs in that image.
       labels = [
         "ubuntu-latest:docker://node:20-bookworm"

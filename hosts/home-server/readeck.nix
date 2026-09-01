@@ -1,4 +1,7 @@
+{ config, ... }:
 {
+  sops.secrets."readeck/env".restartUnits = [ "readeck.service" ];
+
   services.postgresql = {
     ensureDatabases = [ "readeck" ];
     ensureUsers = [
@@ -16,7 +19,7 @@
 
   services.readeck = {
     enable = true;
-    environmentFile = "/root/readeck.env";
+    environmentFile = config.sops.secrets."readeck/env".path;
     settings = {
       server = {
         host = "127.0.0.1";
