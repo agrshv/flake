@@ -1,5 +1,22 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
+  # qBittorrent keeps its WebUI password as a PBKDF2 hash in serverConfig, which
+  # nixpkgs renders into a world-readable /nix/store file. Keep the hash in sops
+  # instead: serverConfig carries a placeholder and an ExecStartPre swaps in the
+  # real value. `mkAfter` is what puts that step *after* the module's own
+  # install of the config file — a plain preStart runs before it and would be
+  # overwritten (nixpkgs qbittorrent.nix:176).
+  qbtPasswordPlaceholder = "QBITTORRENT_PASSWORD_PBKDF2_PLACEHOLDER";
+  qbtSetPassword = pkgs.writeShellScript "qbittorrent-set-password" ''
+    ${lib.getExe pkgs.replace-secret} '${qbtPasswordPlaceholder}' \
+      ${config.sops.secrets."nixflix/qbittorrent/password_hash".path} \
+      /var/lib/qBittorrent/qBittorrent/config/qBittorrent.conf
+  '';
   # The *arr services read their own API key at start-up as their own user, and
   # recyclarr reads all three of sonarr/sonarr-anime/radarr. Everything else
   # here is read by a root oneshot, so it keeps the sops default of 0400 root.
@@ -25,8 +42,14 @@ in
       ]
   );
 
+  # Runs with `+` (full privileges) so the hash can stay 0400 root, and after the
+  # upstream install step that would otherwise clobber the substitution.
+  systemd.services.qbittorrent.serviceConfig.ExecStartPre = lib.mkAfter [ "+${qbtSetPassword}" ];
+
   sops.secrets = {
     "nixflix/qbittorrent/webui_password" = { };
+    "nixflix/qbittorrent/password_hash".restartUnits = [ "qbittorrent.service" ];
+
     "nixflix/jellyfin/api_key" = { };
     "nixflix/jellyfin/admin_password" = { };
     "nixflix/jellyfin/opensubtitles_password" = { };
@@ -62,6 +85,9 @@ in
       password._secret = config.sops.secrets."nixflix/qbittorrent/webui_password".path;
       serverConfig.Preferences.WebUI = {
         Username = "d3spair";
+        # Substituted at start-up from sops by qbtSetPassword above; the store
+        # only ever sees this placeholder.
+        Password_PBKDF2 = "@ByteArray(${qbtPasswordPlaceholder})";
         AlternativeUIEnabled = true;
         RootFolder = "${pkgs.vuetorrent}/share/vuetorrent";
       };

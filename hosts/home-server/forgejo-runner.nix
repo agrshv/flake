@@ -19,14 +19,17 @@
   #        sops secrets/home-server.yaml
   #    under `forgejo-runner: token: "TOKEN=<registration-token>"`.
   #    (Changing the token or labels later triggers automatic re-registration.)
-  # 3. Deploy, then: systemctl restart gitea-runner-home-server
+  # 3. Deploy; the sops restartUnits below re-registers the runner.
   # ────────────────────────────────────────────────────────────────────────────
+
+  # Named after the instance attribute below: `instances.home` produces
+  # gitea-runner-home.service. Keep the two in step — a stale name here fails
+  # silently, leaving a new token undeployed until something else restarts it.
+  sops.secrets."forgejo-runner/token".restartUnits = [ "gitea-runner-home.service" ];
 
   # Container runtime for job execution. The runner module auto-detects podman,
   # points DOCKER_HOST at /run/podman/podman.sock, and adds the runner to the
   # `podman` group. Rootful is fine — this is a headless single-user box.
-  sops.secrets."forgejo-runner/token".restartUnits = [ "gitea-runner-home-server.service" ];
-
   virtualisation.podman = {
     enable = true;
     autoPrune.enable = true;
@@ -35,9 +38,9 @@
 
   services.gitea-actions-runner = {
     package = pkgs.forgejo-runner;
-    instances.home-server = {
+    instances.home = {
       enable = true;
-      name = "home-server";
+      name = "home";
       url = "https://git.agrshv.dev";
       tokenFile = config.sops.secrets."forgejo-runner/token".path;
       # "<label>:docker://<image>" — a job's `runs-on: <label>` runs in that image.
