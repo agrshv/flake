@@ -36,9 +36,9 @@ let
     "dawarich.agrshv.dev"
     "tube.agrshv.dev"
     "nocodb.agrshv.dev"
-    "grist.agrshv.dev"
     "recipes.agrshv.dev"
     "webmail.agrshv.dev"
+    "vault.agrshv.dev"
   ];
 in
 {
@@ -164,6 +164,15 @@ in
           forceSSL = true;
           useACMEHost = "agrshv.dev";
           locations."/".proxyPass = "http://127.0.0.1:8888";
+        };
+        # The apex used to serve the Homepage dashboard. Kept as an explicit
+        # vhost that answers nothing: the catch-all default server only listens
+        # on :80, so without this an HTTPS request for agrshv.dev would fall
+        # through to whichever SSL vhost nginx orders first.
+        "agrshv.dev" = {
+          forceSSL = true;
+          useACMEHost = "agrshv.dev";
+          locations."/".return = "444";
         };
       };
     }

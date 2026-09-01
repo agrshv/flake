@@ -4,14 +4,13 @@ let
   # while the backup runs (see backupPrepareCommand below).
   sqliteServices = builtins.concatStringsSep " " [
     "navidrome.service" # /var/lib/navidrome/navidrome.db
-    "podman-grist.service" # /var/lib/grist/docs/*.grist, grist-sessions.db
     "wrtagweb.service" # /var/lib/wrtag/wrtag.db
     "paperless-scheduler.service" # /var/lib/paperless/celerybeat-schedule.db
   ];
 in
 {
   # Consistent SQL dumps of the whole Postgres cluster (pg_dumpall: immich,
-  # paperless, readeck, miniflux, authelia, forgejo, grist, nocodb, mealie, …)
+  # paperless, readeck, miniflux, authelia, forgejo, vaultwarden, nocodb, …)
   # so restic captures a coherent snapshot instead of a live, possibly-
   # inconsistent data directory. Dumps land in /var/backup/postgresql/all.sql.zstd.
   services.postgresqlBackup = {
@@ -69,10 +68,10 @@ in
       "/var/lib/paperless" # document archive, originals, search index
       "/var/lib/private/readeck" # saved articles + assets
       "/var/lib/forgejo" # git repositories, LFS, generated app secrets
-      "/var/lib/grist" # Grist documents (SQLite per doc) — PG only holds the home DB
       "/var/lib/nocodb" # attachments
       "/var/lib/private/mealie" # recipe images + app secrets
       "/var/lib/monica" # uploads + APP_KEY (encrypts data in the DB dump)
+      "/var/lib/vaultwarden" # attachments, Sends, and rsa_key.pem (signs client JWTs)
       "/var/lib/wrtag" # import queue db
 
       # Secrets / identity that can't be regenerated
@@ -89,12 +88,13 @@ in
       "/var/lib/immich/thumbs"
       "/var/lib/immich/encoded-video"
       "/var/lib/navidrome/cache"
+      "/var/lib/vaultwarden/icon_cache"
       "/var/lib/private/gitea-runner/home-server/.cache"
       "/root/.cache"
     ];
 
-    # Several services keep SQLite databases inside the paths above (navidrome.db,
-    # Grist documents, wrtag.db, paperless' celerybeat schedule). Restic copies
+    # Several services keep SQLite databases inside the paths above
+    # (navidrome.db, wrtag.db, paperless' celerybeat schedule). Restic copies
     # files live with no filesystem snapshot, so a write landing mid-read would
     # leave a torn copy. Stop those writers for the duration of the run and bring
     # them back afterwards — the cleanup hook runs even if the backup fails.

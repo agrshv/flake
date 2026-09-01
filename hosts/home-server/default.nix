@@ -14,8 +14,6 @@ in
     ./dawarich.nix
     ./forgejo.nix
     ./forgejo-runner.nix
-    ./grist.nix
-    ./homepage.nix
     ./nocodb.nix
     ./immich.nix
     ./mealie.nix
@@ -32,6 +30,7 @@ in
     ./restic.nix
     ./searx.nix
     ./slskd.nix
+    ./vaultwarden.nix
     ./wrtag.nix
   ];
 
