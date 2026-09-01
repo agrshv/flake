@@ -4,6 +4,7 @@
 {
   config,
   lib,
+  pkgs,
   modulesPath,
   ...
 }:
@@ -16,6 +17,7 @@
   boot.initrd.availableKernelModules = [
     "xhci_pci"
     "ahci"
+    "usbhid"
     "usb_storage"
     "sd_mod"
     "sr_mod"
