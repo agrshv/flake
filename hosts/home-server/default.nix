@@ -20,6 +20,7 @@ in
     ./miniflux.nix
     ./monica.nix
     ./navidrome.nix
+    ./netbird.nix
     ./nginx.nix
     ./nixflix.nix
     ./paperless.nix
