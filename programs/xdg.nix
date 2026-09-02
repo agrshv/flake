@@ -5,6 +5,9 @@
     userDirs = {
       enable = true;
       createDirectories = true;
+      # Adopt the 26.05 default: don't export XDG_*_DIR as session variables.
+      # Apps read ~/.config/user-dirs.dirs, which is still generated.
+      setSessionVariables = false;
 
       download = "${config.home.homeDirectory}/Downloads";
       desktop = "${config.home.homeDirectory}/Desktop";
