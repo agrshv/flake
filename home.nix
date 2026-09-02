@@ -13,6 +13,7 @@ in
     ./programs/bitwarden.nix
     ./programs/chromium.nix
     ./programs/claude-code.nix
+    ./programs/direnv.nix
     ./programs/eza.nix
     ./programs/ghostty.nix
     ./programs/git.nix
