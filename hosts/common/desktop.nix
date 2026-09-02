@@ -140,4 +140,8 @@ in
   };
 
   services.upower.enable = true;
+
+  # Opens firewall ports 1714-1764 (TCP/UDP) for device discovery; the daemon
+  # runs as a user service (programs/noctalia.nix) and Noctalia is the UI.
+  programs.kdeconnect.enable = true;
 }

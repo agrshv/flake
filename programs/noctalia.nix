@@ -2,6 +2,17 @@
 {
   sops.secrets."stalwart/noctalia".sopsFile = ../secrets/common.yaml;
 
+  # kdeconnectd user service; niri doesn't run XDG autostart entries, so the
+  # NixOS module alone wouldn't get the daemon started.
+  services.kdeconnect.enable = true;
+
+  # Noctalia's KDE Connect widget shells out to gdbus for DBus calls and
+  # mounts device filesystems over sshfs.
+  home.packages = [
+    pkgs.glib # gdbus
+    pkgs.sshfs
+  ];
+
   programs.noctalia = {
     enable = true;
     systemd.enable = true;
