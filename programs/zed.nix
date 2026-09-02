@@ -65,6 +65,9 @@
       autosave.after_delay.milliseconds = 1000;
       agent_servers.claude-acp = {
         type = "registry";
+        # Start Claude threads in Auto mode instead of Manual approval.
+        # Falls back to acceptEdits if the model doesn't support Auto.
+        default_mode = "auto";
         env.CLAUDE_CODE_EXECUTABLE = "${lib.getExe pkgs-unstable.claude-code}";
       };
       ui_font_size = 16;
