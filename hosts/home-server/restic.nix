@@ -113,6 +113,13 @@ in
       "--keep-monthly 12"
     ];
 
+    # Verify the repository after each backup (a non-empty checkOpts flips the
+    # module's runCheck default to true). Structural check plus a random 5% of
+    # pack data re-downloaded and re-hashed per run, so silent repo corruption
+    # surfaces within days instead of on restore day. ~5%/day of B2 egress
+    # stays well inside Backblaze's free tier (3x stored data per month).
+    checkOpts = [ "--read-data-subset=5%" ];
+
     timerConfig = {
       # Run after the DB dumps (02:00). Persistent catches up after downtime.
       OnCalendar = "*-*-* 03:00:00";
