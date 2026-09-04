@@ -39,9 +39,40 @@ let
     "recipes.agrshv.dev"
     "webmail.agrshv.dev"
     "vault.agrshv.dev"
+    # nixflix-defined vhosts (see ./nixflix.nix) — the module builds these
+    # itself, so they're easy to forget here. The assertion below catches that.
+    "jellyfin.agrshv.dev"
+    "seerr.agrshv.dev"
+    "prowlarr.agrshv.dev"
+    "qbittorrent.agrshv.dev"
+    "radarr.agrshv.dev"
+    "sonarr.agrshv.dev"
+    "sonarr-anime.agrshv.dev"
   ];
+
+  # Vhosts deliberately outside the country gate.
+  exemptHosts = [
+    "_" # nixflix's catch-all default server: listens on :80 only, serves nothing
+  ];
+
+  # guardedHosts can't be derived from config.services.nginx.virtualHosts —
+  # the geo-guard definitions below would make the vhost attribute names depend
+  # on themselves (infinite recursion). Reading it in an assertion is fine.
+  unguardedHosts = lib.subtractLists (guardedHosts ++ exemptHosts) (
+    lib.attrNames config.services.nginx.virtualHosts
+  );
 in
 {
+  # Fail closed: any vhost defined anywhere in the config (including by modules
+  # like nixflix) must be in guardedHosts or exemptHosts, or the build aborts —
+  # a new service can't silently ship without the country gate.
+  assertions = [
+    {
+      assertion = unguardedHosts == [ ];
+      message = "nginx vhosts missing the geo gate — add them to guardedHosts (or exemptHosts) in hosts/home-server/nginx.nix: ${lib.concatStringsSep ", " unguardedHosts}";
+    }
+  ];
+
   networking.firewall.allowedTCPPorts = [
     80
     443
