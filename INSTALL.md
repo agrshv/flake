@@ -91,11 +91,12 @@ from the installed system afterwards.
 
 ## First boot
 
-Log in as `agrshv` with `changeme`, then, in this order:
+Log in as `agrshv` with the **workstation bootstrap** password from Bitwarden
+(set as `initialHashedPassword` in `hosts/common/desktop.nix`; it only applies
+at user creation, so run `passwd` if you want a different one). Then, in this
+order:
 
 ```sh
-passwd
-
 # 1. Bitwarden Desktop autostarts: Settings → enable "SSH agent". Then:
 ssh-add -l                                   # personal key served from the vault
 echo $SSH_AUTH_SOCK                          # ~/.bitwarden-ssh-agent.sock

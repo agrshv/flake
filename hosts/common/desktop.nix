@@ -29,7 +29,12 @@ in
       "wheel"
       "networkmanager"
     ];
-    initialPassword = "changeme";
+    # First-boot password (applies at user creation only; passwd changes stick).
+    # Can't come from sops here: the age key is derived from the personal SSH key
+    # *after* first login (INSTALL.md), so the hash must be usable before any
+    # secret decrypts. A yescrypt hash of a 24-char random password is safe to
+    # commit; the plaintext lives in Bitwarden ("workstation bootstrap").
+    initialHashedPassword = "$y$j9T$I6iqFqXRI5cRhQN.6/s/71$b3YN8CLgAkP4JcvlDIbmPSvu2rb94aBE87OliZ7MHS1";
     openssh.authorizedKeys.keys = [
       me.sshKey
     ];

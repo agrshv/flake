@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 let
   me = import ../common/me.nix;
 in
@@ -130,12 +130,23 @@ in
 
   time.timeZone = "Asia/Almaty";
 
+  # The login/sudo password hash, decrypted with the host key before user
+  # creation (neededForUsers → lands under /run/secrets-for-users). With
+  # mutableUsers (the default) it only applies when the user is *created*, i.e.
+  # on a fresh install — a live host keeps whatever `passwd` last set. The
+  # plaintext lives in Bitwarden ("home-server sudo"); deploys use it for
+  # --ask-sudo-password after a reinstall. NB: a reinstall must restore
+  # /etc/ssh first (see restic.nix) or no sops secret decrypts, this one
+  # included — the user is then created passwordless (SSH key still works;
+  # fix with a root console + `passwd`).
+  sops.secrets."user/hashed-password".neededForUsers = true;
+
   users.users.${me.user} = {
     isNormalUser = true;
     extraGroups = [
       "wheel"
     ];
-    initialPassword = "changeme";
+    hashedPasswordFile = config.sops.secrets."user/hashed-password".path;
     openssh.authorizedKeys.keys = [
       me.sshKey
     ];
