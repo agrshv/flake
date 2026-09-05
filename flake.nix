@@ -27,6 +27,13 @@
     # (cache miss). Track the `cachix` branch to stay on cached commits.
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
     noctalia-greeter.url = "github:noctalia-dev/noctalia-greeter";
+    # Unlike noctalia, umbriel publishes no binary cache, so it builds from
+    # source either way; follow our unstable (it pins nixos-unstable upstream
+    # and needs wlroots_0_20) instead of fetching a third nixpkgs.
+    umbriel = {
+      url = "github:noctalia-dev/umbriel";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     nixflix = {
       url = "github:kiriwalawren/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -85,6 +92,7 @@
                   ./home.nix
                   inputs.catppuccin.homeModules.catppuccin
                   inputs.noctalia.homeModules.default
+                  inputs.umbriel.homeModules.default
                   inputs.work.homeModules.default
                 ];
                 extraSpecialArgs = specialArgs;

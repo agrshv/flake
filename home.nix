@@ -25,8 +25,8 @@ in
     ./programs/remmina.nix
     ./programs/ssh.nix
     ./programs/starship.nix
-    ./programs/sway.nix
     ./programs/udiskie.nix
+    ./programs/umbriel.nix
     ./programs/vesktop.nix
     ./programs/xdg.nix
     ./programs/zed.nix
@@ -45,8 +45,15 @@ in
     pointerCursor = {
       enable = true;
       gtk.enable = true;
-      sway.enable = true;
       x11.enable = true;
+    };
+
+    # User avatar (noctalia greeter/lockscreen read ~/.face): the GitHub
+    # avatar of github.com/agrshv, pinned by hash — changing the avatar on
+    # GitHub requires updating the hash here.
+    file.".face".source = pkgs.fetchurl {
+      url = "https://avatars.githubusercontent.com/u/40725053?v=4";
+      hash = "sha256-9mz8WVgEs1vUe0X7v9wNrV4GS3/5gC5H7n8IDCYw4B0=";
     };
 
     packages = with pkgs; [

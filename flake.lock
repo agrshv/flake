@@ -239,6 +239,7 @@
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
         "sops-nix": "sops-nix",
+        "umbriel": "umbriel",
         "work": "work"
       }
     },
@@ -283,6 +284,27 @@
         "type": "github"
       }
     },
+    "umbriel": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ],
+        "xdg-desktop-portal-umbriel": "xdg-desktop-portal-umbriel"
+      },
+      "locked": {
+        "lastModified": 1788546425,
+        "narHash": "sha256-qIRlr73dC1Ve2l6ZVIN0F0OKkSY77ip9gOwxNQBqP2Y=",
+        "owner": "noctalia-dev",
+        "repo": "umbriel",
+        "rev": "48ef620bba366f8b44a5323208858298380d5f5b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "umbriel",
+        "type": "github"
+      }
+    },
     "vpn-confinement": {
       "locked": {
         "lastModified": 1785142579,
@@ -311,6 +333,27 @@
       "original": {
         "type": "git",
         "url": "ssh://git@github.com/agrshv/flake-work.git"
+      }
+    },
+    "xdg-desktop-portal-umbriel": {
+      "inputs": {
+        "nixpkgs": [
+          "umbriel",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788532681,
+        "narHash": "sha256-xVLPCVS5RElZQirnx90DB+4OEvUGGqklMsNW+eP6EbE=",
+        "owner": "noctalia-dev",
+        "repo": "xdg-desktop-portal-umbriel",
+        "rev": "5e7efc50ce5013b4799f60c9de8b830026f236a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "xdg-desktop-portal-umbriel",
+        "type": "github"
       }
     }
   },

@@ -5,6 +5,7 @@ in
 {
   imports = [
     inputs.noctalia-greeter.nixosModules.default
+    inputs.umbriel.nixosModules.default
   ];
   sops.age.keyFile = "/home/${me.user}/.config/sops/age/keys.txt";
 
@@ -66,14 +67,11 @@ in
 
   networking.networkmanager.enable = true;
 
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-    extraPackages = [ ];
-  };
   programs.niri.enable = true;
-  programs.mangowc.enable = true;
-  programs.labwc.enable = true;
+  # Session + portal come from the flake's NixOS module (registers with
+  # noctalia-greeter via displayManager.sessionPackages); the user config
+  # lives in programs/umbriel.nix (home-manager).
+  programs.umbriel.enable = true;
 
   xdg.portal = {
     enable = true;
