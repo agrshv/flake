@@ -8,6 +8,8 @@ in
     ./hardware-configuration.nix
     ../common/nixos.nix
     ./stalwart.nix
+    ./amneziawg.nix
+    ./xray.nix
   ];
 
   # Same scheme as home-server: the host decrypts with its own SSH host key
