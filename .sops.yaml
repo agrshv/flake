@@ -12,6 +12,11 @@ keys:
   # `sops updatekeys secrets/home-server.yaml`.
   - &home_server age1lujgj3d30l3fnacj3vfxe5430mwc3qdvwewgjf86k7egr7kujpvqshgsqs
 
+  # drake (Oracle Cloud), same scheme as home-server. NB: a reinstall that
+  # regenerates /etc/ssh invalidates this — carry /etc/ssh across with
+  # --extra-files, or re-derive and `sops updatekeys secrets/drake.yaml`.
+  - &drake age1enj23rdkrwnguz09caqdkq4rrq2cm6pyxh62025kath7p36dmckq7gs5gp
+
 creation_rules:
   # Secrets shared by every host. Work-related secrets live in the private
   # `work` flake input, not here.
@@ -26,3 +31,9 @@ creation_rules:
       - age:
           - *personal_key
           - *home_server
+
+  - path_regex: secrets/drake\.yaml$
+    key_groups:
+      - age:
+          - *personal_key
+          - *drake

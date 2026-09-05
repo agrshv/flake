@@ -50,11 +50,15 @@
       me = import ./hosts/common/me.nix;
 
       # Evaluated once here and handed to every host (NixOS and home-manager) so
-      # no module needs to `import nixpkgs-unstable` again.
-      pkgs-unstable = import nixpkgs-unstable {
-        inherit system;
-        config.allowUnfree = true;
-      };
+      # no module needs to `import nixpkgs-unstable` again. drake is the one
+      # aarch64 host, so it gets its own instantiation below.
+      mkPkgsUnstable =
+        system:
+        import nixpkgs-unstable {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      pkgs-unstable = mkPkgsUnstable system;
       specialArgs = { inherit inputs pkgs-unstable; };
 
       # A graphical workstation: NixOS + home-manager for me.user with the shared
@@ -105,6 +109,22 @@
             inputs.sops-nix.nixosModules.sops
             inputs.nixflix.nixosModules.default
             ./hosts/home-server
+          ];
+        };
+
+        # Oracle Cloud Ampere VM (aarch64, UEFI, virtio). Headless; no LUKS.
+        # Install and day-2 deploys: see INSTALL.md "drake". Closures are built
+        # on the box itself — this machine can't build aarch64 locally.
+        drake = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          specialArgs = {
+            inherit inputs;
+            pkgs-unstable = mkPkgsUnstable "aarch64-linux";
+          };
+          modules = [
+            inputs.disko.nixosModules.disko
+            inputs.sops-nix.nixosModules.sops
+            ./hosts/drake
           ];
         };
 

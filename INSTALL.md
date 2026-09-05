@@ -89,6 +89,59 @@ the GitHub key, then `sudo -E disko-install --flake github:agrshv/flake#work-lap
 (`-E` keeps `SSH_AUTH_SOCK` for root). Commit the regenerated hardware config
 from the installed system afterwards.
 
+## drake — Oracle Cloud Ampere VM (aarch64)
+
+drake skips the shared layout: no LUKS (headless cloud box, no TPM) and its
+own `hosts/drake/disko.nix` targeting `/dev/sda`. No ISO either —
+nixos-anywhere kexecs the running OS into a RAM installer over SSH.
+
+Two things the netbird-only access path forces:
+
+1. **Install over the public IP.** kexec kills netbird with the old OS, so the
+   OCI subnet's security list must allow TCP 22 from your current IP (and the
+   instance must have a public IP attached) for the duration of the install.
+2. **Carry the identity state across.** Two directories go into
+   `--extra-files`: `/var/lib/netbird` so the box rejoins the mesh at the same
+   100.78.x.x address on first boot (no setup key needed — but note the NixOS
+   module reads the legacy `config.json`, not the ≥0.75 profile files: if the
+   source layout is `default.json`, copy it to `config.json`), and **`/etc/ssh`
+   on a reinstall**, or the host key changes and no sops secret decrypts —
+   same failure mode as home-server, `secrets/drake.yaml` included. Stalwart's
+   `/var/lib/stalwart` must be restored the same way (or from a backup) before
+   the container first starts, or it initialises an empty mail store.
+
+The box can't be built for from an x86 machine without emulation, so
+`--build-on-remote` builds the closure in the RAM installer on the target.
+
+```sh
+cd ~/Documents/flake && git pull
+
+# Preserve the netbird peer identity from the old OS (before kexec!)
+mkdir -p /tmp/drake-extra/var/lib/netbird
+scp 'root@drake:/var/lib/netbird/*.json' /tmp/drake-extra/var/lib/netbird/
+
+nix run github:nix-community/nixos-anywhere -- \
+  --flake .#drake \
+  --generate-hardware-config nixos-generate-config ./hosts/drake/hardware-configuration.nix \
+  --extra-files /tmp/drake-extra \
+  --build-on-remote \
+  --target-host root@<public-ip>
+
+git commit -am "drake: regenerate hardware config" && git push
+```
+
+Day-2 deploys evaluate locally and build on the box (root@ is key-authorized
+precisely for this):
+
+```sh
+nixos-rebuild switch --flake ~/Documents/flake#drake \
+  --target-host root@drake --build-host root@drake
+```
+
+Break-glass: OCI web console → Instance → Console Connection (serial console
+is on the kernel cmdline); log in as `agrshv` with the "drake sudo" password
+from Bitwarden.
+
 ## First boot
 
 Log in as `agrshv` with the **workstation bootstrap** password from Bitwarden
