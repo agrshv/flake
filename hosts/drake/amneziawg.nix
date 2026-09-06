@@ -73,5 +73,7 @@ in
     internalInterfaces = [ "awg0" ];
   };
 
+  systemd.services.wg-quick-awg0.onFailure = [ "ntfy-alert@wg-quick-awg0.service" ];
+
   networking.firewall.allowedUDPPorts = [ 39422 ];
 }

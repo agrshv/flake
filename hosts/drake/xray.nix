@@ -88,5 +88,7 @@ in
     settingsFile = config.sops.templates."xray-config.json".path;
   };
 
+  systemd.services.xray.onFailure = [ "ntfy-alert@xray.service" ];
+
   networking.firewall.allowedTCPPorts = [ 8443 ];
 }

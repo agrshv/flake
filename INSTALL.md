@@ -142,6 +142,28 @@ Break-glass: OCI web console → Instance → Console Connection (serial console
 is on the kernel cmdline); log in as `agrshv` with the "drake sudo" password
 from Bitwarden.
 
+Ports are gated twice: the NixOS firewall *and* the OCI subnet's security
+list. Opening one without the other is the usual reason something is
+unreachable. drake currently uses 22, 25/443/465/993/4190 (stalwart), 8443
+(xray reality), 2443 (ntfy) and udp/39422 (amneziawg).
+
+Alerts: any unit can page you by adding
+`onFailure = [ "ntfy-alert@<unit>.service" ];` (`ntfy-ok@` for successes) —
+both are defined in `hosts/drake/ntfy.nix` and post to the `alerts` topic on
+https://ntfy.agrshv.dev:2443. Subscribe in the ntfy app with the `agrshv`
+login ("drake ntfy" in Bitwarden); the server is `deny-all`, so an
+unauthenticated client sees nothing.
+
+Backups go to the same B2 bucket as home-server under a `/drake` prefix,
+sharing its repo password. The module installs a wrapper that already carries
+the repository, password and S3 credentials — use it rather than plain
+`restic` (passing `-r` on top of it errors out):
+
+```sh
+sudo restic-drake snapshots
+sudo restic-drake restore latest --target /restore --include /var/lib/stalwart
+```
+
 ## First boot
 
 Log in as `agrshv` with the **workstation bootstrap** password from Bitwarden

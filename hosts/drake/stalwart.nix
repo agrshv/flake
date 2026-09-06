@@ -32,6 +32,9 @@ in
     };
   };
 
+  # Mail going down is the one failure worth waking up for (see ./ntfy.nix).
+  systemd.services.podman-stalwart.onFailure = [ "ntfy-alert@podman-stalwart.service" ];
+
   # SMTP, HTTPS (JMAP/web-admin/ACME), submissions, submission, IMAPS, sieve.
   # POP3 (110/995) and the plain-HTTP 8080 stay closed; the OCI security list
   # gates these again upstream.

@@ -10,6 +10,9 @@ in
     ./stalwart.nix
     ./amneziawg.nix
     ./xray.nix
+    ./ntfy.nix
+    ./postgresql.nix
+    ./restic.nix
   ];
 
   # Same scheme as home-server: the host decrypts with its own SSH host key
