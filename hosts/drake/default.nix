@@ -40,6 +40,22 @@ in
 
   networking.hostName = "drake";
 
+  # drake is the NetBird routing peer / exit node, so it needs IP forwarding:
+  # "server" is what makes the module set net.ipv4.conf.all.forwarding and
+  # net.ipv6.conf.all.forwarding. The v4 half was already on, but only as a
+  # side effect of networking.nat.enable in ./amneziawg.nix — dropping
+  # AmneziaWG would have silently killed exit-node routing with nothing in the
+  # netbird config to explain it. The v6 half was off entirely (the nat module
+  # only sets the v6 sysctls under enableIPv6, which this host doesn't set).
+  #
+  # Masquerading is deliberately not configured here: the NetBird client
+  # installs its own NAT rules for the routes it serves, toggled per-route in
+  # the dashboard — which is why networking.nat.internalInterfaces covers only
+  # awg0. NB: the peer port (udp/51820) is opened in the NixOS firewall by the
+  # module, but the OCI security list gates it a second time; without that
+  # peers never connect directly and every flow falls back to a TURN relay.
+  services.netbird.useRoutingFeatures = "server";
+
   time.timeZone = "UTC";
 
   nix = {

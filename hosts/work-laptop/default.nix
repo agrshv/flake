@@ -52,6 +52,13 @@ in
 
   networking.hostName = "work-laptop";
 
+  # This host *uses* an exit node (drake, see hosts/drake/default.nix) rather
+  # than being one. "client" relaxes networking.firewall.checkReversePath from
+  # strict to loose: with the default route pointed at wt0, replies come back
+  # over an interface the reverse-path lookup doesn't expect, and strict rpfilter
+  # drops them — the tunnel comes up and then no traffic flows.
+  services.netbird.useRoutingFeatures = "client";
+
   users.users.${me.user}.extraGroups = [ "i2c" ];
 
   environment.systemPackages = with pkgs; [
