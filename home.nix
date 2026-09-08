@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   pkgs,
   pkgs-unstable,
   ...
@@ -66,6 +67,8 @@ in
       vim
       wl-clipboard
       pkgs-unstable.fluxcd
+      # Kubernetes TUI in the k9s mould — see the sofka input in flake.nix.
+      inputs.sofka.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
   };
 

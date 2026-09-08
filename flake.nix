@@ -38,6 +38,14 @@
       url = "github:kiriwalawren/nixflix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # k9s replacement (see programs/k9s.nix — both are installed for now).
+    # Upstream pins nixos-26.05 too, so following our nixpkgs dedupes the lock
+    # without moving sofka off the nixpkgs it is tested against; there is no
+    # binary cache either way, so it builds from source.
+    sofka = {
+      url = "github:nklmilojevic/sofka";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Private work-specific modules (VPN profiles, work SSH/git identity, cloud
     # CLIs and their sops secrets). Fetched over SSH from a private GitHub repo;
     # if you are reusing this flake, drop this input and the two

@@ -238,9 +238,30 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
+        "sofka": "sofka",
         "sops-nix": "sops-nix",
         "umbriel": "umbriel",
         "work": "work"
+      }
+    },
+    "sofka": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788813258,
+        "narHash": "sha256-B5+CH7L4xmFo0j+1n2nl0vgeER1caGCnxbrRVNzDV60=",
+        "owner": "nklmilojevic",
+        "repo": "sofka",
+        "rev": "c8b1a5d7a212204ab5babb5b9e0fcf248d2f7d65",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nklmilojevic",
+        "repo": "sofka",
+        "type": "github"
       }
     },
     "sops-nix": {
