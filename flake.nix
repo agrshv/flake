@@ -108,7 +108,7 @@
         work-laptop = mkWorkstation "work-laptop";
 
         # Headless. Deploy with:
-        #   nixos-rebuild switch --flake .#home-server --target-host home-server.agrshv.dev --sudo --ask-sudo-password
+        #   nixos-rebuild switch --flake .#home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev --sudo --ask-sudo-password
         home-server = nixpkgs.lib.nixosSystem {
           inherit system specialArgs;
           modules = [

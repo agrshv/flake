@@ -29,6 +29,7 @@ in
     ./readeck.nix
     ./redis.nix
     ./restic.nix
+    ./romm.nix
     ./searx.nix
     ./slskd.nix
     ./vaultwarden.nix

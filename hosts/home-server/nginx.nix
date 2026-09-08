@@ -37,6 +37,7 @@ let
     "tube.agrshv.dev"
     "nocodb.agrshv.dev"
     "recipes.agrshv.dev"
+    "roms.agrshv.dev"
     "webmail.agrshv.dev"
     "vault.agrshv.dev"
     # nixflix-defined vhosts (see ./nixflix.nix) — the module builds these

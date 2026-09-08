@@ -69,6 +69,7 @@ in
       "/var/lib/private/readeck" # saved articles + assets
       "/var/lib/forgejo" # git repositories, LFS, generated app secrets
       "/var/lib/nocodb" # attachments
+      "/var/lib/romm" # save files + states, scraped config, generated auth secret
       "/var/lib/private/mealie" # recipe images + app secrets
       "/var/lib/monica" # uploads + APP_KEY (encrypts data in the DB dump)
       "/var/lib/vaultwarden" # attachments, Sends, and rsa_key.pem (signs client JWTs)
@@ -90,6 +91,12 @@ in
       "/var/lib/navidrome/cache"
       "/var/lib/vaultwarden/icon_cache"
       "/var/lib/private/gitea-runner/home-server/.cache"
+      # ROMs are re-obtainable and would dominate the repo; the artwork RomM
+      # scraped is re-scrapable. What is kept is /var/lib/romm/assets (saves and
+      # save states) plus its config and .auth-secret.env.
+      "/var/lib/romm/library"
+      "/var/lib/romm/resources"
+      "/var/lib/romm/cache"
       "/root/.cache"
     ];
 
