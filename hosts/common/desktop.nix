@@ -144,6 +144,10 @@ in
 
   services.upower.enable = true;
 
+  # Normally pulled in by GNOME/Plasma, which we don't run — niri needs it
+  # enabled by hand. Backs Noctalia's power-profile switcher over D-Bus.
+  services.power-profiles-daemon.enable = true;
+
   # Opens firewall ports 1714-1764 (TCP/UDP) for device discovery; the daemon
   # runs as a user service (programs/noctalia.nix) and Noctalia is the UI.
   programs.kdeconnect.enable = true;
