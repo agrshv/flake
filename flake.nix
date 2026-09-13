@@ -76,6 +76,13 @@
       pkgs-unstable = mkPkgsUnstable system;
       specialArgs = { inherit inputs pkgs-unstable; };
 
+      # Stamp each host with the commit it was built from, so
+      # `nixos-version --configuration-revision` on a box that was deployed by
+      # hand (home-server, drake) says exactly what is running there.
+      revision = {
+        system.configurationRevision = self.rev or self.dirtyRev or "dirty";
+      };
+
       # A graphical workstation: NixOS + home-manager for me.user with the shared
       # desktop/work modules wired in. `host` names a directory under ./hosts.
       mkWorkstation =
@@ -92,6 +99,11 @@
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
+                # Rename a conflicting file instead of aborting activation: a
+                # program that writes its own config before home-manager takes
+                # the file over (~/.claude/settings.json, mimeapps.list, ...)
+                # otherwise fails the switch with "would be clobbered".
+                backupFileExtension = "hm-bak";
                 sharedModules = [
                   inputs.sops-nix.homeManagerModules.sops
                   inputs.nix-index-database.homeModules.default
@@ -106,6 +118,7 @@
                 extraSpecialArgs = specialArgs;
               };
             }
+            revision
             ./hosts/${host}
           ];
         };
@@ -123,6 +136,7 @@
             inputs.catppuccin.nixosModules.catppuccin
             inputs.sops-nix.nixosModules.sops
             inputs.nixflix.nixosModules.default
+            revision
             ./hosts/home-server
           ];
         };
@@ -139,6 +153,7 @@
           modules = [
             inputs.disko.nixosModules.disko
             inputs.sops-nix.nixosModules.sops
+            revision
             ./hosts/drake
           ];
         };
@@ -146,10 +161,19 @@
         # Thin bootstrap ISO — see INSTALL.md. Build with `nix build .#installer-iso`.
         installer = nixpkgs.lib.nixosSystem {
           inherit system specialArgs;
-          modules = [ ./hosts/installer ];
+          modules = [
+            revision
+            ./hosts/installer
+          ];
         };
       };
 
       packages.${system}.installer-iso = self.nixosConfigurations.installer.config.system.build.isoImage;
+
+      # `nix fmt` / `nix fmt -- --check`, in the style every .nix file here is
+      # already written in. aarch64 is covered so it also works on drake.
+      formatter = nixpkgs.lib.genAttrs [ system "aarch64-linux" ] (
+        sys: nixpkgs.legacyPackages.${sys}.nixfmt
+      );
     };
 }
