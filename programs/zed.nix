@@ -65,9 +65,15 @@
       autosave.after_delay.milliseconds = 1000;
       agent_servers.claude-acp = {
         type = "registry";
-        # Start Claude threads in Auto mode instead of Manual approval.
-        # Falls back to acceptEdits if the model doesn't support Auto.
-        default_mode = "auto";
+        # NB: a per-agent `default_mode` is NOT a setting Zed 1.16 understands
+        # (its per-agent keys are command/env/default_model/favorite_models/
+        # default_config_options/favorite_config_option_values), so it was
+        # silently ignored. A new thread's starting model and permission mode
+        # come from Claude Code's own ~/.claude/settings.json (`model` and
+        # `permissions.defaultMode`); picking either from the panel dropdowns
+        # can't stick, because Zed persists that choice by rewriting
+        # ~/.config/zed/settings.json, which mutableUserSettings = false makes
+        # a read-only /nix/store symlink.
         env.CLAUDE_CODE_EXECUTABLE = "${lib.getExe pkgs-unstable.claude-code}";
       };
       ui_font_size = 16;
