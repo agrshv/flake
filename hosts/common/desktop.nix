@@ -41,27 +41,15 @@ in
     ];
   };
 
+  # Everything shared with the headless hosts is in ../common/nixos.nix; only
+  # the desktop-specific bits stay here.
   nix = {
     settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      trusted-users = [
-        "root"
-        "@wheel"
-      ];
       extra-substituters = [ "https://noctalia.cachix.org" ];
       extra-trusted-public-keys = [
         "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
       ];
     };
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 14d";
-    };
-    channel.enable = false;
     registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
   };
 

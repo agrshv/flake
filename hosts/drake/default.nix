@@ -58,26 +58,6 @@ in
 
   time.timeZone = "UTC";
 
-  nix = {
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      trusted-users = [
-        "root"
-        me.user
-      ];
-    };
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 14d";
-    };
-    optimise.automatic = true;
-    channel.enable = false;
-  };
-
   # Login/sudo password hash, as on home-server. With mutableUsers it only
   # applies at user creation; the live box got the same password via passwd
   # right after this secret was minted. Plaintext: Bitwarden, "drake sudo".

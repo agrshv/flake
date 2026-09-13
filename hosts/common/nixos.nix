@@ -2,6 +2,31 @@
 {
   # security.lockKernelModules = true;
 
+  # Shared by every host; per-host additions (extra substituters, the flake
+  # registry pin) live next to the host that needs them. NB: @wheel is trusted
+  # rather than just root, which is what lets `nixos-rebuild --target-host`
+  # deploys and `nh` run without sudo-ing the nix daemon calls.
+  nix = {
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      trusted-users = [
+        "root"
+        "@wheel"
+      ];
+    };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 14d";
+    };
+    # Hard-link identical files in the store to reclaim space after each build.
+    optimise.automatic = true;
+    channel.enable = false;
+  };
+
   services.netbird = {
     enable = true;
     # nixos-26.05 ships netbird 0.71.4, which predates the protocol change that

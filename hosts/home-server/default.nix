@@ -53,21 +53,6 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
-  nix = {
-    settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 14d";
-    };
-    # Hard-link identical files in the store to reclaim space after each build.
-    optimise.automatic = true;
-    channel.enable = false;
-  };
-
   # Scheduled `nixos-rebuild switch --flake` against the remote repo, so the
   # server only ever builds what's committed and lockfile bumps stay deliberate
   # (run `nix flake update` + push to actually advance package versions).
@@ -157,12 +142,6 @@ in
     vim
     git
     btop
-  ];
-
-  nix.settings.trusted-users = [
-    "root"
-    "@wheel"
-    me.user
   ];
 
   system.stateVersion = "25.11";
