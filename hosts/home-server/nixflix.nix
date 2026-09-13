@@ -190,7 +190,6 @@ in
     seerr = {
       enable = true;
       apiKey._secret = config.sops.secrets."nixflix/seerr/api_key".path;
-      externalUrlScheme = "https";
       jellyfin = {
         adminUsername = "d3spair";
         adminPassword._secret = config.sops.secrets."nixflix/jellyfin/admin_password".path;
