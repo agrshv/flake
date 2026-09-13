@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 let
   me = import ../common/me.nix;
 in
@@ -8,6 +8,16 @@ in
     ./hardware-configuration.nix
     ../common/nixos.nix
     ../common/desktop.nix
+
+    # Zenbook UM425QA (Ryzen, NVMe). nixos-hardware has no profile for this
+    # model, so these are the generic AMD-laptop ones. The pstate module also
+    # pulls in common-cpu-amd, and hands frequency scaling to amd_pstate in
+    # active mode, which is what power-profiles-daemon drives via EPP.
+    # common-pc-laptop would enable TLP, but only when no other power daemon
+    # is on — power-profiles-daemon (common/desktop.nix) keeps it off.
+    inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
+    inputs.nixos-hardware.nixosModules.common-pc-laptop
+    inputs.nixos-hardware.nixosModules.common-pc-laptop-ssd
   ];
 
   # Pinned so an install can't land on the Ventoy stick it was booted from.

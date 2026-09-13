@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
 let
   me = import ../common/me.nix;
 in
@@ -7,6 +12,15 @@ in
     ../common/disko.nix
     ./hardware-configuration.nix
     ../common/nixos.nix
+
+    # AMD box on a SATA SSD. Both of these only pin what NixOS already
+    # defaults to here (microcode updates, weekly fstrim) — they are in for
+    # the same reason the laptop has them: upstream additions for this class
+    # of hardware land automatically. amd_pstate is deliberately not enabled:
+    # it is a kernel param, so it would need a reboot, and this box asks for
+    # the LUKS passphrase on the way up.
+    inputs.nixos-hardware.nixosModules.common-cpu-amd
+    inputs.nixos-hardware.nixosModules.common-pc-ssd
 
     ./actual.nix
     ./authelia.nix

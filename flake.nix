@@ -22,6 +22,13 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Hardware quirk profiles, imported per host. Its nixpkgs input is only
+    # used by its own checks, so follow ours rather than let a third nixpkgs
+    # into the lock.
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Do NOT set inputs.nixpkgs.follows here: noctalia's cachix builds are keyed
     # to its own pinned nixpkgs, so overriding it forces a from-source rebuild
     # (cache miss). Track the `cachix` branch to stay on cached commits.
