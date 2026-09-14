@@ -5,6 +5,10 @@
   ...
 }:
 {
+  # Themed by noctalia instead: its community `zed` template (enabled in
+  # programs/noctalia.nix) renders ~/.config/zed/themes/noctalia.json.
+  catppuccin.zed.enable = false;
+
   home.sessionVariables.EDITOR = "${pkgs-unstable.zed-editor}/bin/zeditor -w";
 
   programs.zed-editor = {
@@ -61,6 +65,15 @@
         ignore_system_version = false;
         path = lib.getExe pkgs.nodejs;
         npm_path = "${lib.getExe' pkgs.nodejs "npm"}";
+      };
+      # Theme names inside ~/.config/zed/themes/noctalia.json. Zed watches that
+      # directory, so a palette change lands without a restart. Both modes are
+      # named even though noctalia is pinned to dark, so flipping it there is
+      # all it takes. ("Noctalia {Dark,Light} Transparent" also exist.)
+      theme = {
+        mode = "dark";
+        dark = "Noctalia Dark";
+        light = "Noctalia Light";
       };
       autosave.after_delay.milliseconds = 1000;
       agent_servers.claude-acp = {

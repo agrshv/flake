@@ -96,6 +96,23 @@
         mode = "dark";
         source = "builtin";
         builtin = "Catppuccin";
+        # Apps whose colours noctalia owns instead of the catppuccin modules.
+        # Both lists are opt-in: empty `builtin_ids`/`community_ids` apply
+        # nothing, so only what is named here is ever written.
+        #
+        # NB: community templates are not part of the noctalia package. They
+        # are fetched at runtime from api.noctalia.dev into noctalia's cache
+        # (md5-checked against the catalog) and so are neither pinned by the
+        # lockfile nor available offline on a fresh machine.
+        templates = {
+          enable_builtin_templates = true;
+          builtin_ids = [ "ghostty" ];
+          enable_community_templates = true;
+          # Writes ~/.config/zed/themes/noctalia.json with four variants
+          # (Noctalia {Dark,Light}[ Transparent]); programs/zed.nix selects by
+          # name. No apply hook, so Zed's read-only settings.json is untouched.
+          community_ids = [ "zed" ];
+        };
       };
       wallpaper = {
         enabled = true;
