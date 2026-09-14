@@ -66,7 +66,7 @@ in
     extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
   };
 
-  programs.noctalia-greeter = {
+  services.displayManager.noctalia-greeter = {
     enable = true;
     package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
     settings = {
