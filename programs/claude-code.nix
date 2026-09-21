@@ -22,6 +22,10 @@
         # too — Zed 1.16 has no per-agent mode setting of its own.
         defaultMode = "auto";
       };
+      # Stop it appending a "Co-Authored-By: Claude" trailer to commits it
+      # writes (and the matching footer on pull request descriptions).
+      includeCoAuthoredBy = false;
+
       tui = "fullscreen";
       theme = "auto";
       agentPushNotifEnabled = true;
