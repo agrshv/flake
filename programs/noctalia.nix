@@ -1,4 +1,19 @@
 { config, pkgs, ... }:
+let
+  wallpapers = "${config.home.homeDirectory}/Media/Pictures/Wallpapers";
+  defaultWallpaper = "sam-ferrara-1527pjeb6jg-unsplash.jpg";
+  # Fetched from Unsplash rather than committed, and pinned by hash: the photo
+  # id in the URL is permanent, the query string picks the encoding, and a
+  # re-encode upstream fails the build instead of silently changing the image.
+  # The directory itself stays an ordinary one in $HOME rather than a store
+  # path, so wallpapers can still be dropped in by hand; only this one is
+  # linked, so the default survives a reinstall.
+  defaultWallpaperFile = pkgs.fetchurl {
+    name = defaultWallpaper;
+    url = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&dl=${defaultWallpaper}";
+    hash = "sha256-OZTUlNTFrVD7R+R9n3sTGXZ2sGorqumiGm6po8xRdGc=";
+  };
+in
 {
   sops.secrets."stalwart/noctalia".sopsFile = ../secrets/common.yaml;
 
@@ -12,6 +27,8 @@
     pkgs.glib # gdbus
     pkgs.sshfs
   ];
+
+  home.file."Media/Pictures/Wallpapers/${defaultWallpaper}".source = defaultWallpaperFile;
 
   programs.noctalia = {
     enable = true;
@@ -122,7 +139,10 @@
       };
       wallpaper = {
         enabled = true;
-        default.path = "${pkgs.nixos-artwork.wallpapers.catppuccin-mocha}/share/backgrounds/nixos/nixos-wallpaper-catppuccin-mocha.png";
+        # `directory` is what the wallpaper picker browses; `default.path` is
+        # the one it starts on, which home-manager links in below.
+        directory = wallpapers;
+        default.path = "${wallpapers}/${defaultWallpaper}";
       };
       widget = {
         media.hide_when_no_media = true;
