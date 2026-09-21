@@ -123,7 +123,14 @@ in
         # lockfile nor available offline on a fresh machine.
         templates = {
           enable_builtin_templates = true;
-          builtin_ids = [ "ghostty" ];
+          # gtk3/gtk4 share one apply.sh that adds an @import of the generated
+          # noctalia.css to each gtk.css. home-manager owns settings.ini in
+          # those directories but not gtk.css, so the two do not collide.
+          builtin_ids = [
+            "ghostty"
+            "gtk3"
+            "gtk4"
+          ];
           enable_community_templates = true;
           # zed: writes ~/.config/zed/themes/noctalia.json with four variants
           # (Noctalia {Dark,Light}[ Transparent]); programs/zed.nix selects by

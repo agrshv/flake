@@ -79,16 +79,13 @@ in
     flavor = "mocha";
   };
 
-  # GTK dark mode
-  gtk = {
-    enable = true;
-    gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
-    };
-    gtk4.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
-    };
-  };
+  # Light/dark is noctalia's call (theme.mode in programs/noctalia.nix): it
+  # writes org.gnome.desktop.interface color-scheme itself after every theme
+  # apply, so pinning gtk-application-prefer-dark-theme here only fought it —
+  # GTK3 read the pin while GTK4 followed whichever of the two wrote last.
+  # home-manager still owns settings.ini; noctalia's gtk templates write
+  # noctalia.css and import it from gtk.css, which nothing here manages.
+  gtk.enable = true;
 
   # NetworkManager secret agent: bridges agent-owned VPN secrets (password-flags=1)
   # from gnome-keyring to NetworkManager. Noctalia provides a network UI but no
@@ -102,13 +99,6 @@ in
     platformTheme.name = "kvantum";
     style = {
       name = "kvantum";
-    };
-  };
-
-  # Desktop environment dark mode preference
-  dconf.settings = {
-    "org/gnome/desktop/interface" = {
-      color-scheme = "prefer-dark";
     };
   };
 
