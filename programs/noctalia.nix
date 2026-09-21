@@ -93,9 +93,9 @@
       nightlight.enabled = true;
       shell.launch_apps_as_systemd_services = true;
       theme = {
-        mode = "dark";
+        mode = "light";
         source = "builtin";
-        builtin = "Catppuccin";
+        builtin = "Gruvbox";
         # Apps whose colours noctalia owns instead of the catppuccin modules.
         # Both lists are opt-in: empty `builtin_ids`/`community_ids` apply
         # nothing, so only what is named here is ever written.
