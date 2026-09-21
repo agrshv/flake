@@ -108,10 +108,16 @@
           enable_builtin_templates = true;
           builtin_ids = [ "ghostty" ];
           enable_community_templates = true;
-          # Writes ~/.config/zed/themes/noctalia.json with four variants
+          # zed: writes ~/.config/zed/themes/noctalia.json with four variants
           # (Noctalia {Dark,Light}[ Transparent]); programs/zed.nix selects by
-          # name. No apply hook, so Zed's read-only settings.json is untouched.
-          community_ids = [ "zed" ];
+          # name. discord: writes three stylesheets into the themes directory
+          # of whichever clients are installed — programs/vesktop.nix enables
+          # noctalia-material.theme.css. Neither has an apply hook, so read-only
+          # settings files home-manager owns are untouched.
+          community_ids = [
+            "discord"
+            "zed"
+          ];
         };
       };
       wallpaper = {
