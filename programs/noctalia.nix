@@ -136,10 +136,14 @@ in
           # (Noctalia {Dark,Light}[ Transparent]); programs/zed.nix selects by
           # name. discord: writes three stylesheets into the themes directory
           # of whichever clients are installed — programs/vesktop.nix enables
-          # noctalia-material.theme.css. Neither has an apply hook, so read-only
+          # noctalia-material.theme.css. telegram: drops a .tdesktop-theme into
+          # ~/.config/telegram-desktop/themes, which has to be picked once from
+          # Settings → Chat Settings → Themes, as the client keeps that choice
+          # in its own state. None of the three has an apply hook, so read-only
           # settings files home-manager owns are untouched.
           community_ids = [
             "discord"
+            "telegram"
             "zed"
           ];
         };
