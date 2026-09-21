@@ -67,11 +67,12 @@
         npm_path = "${lib.getExe' pkgs.nodejs "npm"}";
       };
       # Theme names inside ~/.config/zed/themes/noctalia.json. Zed watches that
-      # directory, so a palette change lands without a restart. Both modes are
-      # named even though noctalia is pinned to dark, so flipping it there is
-      # all it takes. ("Noctalia {Dark,Light} Transparent" also exist.)
+      # directory, so a palette change lands without a restart. `system` reads
+      # the portal's colour scheme, which noctalia is now the only writer of
+      # (see home.nix), so Zed follows its theme.mode without being told.
+      # ("Noctalia {Dark,Light} Transparent" also exist.)
       theme = {
-        mode = "dark";
+        mode = "system";
         dark = "Noctalia Dark";
         light = "Noctalia Light";
       };
