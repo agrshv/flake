@@ -27,7 +27,7 @@ in
         focus-follows-mouse
         keyboard {
             xkb {
-                layout "us,ru"
+                layout "us,ru,de"
                 options "grp:alt_shift_toggle"
             }
             repeat-delay 300
