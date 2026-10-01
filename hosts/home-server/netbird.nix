@@ -18,6 +18,17 @@
   # doesn't exist would just fail netbird-login.service.
   sops.secrets."netbird/setup-key".restartUnits = [ "netbird-login.service" ];
 
+  # archive.org is blocked here at the IP level, which breaks wrtag's cover
+  # downloads: the Cover Art Archive API answers, but redirects the images to
+  # archive.org hosts. A NetBird network route (dashboard → Networks, resource
+  # 207.241.224.0/20, the Internet Archive's range, routing peer drake,
+  # distributed to this host) sends that range out through drake instead.
+  # "client" relaxes the reverse-path filter from strict to loose; without it,
+  # replies arrive on wt0 for addresses the kernel expects on the uplink, and
+  # strict rpfilter drops them — the route installs but nothing gets through.
+  # Same reason as work-laptop, which uses drake as an exit node.
+  services.netbird.useRoutingFeatures = "client";
+
   services.netbird.clients.default.login = {
     enable = true;
     setupKeyFile = config.sops.secrets."netbird/setup-key".path;
