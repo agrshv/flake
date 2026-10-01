@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   wallpapers = "${config.home.homeDirectory}/Media/Pictures/Wallpapers";
   defaultWallpaper = "sam-ferrara-1527pjeb6jg-unsplash.jpg";
@@ -65,50 +70,110 @@ in
         };
       };
       location.address = "Almaty, Kazakhstan";
-      lockscreen_widgets = {
-        enabled = true;
-        schema_version = 2;
-        widget_order = [
-          "lockscreen-login-box@eDP-1"
-          "lockscreen-login-box@DP-2"
-          "lockscreen-widget-clock"
-        ];
-        grid = {
-          cell_size = 16;
-          major_interval = 4;
-          visible = true;
-        };
-        widget = {
-          "lockscreen-login-box@DP-2" = {
-            box_height = 0.0;
-            box_width = 0.0;
-            cx = 960.0;
-            cy = 957.0;
-            output = "DP-2";
-            rotation = 0.0;
-            type = "login_box";
+      # Ported from the layout arranged in noctalia's settings UI (it lived only
+      # in ~/.local/state/noctalia/settings.toml, which overrides this file).
+      # Positions are in each output's own pixels, so the layout is tied to
+      # these exact outputs. Per-box options and styling go under that box's
+      # `.settings` — a sibling `widget.settings` table is read as a widget
+      # named "settings" of no type, which is what the validator used to warn
+      # about.
+      lockscreen_widgets =
+        let
+          loginBoxOptions = {
+            center_password_text = false;
+            layout = "regular";
+            show_caps_lock = true;
+            show_keyboard_layout = true;
+            show_login_button = true;
+            show_media = true;
+            show_session_buttons = true;
+            show_unlock_hint = true;
+            show_weather = true;
           };
-          settings = {
+          loginBoxStyle = {
             background_color = "surface_variant";
             background_opacity = 0.88;
             background_radius = 12.0;
             input_opacity = 1.0;
             input_radius = 6.0;
-            show_login_button = true;
           };
-          "lockscreen-widget-clock" = {
-            box_height = 160.0;
-            box_width = 288.0;
-            cx = 960.0;
-            cy = 220.0;
-            output = "eDP-1";
-            rotation = 0.0;
-            type = "clock";
+          loginBox =
+            output:
+            {
+              cx,
+              cy,
+              placement_width ? 0.0,
+              placement_height ? 0.0,
+              styled ? true,
+            }:
+            {
+              inherit
+                output
+                cx
+                cy
+                placement_width
+                placement_height
+                ;
+              box_width = 810.0;
+              box_height = 196.0;
+              rotation = 0.0;
+              type = "login_box";
+              settings = loginBoxOptions // lib.optionalAttrs styled loginBoxStyle;
+            };
+        in
+        {
+          enabled = true;
+          schema_version = 2;
+          widget_order = [
+            "lockscreen-login-box@HDMI-A-1"
+            "lockscreen-login-box@eDP-1"
+            "lockscreen-login-box@DP-2"
+            "lockscreen-widget-clock"
+          ];
+          grid = {
+            cell_size = 16;
+            major_interval = 4;
+            visible = true;
+          };
+          widget = {
+            "lockscreen-login-box@HDMI-A-1" = loginBox "HDMI-A-1" {
+              cx = 1280.0;
+              cy = 1258.0;
+              placement_width = 2560.0;
+              placement_height = 1440.0;
+            };
+            "lockscreen-login-box@eDP-1" = loginBox "eDP-1" {
+              cx = 960.0;
+              cy = 898.0;
+              placement_width = 1920.0;
+              placement_height = 1080.0;
+            };
+            # Unstyled, as it was in the UI; drop `styled` to match the others.
+            "lockscreen-login-box@DP-2" = loginBox "DP-2" {
+              cx = 960.0;
+              cy = 957.0;
+              styled = false;
+            };
+            "lockscreen-widget-clock" = {
+              box_width = 288.0;
+              box_height = 160.0;
+              cx = 960.0;
+              cy = 220.0;
+              output = "eDP-1";
+              placement_width = 1920.0;
+              placement_height = 1080.0;
+              rotation = 0.0;
+              type = "clock";
+            };
           };
         };
-      };
       nightlight.enabled = true;
-      shell.launch_apps_as_systemd_services = true;
+      shell = {
+        polkit_agent = true;
+        launch_apps_as_systemd_services = true;
+        readline_shortcuts = true;
+        greeter_sync.auto_sync = true;
+      };
       theme = {
         mode = "light";
         source = "builtin";
