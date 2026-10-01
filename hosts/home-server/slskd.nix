@@ -87,6 +87,41 @@ in
       mode = lib.mkForce "2770";
     };
     "/var/lib/navidrome"."d".mode = lib.mkForce "0710";
+
+    # Default ACL on the library root, so new entries are group-writable no
+    # matter who creates them or with what umask (with a default ACL present,
+    # the umask is not applied). Without it, a directory made outside the
+    # wrtagweb unit — a manual copy, a root CLI run, a restore — comes out
+    # e.g. navidrome:navidrome 2750, and later imports into it fail with
+    # "mkdir …: permission denied" since slskd only writes via the group.
+    # Inheritance happens at creation, so this covers new trees only; the
+    # oneshot below repairs what already exists.
+    "/var/lib/navidrome/music"."A+".argument = "d:u::rwx,d:g::rwx,d:g:navidrome:rwx,d:m::rwx,d:o::---";
+  };
+
+  # Repairs entries that lost group write: anything that predates the ACL above,
+  # and anything a restic restore brings back with its old modes. Additive and
+  # idempotent — only wrong entries are touched, and "other" bits are left as
+  # they are — so normally it walks the tree and changes nothing. Ordered before
+  # the writers so an import never races a half-repaired library.
+  systemd.services.navidrome-music-perms = {
+    description = "Keep the music library group-writable for navidrome group members";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-tmpfiles-setup.service" ];
+    before = [
+      "wrtagweb.service"
+      "slskd.service"
+    ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      music=/var/lib/navidrome/music
+      find "$music" -mindepth 1 ! -group navidrome -exec chgrp navidrome {} +
+      find "$music" -mindepth 1 -type d ! -perm -2070 -exec chmod g+rwxs {} +
+      find "$music" -type f ! -perm -0060 -exec chmod g+rw {} +
+    '';
   };
 
   networking.firewall.allowedTCPPorts = [ 50300 ];
