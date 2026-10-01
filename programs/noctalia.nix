@@ -26,8 +26,8 @@ in
   # NixOS module alone wouldn't get the daemon started.
   services.kdeconnect.enable = true;
 
-  # Noctalia's KDE Connect widget shells out to gdbus for DBus calls and
-  # mounts device filesystems over sshfs.
+  # The phone-connect plugin (plugins.enabled below) shells out to gdbus for
+  # KDE Connect's DBus calls and mounts device filesystems over sshfs.
   home.packages = [
     pkgs.glib # gdbus
     pkgs.sshfs
@@ -39,10 +39,37 @@ in
     enable = true;
     systemd.enable = true;
     settings = {
-      bar.default.start = [
-        "launcher"
-        "workspaces"
-      ];
+      bar.default = {
+        start = [
+          "launcher"
+          "workspaces"
+        ];
+        # noctalia's default end list (config_types.h), restated in full because
+        # setting `end` replaces it rather than appending, plus the phone-connect
+        # widget next to the laptop's own battery.
+        end = [
+          "media"
+          "tray"
+          "notifications"
+          "clipboard"
+          "network"
+          "bluetooth"
+          "volume"
+          "brightness"
+          "icefish/phone-connect:bar"
+          "battery"
+          "control-center"
+          "session"
+        ];
+      };
+      # Phone Connect (community plugin): battery, ring, ping, share, clipboard
+      # and pairing for KDE Connect devices, as a bar widget plus a details
+      # panel. Its KDE Connect backend is the kdeconnectd user service above;
+      # the glib/sshfs packages are its declared dependencies. Like community
+      # templates, the plugin itself is fetched at runtime from noctalia's
+      # community repo (a git clone under ~/.local/state/noctalia/plugins), so
+      # it is not pinned by the lockfile.
+      plugins.enabled = [ "icefish/phone-connect" ];
       brightness.enable_ddcutil = true;
       idle = {
         behavior_order = [
