@@ -6,6 +6,30 @@
   ...
 }:
 let
+  # 0.34 ahead of nixpkgs, which still ships 0.33. It needs go 1.27 while
+  # unstable's own wrtag builds with 1.26, hence the buildGoModule swap. What it
+  # brings here: 503s are retried (up to 5x, 1-4s backoff, honouring
+  # Retry-After) where 0.33 only retried 429. The upstream commit says
+  # "musicbrainz", but the retry sits on http.DefaultTransport, which the
+  # lyrics sources wrap too — so this is also what stops lrclib's frequent 503s
+  # ("process addon: unexpected status code: 503") failing whole imports. Also:
+  # a 60s MusicBrainz timeout, and directories honour the unit's UMask. Drop
+  # this once nixpkgs catches up.
+  wrtag =
+    (pkgs-unstable.wrtag.override { buildGoModule = pkgs-unstable.buildGo127Module; }).overrideAttrs
+      (
+        finalAttrs: _: {
+          version = "0.34.0";
+          src = pkgs-unstable.fetchFromGitHub {
+            owner = "sentriz";
+            repo = "wrtag";
+            tag = "v${finalAttrs.version}";
+            hash = "sha256-v4F1N5Q3UuD6YwwO1aSpdKgozecgstIXF2leRfFm/2U=";
+          };
+          vendorHash = "sha256-EchVZbdpXXJ4D+5PxwkdEHVoAQOVzn7qGbSEQmNjrvQ=";
+        }
+      );
+
   # Shared with the slskd post-download hook (see slskd.nix). Defines how
   # releases are laid out in the Navidrome library and what extra metadata
   # wrtag writes.
@@ -73,7 +97,7 @@ in
       # one that lands inside it. Combined with the setgid on music/ (which
       # forces group navidrome), new paths become navidrome:navidrome 2775.
       UMask = "0002";
-      ExecStart = "${pkgs-unstable.wrtag}/bin/wrtagweb";
+      ExecStart = "${wrtag}/bin/wrtagweb";
       Restart = "on-failure";
     };
   };
