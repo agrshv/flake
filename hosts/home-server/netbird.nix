@@ -20,9 +20,14 @@
 
   # archive.org is blocked here at the IP level, which breaks wrtag's cover
   # downloads: the Cover Art Archive API answers, but redirects the images to
-  # archive.org hosts. A NetBird network route (dashboard → Networks, resource
-  # 207.241.224.0/20, the Internet Archive's range, routing peer drake,
-  # distributed to this host) sends that range out through drake instead.
+  # archive.org hosts. A NetBird network route (dashboard → Networks, routing
+  # peer drake, distributed to this host) sends that traffic out through drake
+  # instead. It has to cover both of the Archive's blocks: 207.241.224.0/20
+  # (archive.org, ia*.us.archive.org) and 204.62.246.0/23 + 204.62.248.0/23
+  # (Internet Archive Canada, dn*.ca.archive.org) — the Canadian data nodes are
+  # not blocked but throttled to ~30 KB/s direct, so a 1 MB cover blows wrtag's
+  # hardcoded 30s cover-download timeout. A `*.archive.org` domain resource
+  # covers both.
   # "client" relaxes the reverse-path filter from strict to loose; without it,
   # replies arrive on wt0 for addresses the kernel expects on the uplink, and
   # strict rpfilter drops them — the route installs but nothing gets through.
