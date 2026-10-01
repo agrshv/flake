@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
@@ -24,6 +25,45 @@ let
     group = "nixflix-secrets";
     mode = "0440";
   };
+  # nixflix resolves plugin packages from its bundled repository catalog, which
+  # only carries subbuzz's Jellyfin 12 build — so on Jellyfin 10.11 there is no
+  # compatible version and the "enabled plugins must define `package`"
+  # assertion fires. Upstream still publishes a 10.11 build of the same
+  # release, so package that directly. The zip ships no meta.json, unlike the
+  # catalog plugins' zips; add one with the guid and metadata from subbuzz's
+  # catalog entry. It goes into `src` because nixflix's builder replaces
+  # installPhase without running the postInstall hook. Drop all this once the
+  # catalog has a 10.11 build or Jellyfin here moves to 12.
+  subbuzz =
+    let
+      version = "1.5.0.0";
+      meta = pkgs.writeText "jellyfin-plugin-meta-subbuzz.json" (
+        builtins.toJSON {
+          category = "Subtitles";
+          guid = "5aeab01b-2ef8-45c6-bb6b-16ce9cb268d4";
+          name = "subbuzz";
+          overview = "Download subtitles for your media";
+          owner = "josdion";
+          targetAbi = "10.11.0.0";
+          inherit version;
+        }
+      );
+    in
+    inputs.nixflix.lib.buildJellyfinPlugin { inherit pkgs; } {
+      pname = "subbuzz";
+      inherit version;
+      src = pkgs.runCommand "subbuzz-${version}-src" { nativeBuildInputs = [ pkgs.unzip ]; } ''
+        mkdir $out
+        unzip ${
+          pkgs.fetchurl {
+            url = "https://github.com/josdion/subbuzz/releases/download/v${version}/subbuzz_${version}_jellyfin_10.11.zip";
+            hash = "sha256-dqjO7w1BfpVBB2nBiFao4zdgnCMPoe9KdsB85m7ozOA=";
+          }
+        } -d $out
+        cp ${meta} $out/meta.json
+      '';
+      passthru.pluginDirName = "subbuzz_${version}";
+    };
 in
 {
   users.groups.nixflix-secrets = { };
@@ -111,6 +151,7 @@ in
       plugins = {
         subbuzz = {
           enable = true;
+          package = subbuzz;
           config = {
             OpenSubUserName = "prescribe2222"; # must match your opensubtitles.com login
             OpenSubPassword._secret = config.sops.secrets."nixflix/jellyfin/opensubtitles_password".path;
