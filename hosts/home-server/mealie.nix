@@ -27,6 +27,15 @@
     };
   };
 
+  # nltk (3.10) now builds its Downloader at import time, and that raises
+  # "Could not find a default download directory" unless some entry on its data
+  # path is writable or `~` resolves. The module's NLTK_DATA is a read-only
+  # store path and this DynamicUser unit has no HOME, so init_db died on
+  # `import nltk` before touching the database. Point HOME at the state
+  # directory; nltk only needs it to exist — the tagger data still comes from
+  # NLTK_DATA, so nothing is downloaded.
+  systemd.services.mealie.environment.HOME = "/var/lib/mealie";
+
   services.nginx.virtualHosts."recipes.agrshv.dev" = {
     forceSSL = true;
     useACMEHost = "agrshv.dev";
