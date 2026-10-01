@@ -200,6 +200,7 @@ in
         launch_apps_as_systemd_services = true;
         readline_shortcuts = true;
         greeter_sync.auto_sync = true;
+        clipboard_enabled = false;
       };
       theme = {
         mode = "light";
