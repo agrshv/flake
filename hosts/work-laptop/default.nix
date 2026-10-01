@@ -59,6 +59,17 @@ in
   hardware.enableRedistributableFirmware = true;
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
+  # Keep blueman-manager and its daemon, but not the tray applet: noctalia's
+  # bluetooth widget already covers it. The package ships an XDG autostart
+  # entry that systemd's generator starts at login; a same-named user entry
+  # with Hidden=true overrides it per the XDG autostart spec.
+  home-manager.users.${me.user}.xdg.configFile."autostart/blueman.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Blueman Applet
+    Exec=blueman-applet
+    Hidden=true
+  '';
 
   networking.hostName = "work-laptop";
 
