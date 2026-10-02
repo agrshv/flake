@@ -10,6 +10,4 @@
     compression = "zstd";
     startAt = "*-*-* 02:00:00";
   };
-
-  systemd.services.postgresqlBackup.onFailure = [ "ntfy-alert@postgresqlBackup.service" ];
 }

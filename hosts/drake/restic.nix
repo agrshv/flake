@@ -56,7 +56,6 @@
   };
 
   systemd.services.restic-backups-drake = {
-    onFailure = [ "ntfy-alert@restic-backups-drake.service" ];
     onSuccess = [ "ntfy-ok@restic-backups-drake.service" ];
   };
 }

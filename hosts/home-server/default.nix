@@ -12,6 +12,7 @@ in
     ../common/disko.nix
     ./hardware-configuration.nix
     ../common/nixos.nix
+    ../common/ntfy-alerts.nix
 
     # AMD box on a SATA SSD. Both of these only pin what NixOS already
     # defaults to here (microcode updates, weekly fstrim) — they are in for
@@ -58,6 +59,16 @@ in
   sops = {
     defaultSopsFile = ../../secrets/home-server.yaml;
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  };
+
+  # Failure alerts for every unit (../common/ntfy-alerts.nix), published to
+  # drake's ntfy over its public HTTPS endpoint — its loopback listener is only
+  # reachable from drake itself. `ntfy/env` holds NTFY_TOKEN=<token>, the same
+  # write token drake's own alerts use.
+  sops.secrets."ntfy/env" = { };
+  ntfyAlerts = {
+    url = "https://ntfy.agrshv.dev:2443/alerts";
+    environmentFile = config.sops.secrets."ntfy/env".path;
   };
 
   catppuccin = {

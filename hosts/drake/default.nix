@@ -7,6 +7,7 @@ in
     ./disko.nix
     ./hardware-configuration.nix
     ../common/nixos.nix
+    ../common/ntfy-alerts.nix
     ./stalwart.nix
     ./amneziawg.nix
     ./xray.nix

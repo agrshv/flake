@@ -3,8 +3,8 @@
   sops.secrets = {
     "acme/env".restartUnits = [ "acme-ntfy.agrshv.dev.service" ];
     # NTFY_AUTH_USERS / NTFY_AUTH_TOKENS (declarative auth db entries) plus
-    # NTFY_TOKEN, which only the ntfy-alert@/ntfy-ok@ units below use. The
-    # user password's plaintext lives in Bitwarden ("drake ntfy").
+    # NTFY_TOKEN, which only the ntfy-alert@ (../common/ntfy-alerts.nix) and
+    # ntfy-ok@ units use. The user password's plaintext lives in Bitwarden ("drake ntfy").
     "ntfy/env".restartUnits = [ "ntfy-sh.service" ];
   };
 
@@ -54,28 +54,16 @@
     ];
   };
 
-  # Attach to any unit via onFailure/onSuccess, e.g.
-  #   onFailure = [ "ntfy-alert@restic-backups-drake.service" ];
-  # The instance (%i) is the failed unit's name without the .service suffix.
-  systemd.services."ntfy-alert@" = {
-    description = "ntfy failure alert: %i";
-    serviceConfig = {
-      Type = "oneshot";
-      EnvironmentFile = config.sops.secrets."ntfy/env".path;
-    };
-    scriptArgs = "%i";
-    script = ''
-      status=$(${pkgs.systemd}/bin/systemctl status --no-pager -n 12 "$1" 2>&1 | tail -12 || true)
-      ${pkgs.curl}/bin/curl -fsS -m 15 \
-        -H "Authorization: Bearer $NTFY_TOKEN" \
-        -H "Title: $1 failed on drake" \
-        -H "Priority: high" \
-        -H "Tags: rotating_light" \
-        -d "$status" \
-        http://127.0.0.1:2586/alerts
-    '';
+  # Failure alerts for every unit come from ../common/ntfy-alerts.nix; drake
+  # publishes to its own server over loopback, so they never depend on the
+  # certificate or the firewall.
+  ntfyAlerts = {
+    url = "http://127.0.0.1:2586/alerts";
+    environmentFile = config.sops.secrets."ntfy/env".path;
   };
 
+  # Success pings stay opt-in per unit, e.g.
+  #   onSuccess = [ "ntfy-ok@restic-backups-drake.service" ];
   systemd.services."ntfy-ok@" = {
     description = "ntfy success ping: %i";
     serviceConfig = {
