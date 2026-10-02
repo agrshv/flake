@@ -1,4 +1,9 @@
-{ pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   me = import ./me.nix;
 in
@@ -76,6 +81,36 @@ in
         package = pkgs.adwaita-icon-theme;
       };
     };
+  };
+
+  # The greeter shows each user's AccountsService IconFile. With no icon
+  # registered, AccountsService falls back to ~/.face — which home.nix does
+  # provide, but /home/${me.user} is 0700, so the greeter (its own user) can't
+  # read it and draws the placeholder. Registering the same image through
+  # SetIconFile makes AccountsService copy it to the world-readable
+  # /var/lib/AccountsService/icons/${me.user} and record it in its own user
+  # file, which (unlike writing that file directly) leaves the other keys it
+  # keeps there alone. Re-run on every boot/switch so a new avatar hash in
+  # home.nix lands here too; it is a no-op when nothing changed.
+  systemd.services.accountsservice-avatar = {
+    description = "Register the user avatar with AccountsService";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "accounts-daemon.service" ];
+    requires = [ "accounts-daemon.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    path = [
+      pkgs.systemd
+      pkgs.jq
+    ];
+    script = ''
+      user=$(busctl --json=short call org.freedesktop.Accounts /org/freedesktop/Accounts \
+        org.freedesktop.Accounts FindUserByName s ${me.user} | jq -r '.data[0]')
+      busctl call org.freedesktop.Accounts "$user" org.freedesktop.Accounts.User \
+        SetIconFile s "${config.home-manager.users.${me.user}.home.file.".face".source}"
+    '';
   };
 
   hardware.graphics.enable = true;
