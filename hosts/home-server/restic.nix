@@ -7,6 +7,7 @@ let
     "wrtagweb.service" # /var/lib/wrtag/wrtag.db
     "paperless-scheduler.service" # /var/lib/paperless/celerybeat-schedule.db
     "jellyfin.service" # /var/lib/jellyfin/data/{jellyfin,library}.db
+    "kavita.service" # /var/lib/kavita/config/kavita.db
   ];
 in
 {
@@ -76,6 +77,7 @@ in
       "/var/lib/vaultwarden" # attachments, Sends, and rsa_key.pem (signs client JWTs)
       "/var/lib/wrtag" # import queue db
       "/var/lib/jellyfin" # users, watch history/resume state, library settings
+      "/var/lib/kavita" # books (library/), kavita.db: users, reading progress
 
       # Secrets / identity that can't be regenerated
       "/var/lib/authelia-main" # storage-encryption-key, jwt/session secrets, OIDC key, users.yml
@@ -94,6 +96,11 @@ in
       # Re-fetched from the metadata providers on the next library scan.
       "/var/lib/jellyfin/metadata"
       "/var/lib/jellyfin/log"
+      # Kavita's own nightly db backups duplicate kavita.db; the rest is scratch.
+      "/var/lib/kavita/config/backups"
+      "/var/lib/kavita/config/cache"
+      "/var/lib/kavita/config/logs"
+      "/var/lib/kavita/config/temp"
       "/var/lib/vaultwarden/icon_cache"
       "/var/lib/private/gitea-runner/home-server/.cache"
       # ROMs are re-obtainable and would dominate the repo; the artwork RomM

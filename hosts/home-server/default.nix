@@ -29,6 +29,7 @@ in
     ./forgejo-runner.nix
     ./nocodb.nix
     ./immich.nix
+    ./kavita.nix
     ./mealie.nix
     ./miniflux.nix
     ./monica.nix
