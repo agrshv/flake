@@ -6,6 +6,7 @@ let
     "navidrome.service" # /var/lib/navidrome/navidrome.db
     "wrtagweb.service" # /var/lib/wrtag/wrtag.db
     "paperless-scheduler.service" # /var/lib/paperless/celerybeat-schedule.db
+    "jellyfin.service" # /var/lib/jellyfin/data/{jellyfin,library}.db
   ];
 in
 {
@@ -74,6 +75,7 @@ in
       "/var/lib/monica" # uploads + APP_KEY (encrypts data in the DB dump)
       "/var/lib/vaultwarden" # attachments, Sends, and rsa_key.pem (signs client JWTs)
       "/var/lib/wrtag" # import queue db
+      "/var/lib/jellyfin" # users, watch history/resume state, library settings
 
       # Secrets / identity that can't be regenerated
       "/var/lib/authelia-main" # storage-encryption-key, jwt/session secrets, OIDC key, users.yml
@@ -89,6 +91,9 @@ in
       "/var/lib/immich/thumbs"
       "/var/lib/immich/encoded-video"
       "/var/lib/navidrome/cache"
+      # Re-fetched from the metadata providers on the next library scan.
+      "/var/lib/jellyfin/metadata"
+      "/var/lib/jellyfin/log"
       "/var/lib/vaultwarden/icon_cache"
       "/var/lib/private/gitea-runner/home-server/.cache"
       # ROMs are re-obtainable and would dominate the repo; the artwork RomM
