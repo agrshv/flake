@@ -12,6 +12,7 @@ in
     ./amneziawg.nix
     ./xray.nix
     ./ntfy.nix
+    ./mollysocket.nix
     ./postgresql.nix
     ./restic.nix
   ];

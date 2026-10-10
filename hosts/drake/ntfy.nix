@@ -34,6 +34,10 @@
       cert-file = "/run/credentials/ntfy-sh.service/cert.pem";
       # Not an open relay: only the declarative users above may read or write.
       auth-default-access = "deny-all";
+      # Except UnifiedPush: app servers (MollySocket, see ./mollysocket.nix)
+      # publish to the phone's random up<id> topics without credentials. They
+      # may only write; reading still takes the admin user.
+      auth-access = [ "*:up*:write-only" ];
       # Lets the iOS app get instant delivery from a self-hosted server.
       upstream-base-url = "https://ntfy.sh";
     };
