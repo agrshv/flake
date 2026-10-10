@@ -20,6 +20,7 @@
       "/var/backup/postgresql" # nightly pg_dumpall (see ./postgresql.nix)
       "/var/lib/stalwart" # the mail store — accounts, mail, certs, DKIM
       "/var/lib/netbird" # peer identity: keeps the overlay address across reinstalls
+      "/var/lib/private/mollysocket" # linked Molly connections (DynamicUser, so the real path)
       "/etc/ssh" # host keys — sops decrypts with them
       "/var/lib/nixos" # uid/gid maps
       "/root"
