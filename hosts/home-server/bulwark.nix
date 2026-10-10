@@ -12,7 +12,7 @@
   # mail.agrshv.dev — Bulwark probes its JMAP session resource
   # (https://mail.agrshv.dev/.well-known/jmap) and proxies the browser's
   # authenticated JMAP calls through to it. The container listens on 3000; we map
-  # it to loopback 3456 (host :3000/:3002 are already taken) and let nginx
+  # it to loopback 3456 (host :3000 is already taken) and let nginx
   # terminate TLS.
   #
   # SESSION_SECRET encrypts session cookies / stored credentials and MUST be

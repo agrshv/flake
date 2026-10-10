@@ -23,10 +23,8 @@ in
     inputs.nixos-hardware.nixosModules.common-cpu-amd
     inputs.nixos-hardware.nixosModules.common-pc-ssd
 
-    ./actual.nix
     ./authelia.nix
     ./bulwark.nix
-    ./dawarich.nix
     ./forgejo.nix
     ./forgejo-runner.nix
     ./nocodb.nix
@@ -39,7 +37,6 @@ in
     ./nginx.nix
     ./nixflix.nix
     ./paperless.nix
-    ./pinchflat.nix
     ./postgresql.nix
     ./readeck.nix
     ./redis.nix
