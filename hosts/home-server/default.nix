@@ -28,6 +28,7 @@ in
     ./forgejo.nix
     ./forgejo-runner.nix
     ./nocodb.nix
+    ./dufs.nix
     ./immich.nix
     ./kavita.nix
     ./mealie.nix

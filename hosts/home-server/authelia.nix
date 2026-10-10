@@ -133,6 +133,15 @@ in
               "user:d3spair"
             ];
           }
+          # dufs (./dufs.nix) has no login of its own and full write access to the
+          # whole book library — so only named users, like slskd.
+          {
+            domain = "files.agrshv.dev";
+            policy = "one_factor";
+            subject = [
+              "user:d3spair"
+            ];
+          }
           {
             domain = "*.agrshv.dev";
             policy = "one_factor";
