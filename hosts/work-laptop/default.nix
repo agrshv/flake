@@ -53,9 +53,6 @@ in
 
   hardware.i2c.enable = true;
 
-  hardware.graphics.extraPackages = [ pkgs.intel-media-driver ];
-  environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
-
   hardware.enableRedistributableFirmware = true;
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
