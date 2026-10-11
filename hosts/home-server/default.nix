@@ -23,6 +23,7 @@ in
     inputs.nixos-hardware.nixosModules.common-cpu-amd
     inputs.nixos-hardware.nixosModules.common-pc-ssd
 
+    ./arr.nix
     ./authelia.nix
     ./bulwark.nix
     ./forgejo.nix
@@ -30,6 +31,7 @@ in
     ./nocodb.nix
     ./dufs.nix
     ./immich.nix
+    ./jellyfin.nix
     ./kavita.nix
     ./mealie.nix
     ./miniflux.nix
@@ -37,14 +39,15 @@ in
     ./navidrome.nix
     ./netbird.nix
     ./nginx.nix
-    ./nixflix.nix
     ./paperless.nix
     ./postgresql.nix
+    ./qbittorrent.nix
     ./readeck.nix
     ./redis.nix
     ./restic.nix
     ./romm.nix
     ./searx.nix
+    ./seerr.nix
     ./slskd.nix
     ./vaultwarden.nix
     ./wrtag.nix

@@ -41,10 +41,6 @@
       url = "github:noctalia-dev/umbriel";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    nixflix = {
-      url = "github:kiriwalawren/nixflix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # k9s replacement (see programs/k9s.nix — both are installed for now).
     # Upstream pins nixos-26.05 too, so following our nixpkgs dedupes the lock
     # without moving sofka off the nixpkgs it is tested against; there is no
@@ -142,7 +138,6 @@
             inputs.disko.nixosModules.disko
             inputs.catppuccin.nixosModules.catppuccin
             inputs.sops-nix.nixosModules.sops
-            inputs.nixflix.nixosModules.default
             revision
             ./hosts/home-server
           ];

@@ -39,37 +39,43 @@ let
     "files.agrshv.dev"
     "webmail.agrshv.dev"
     "vault.agrshv.dev"
-    # nixflix-defined vhosts (see ./nixflix.nix) — the module builds these
-    # itself, so they're easy to forget here. The assertion below catches that.
     "jellyfin.agrshv.dev"
     "seerr.agrshv.dev"
-    "prowlarr.agrshv.dev"
-    "qbittorrent.agrshv.dev"
-    "radarr.agrshv.dev"
-    "sonarr.agrshv.dev"
-    "sonarr-anime.agrshv.dev"
   ];
 
-  # Vhosts deliberately outside the country gate.
+  # Stricter: LAN and NetBird only, no matter the country. For admin UIs that
+  # nobody outside the house needs (the media stack's plumbing).
+  internalGuard = ''
+    if ($geo_internal = block) { return 444; }
+  '';
+  internalHosts = [
+    "sonarr.agrshv.dev"
+    "radarr.agrshv.dev"
+    "prowlarr.agrshv.dev"
+    "bazarr.agrshv.dev"
+    "qbittorrent.agrshv.dev"
+  ];
+
+  # Vhosts deliberately outside both gates.
   exemptHosts = [
-    "_" # nixflix's catch-all default server: listens on :80 only, serves nothing
+    "_" # the catch-all default server below: listens on :80 only, serves nothing
   ];
 
   # guardedHosts can't be derived from config.services.nginx.virtualHosts —
   # the geo-guard definitions below would make the vhost attribute names depend
   # on themselves (infinite recursion). Reading it in an assertion is fine.
-  unguardedHosts = lib.subtractLists (guardedHosts ++ exemptHosts) (
+  unguardedHosts = lib.subtractLists (guardedHosts ++ internalHosts ++ exemptHosts) (
     lib.attrNames config.services.nginx.virtualHosts
   );
 in
 {
-  # Fail closed: any vhost defined anywhere in the config (including by modules
-  # like nixflix) must be in guardedHosts or exemptHosts, or the build aborts —
-  # a new service can't silently ship without the country gate.
+  # Fail closed: any vhost defined anywhere in the config (including by other
+  # modules) must be in guardedHosts, internalHosts or exemptHosts, or the
+  # build aborts — a new service can't silently ship without a gate.
   assertions = [
     {
       assertion = unguardedHosts == [ ];
-      message = "nginx vhosts missing the geo gate — add them to guardedHosts (or exemptHosts) in hosts/home-server/nginx.nix: ${lib.concatStringsSep ", " unguardedHosts}";
+      message = "nginx vhosts missing the geo gate — add them to guardedHosts (or internalHosts/exemptHosts) in hosts/home-server/nginx.nix: ${lib.concatStringsSep ", " unguardedHosts}";
     }
   ];
 
@@ -176,6 +182,12 @@ in
       '';
 
       virtualHosts = {
+        # Requests on :80 for a name we don't serve get dropped instead of
+        # landing on whichever vhost nginx happens to order first.
+        "_" = {
+          default = true;
+          locations."/".return = "444";
+        };
         "read.agrshv.dev" = {
           forceSSL = true;
           useACMEHost = "agrshv.dev";
@@ -210,7 +222,13 @@ in
 
     # Apply the country gate to every public vhost.
     {
-      virtualHosts = lib.genAttrs guardedHosts (_: { extraConfig = geoGuard; });
+      virtualHosts =
+        lib.genAttrs guardedHosts (_: {
+          extraConfig = geoGuard;
+        })
+        // lib.genAttrs internalHosts (_: {
+          extraConfig = internalGuard;
+        });
     }
   ];
 }

@@ -8,6 +8,7 @@ let
     "paperless-scheduler.service" # /var/lib/paperless/celerybeat-schedule.db
     "jellyfin.service" # /var/lib/jellyfin/data/{jellyfin,library}.db
     "kavita.service" # /var/lib/kavita/config/kavita.db
+    "bazarr.service" # /var/lib/bazarr/db/bazarr.db
   ];
 in
 {
@@ -78,6 +79,15 @@ in
       "/var/lib/wrtag" # import queue db
       "/var/lib/jellyfin" # users, watch history/resume state, library settings
       "/var/lib/kavita" # books (library/), kavita.db: users, reading progress
+      # Media stack config; Sonarr, Radarr, Prowlarr and Seerr keep their
+      # databases in Postgres (dumped above). The library itself in /data is not
+      # backed up — it is re-downloadable and would dwarf everything else.
+      "/var/lib/sonarr" # config.xml
+      "/var/lib/radarr" # config.xml
+      "/var/lib/private/prowlarr" # config.xml
+      "/var/lib/private/seerr" # settings.json: Jellyfin/Sonarr/Radarr connections
+      "/var/lib/bazarr" # bazarr.db, provider credentials
+      "/var/lib/qBittorrent" # torrent resume data
 
       # Secrets / identity that can't be regenerated
       "/var/lib/authelia-main" # storage-encryption-key, jwt/session secrets, OIDC key, users.yml
@@ -101,6 +111,12 @@ in
       "/var/lib/kavita/config/cache"
       "/var/lib/kavita/config/logs"
       "/var/lib/kavita/config/temp"
+      "/var/lib/sonarr/logs"
+      "/var/lib/radarr/logs"
+      "/var/lib/private/prowlarr/logs"
+      "/var/lib/private/prowlarr/Definitions" # re-fetched indexer definitions
+      "/var/lib/private/seerr/logs"
+      "/var/lib/bazarr/log"
       "/var/lib/vaultwarden/icon_cache"
       "/var/lib/private/gitea-runner/home-server/.cache"
       # ROMs are re-obtainable and would dominate the repo; the artwork RomM
