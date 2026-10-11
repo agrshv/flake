@@ -25,9 +25,12 @@
       ProtectKernelTunables = true;
       ProtectKernelModules = true;
       ProtectControlGroups = true;
+      # AF_NETLINK: dufs enumerates interface addresses at startup to print
+      # its listen URLs, and exits if it can't.
       RestrictAddressFamilies = [
         "AF_INET"
         "AF_INET6"
+        "AF_NETLINK"
       ];
       RestrictNamespaces = true;
       LockPersonality = true;
