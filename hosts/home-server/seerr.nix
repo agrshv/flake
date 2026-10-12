@@ -37,13 +37,6 @@
   services.nginx.virtualHosts."seerr.agrshv.dev" = {
     forceSSL = true;
     useACMEHost = "agrshv.dev";
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:${toString config.services.seerr.port}";
-      extraConfig = ''
-        proxy_set_header Accept-Encoding "";
-        sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/overseerr/catppuccin-mocha.css"></head>';
-        sub_filter_once on;
-      '';
-    };
+    locations."/".proxyPass = "http://127.0.0.1:${toString config.services.seerr.port}";
   };
 }

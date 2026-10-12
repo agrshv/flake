@@ -73,11 +73,6 @@ in
     environmentFile = config.sops.secrets."ntfy/env".path;
   };
 
-  catppuccin = {
-    enable = true;
-    cache.enable = true;
-  };
-
   nixpkgs.config.allowUnfree = true;
 
   # Scheduled `nixos-rebuild switch --flake` against the remote repo, so the

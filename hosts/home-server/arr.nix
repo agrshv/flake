@@ -21,20 +21,12 @@ let
     log.dbEnabled = false;
   };
 
-  # Catppuccin CSS from theme-park.dev, injected into the web UI.
-  themePark = app: ''
-    proxy_set_header Accept-Encoding "";
-    sub_filter '</body>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/${app}/catppuccin-mocha.css"></body>';
-    sub_filter_once on;
-  '';
-
-  vhost = app: port: {
+  vhost = port: {
     forceSSL = true;
     useACMEHost = "agrshv.dev";
     locations."/" = {
       proxyPass = "http://127.0.0.1:${toString port}";
       proxyWebsockets = true;
-      extraConfig = themePark app;
     };
   };
 in
@@ -231,9 +223,9 @@ in
 
   # LAN/NetBird only: these are in internalHosts in ./nginx.nix.
   services.nginx.virtualHosts = {
-    "sonarr.agrshv.dev" = vhost "sonarr" config.services.sonarr.settings.server.port;
-    "radarr.agrshv.dev" = vhost "radarr" config.services.radarr.settings.server.port;
-    "prowlarr.agrshv.dev" = vhost "prowlarr" config.services.prowlarr.settings.server.port;
-    "bazarr.agrshv.dev" = vhost "bazarr" config.services.bazarr.listenPort;
+    "sonarr.agrshv.dev" = vhost config.services.sonarr.settings.server.port;
+    "radarr.agrshv.dev" = vhost config.services.radarr.settings.server.port;
+    "prowlarr.agrshv.dev" = vhost config.services.prowlarr.settings.server.port;
+    "bazarr.agrshv.dev" = vhost config.services.bazarr.listenPort;
   };
 }

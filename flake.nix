@@ -136,7 +136,6 @@
           inherit system specialArgs;
           modules = [
             inputs.disko.nixosModules.disko
-            inputs.catppuccin.nixosModules.catppuccin
             inputs.sops-nix.nixosModules.sops
             revision
             ./hosts/home-server
