@@ -36,7 +36,7 @@ in
       };
       Preferences.WebUI = {
         Address = "127.0.0.1";
-        Username = "d3spair";
+        Username = "agrshv";
         # Substituted at start-up from sops by setPassword above; the store
         # only ever sees this placeholder.
         Password_PBKDF2 = "@ByteArray(${passwordPlaceholder})";
