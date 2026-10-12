@@ -72,6 +72,9 @@ in
       # community repo (a git clone under ~/.local/state/noctalia/plugins), so
       # it is not pinned by the lockfile.
       plugins.enabled = [ "icefish/phone-connect" ];
+      plugin_settings = {
+        "icefish/phone-connect".battery_display = "percent";
+      };
       brightness.enable_ddcutil = true;
       idle = {
         behavior_order = [
