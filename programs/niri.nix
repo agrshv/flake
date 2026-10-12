@@ -57,10 +57,9 @@ in
 
     layout {
         gaps 8
+        // Colours come from noctalia.kdl, included at the end.
         focus-ring {
             width 2
-            active-color "#b4befe"
-            inactive-color "#6c7086"
         }
     }
 
@@ -153,5 +152,12 @@ in
       // Allows notification actions and window activation from Noctalia.
       honor-xdg-activation-with-invalid-serial
     }
+
+    // Focus ring, border, tab indicator and window-switcher highlight in the
+    // noctalia palette, written by its `niri` template (programs/noctalia.nix).
+    // Last, so it wins over anything above. optional: on a fresh login niri
+    // starts before noctalia has rendered the file. The template's apply hook
+    // sees this line and leaves the read-only config alone.
+    include optional=true "noctalia.kdl"
   '';
 }

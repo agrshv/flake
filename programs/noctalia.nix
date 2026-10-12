@@ -219,10 +219,18 @@ in
           # gtk3/gtk4 share one apply.sh that adds an @import of the generated
           # noctalia.css to each gtk.css. home-manager owns settings.ini in
           # those directories but not gtk.css, so the two do not collide.
+          #
+          # niri: renders ~/.config/niri/noctalia.kdl, included (optional=true)
+          # from programs/niri.nix. umbriel: renders noctalia.toml, which
+          # programs/umbriel.nix already includes. btop: writes a noctalia theme
+          # and selects it in btop.conf (created by btop on first run).
           builtin_ids = [
+            "btop"
             "ghostty"
             "gtk3"
             "gtk4"
+            "niri"
+            "umbriel"
           ];
           enable_community_templates = true;
           # zed: writes ~/.config/zed/themes/noctalia.json with four variants
@@ -232,10 +240,20 @@ in
           # noctalia-material.theme.css. telegram: drops a .tdesktop-theme into
           # ~/.config/telegram-desktop/themes, which has to be picked once from
           # Settings → Chat Settings → Themes, as the client keeps that choice
-          # in its own state. None of the three has an apply hook, so read-only
+          # in its own state. None of these three has an apply hook, so read-only
           # settings files home-manager owns are untouched.
+          #
+          # claude-code: ~/.claude/themes/noctalia.json, picked once via /theme.
+          # obsidian: a noctalia.css snippet in each vault, switched on in the
+          # vault's appearance.json. brave-origin: an unpacked theme extension in
+          # ~/.local/share/noctalia/brave-origin-theme — load it once from
+          # brave://extensions (developer mode → Load unpacked); after palette
+          # changes, Update there or restart Brave.
           community_ids = [
+            "brave-origin"
+            "claude-code"
             "discord"
+            "obsidian"
             "telegram"
             "zed"
           ];
