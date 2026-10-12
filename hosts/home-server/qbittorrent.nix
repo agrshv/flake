@@ -37,7 +37,14 @@ in
     enable = true;
     group = "media";
     webuiPort = 8282;
+    # Incoming peer connections, TCP and UDP (uTP). Forwarded from the
+    # MikroTik to 192.168.88.23 by a fixed dst-nat rule; without it peers can't
+    # connect in and less popular torrents crawl. Unset, qBittorrent picks a
+    # random port on every start.
+    torrentingPort = 50413;
     serverConfig = {
+      # The forward is a static router rule, so no UPnP/NAT-PMP mapping.
+      Network.PortForwardingEnabled = false;
       # Sonarr/Radarr set a category per download; with automatic torrent
       # management each lands in /data/torrents/<category>, next to the
       # library it gets hardlinked into (./arr.nix).
@@ -83,6 +90,12 @@ in
     # qBittorrent also rewrites its own config (with the password hash) under
     # this umask, so nothing for other users.
     UMask = "0007";
+  };
+
+  # Not openFirewall: that would also open the WebUI port, and only for TCP.
+  networking.firewall = {
+    allowedTCPPorts = [ config.services.qbittorrent.torrentingPort ];
+    allowedUDPPorts = [ config.services.qbittorrent.torrentingPort ];
   };
 
   # LAN/NetBird only: in internalHosts in ./nginx.nix.
