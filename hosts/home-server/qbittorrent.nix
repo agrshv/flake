@@ -44,6 +44,24 @@ in
       BitTorrent.Session = {
         DefaultSavePath = "/data/torrents";
         DisableAutoTMMByDefault = false;
+
+        # Stop seeding at ratio 2 or after 14 days, whichever comes first.
+        # Sonarr/Radarr ("Remove Completed" on their download client) then drop
+        # the stopped torrent and its /data/torrents copy; the library hardlink
+        # stays. Without this, replaced or deleted episodes stay on disk via
+        # the torrent's link. Nyaa/1337x are public; Milkie has no seeding rule.
+        GlobalMaxRatio = "2";
+        GlobalMaxSeedingMinutes = 14 * 24 * 60;
+        ShareLimitAction = "Stop";
+
+        # The defaults (3 down, 3 up, 5 total) let a couple of seeding torrents
+        # starve downloads, so a season trickled in three at a time. Stalled
+        # torrents don't hold a slot.
+        QueueingSystemEnabled = true;
+        MaxActiveDownloads = 6;
+        MaxActiveUploads = 10;
+        MaxActiveTorrents = 15;
+        IgnoreSlowTorrentsForQueueing = true;
       };
       Preferences.WebUI = {
         Address = "127.0.0.1";
