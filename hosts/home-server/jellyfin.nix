@@ -49,8 +49,13 @@
     locations."/" = {
       proxyPass = "http://127.0.0.1:8096";
       proxyWebsockets = true;
+      # Not `proxy_buffering off`, the usual Jellyfin advice: unbuffered, nginx
+      # relays the upstream in small chunks and over HTTPS bodies stalled at
+      # ~190 KB/s (a 485 KB file took 2.5 s; Jellyfin direct 0.01 s), which
+      # starved video playback. Buffered, but never spooled to disk — large
+      # streams still flow straight through the in-memory buffers.
       extraConfig = ''
-        proxy_buffering off;
+        proxy_max_temp_file_size 0;
       '';
     };
   };
