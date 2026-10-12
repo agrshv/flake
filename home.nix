@@ -45,8 +45,8 @@ in
 
     pointerCursor = {
       enable = true;
-      package = pkgs.bibata-cursors;
-      name = "Bibata-Modern-Classic";
+      package = pkgs.phinger-cursors;
+      name = "phinger-cursors-dark";
       size = 32;
       gtk.enable = true;
       x11.enable = true;
