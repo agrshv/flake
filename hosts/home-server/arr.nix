@@ -156,7 +156,13 @@ in
     in
     {
       sonarr = afterPostgres // {
-        serviceConfig.UMask = lib.mkForce "0002";
+        serviceConfig = {
+          UMask = lib.mkForce "0002";
+          # Upstream only creates the data dir when it's left at the default
+          # (/var/lib/sonarr/.config/NzbDrone); unlike radarr it has no tmpfiles
+          # rule for a custom one.
+          StateDirectory = "sonarr";
+        };
       };
       radarr = afterPostgres // {
         serviceConfig.UMask = lib.mkForce "0002";
