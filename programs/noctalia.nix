@@ -55,14 +55,12 @@ in
           "media"
           "tray"
           "notifications"
-          "clipboard"
           "network"
           "bluetooth"
           "volume"
           "brightness"
           "icefish/phone-connect:bar"
           "battery"
-          "control-center"
           "session"
         ];
       };
@@ -273,6 +271,15 @@ in
       widget = {
         media.hide_when_no_media = true;
         tray.hidden = [ "nm-applet" ];
+        battery.hide_when_full = true;
+        bluetooth = {
+          show_label = true;
+          hide_when_adapter_off = true;
+        };
+        network = {
+          show_label = false;
+          vpn_status = "both";
+        };
       };
       calendar = {
         enabled = true;
