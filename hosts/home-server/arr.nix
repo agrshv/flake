@@ -202,9 +202,22 @@ in
         base_url = "http://127.0.0.1:${toString config.services.radarr.settings.server.port}";
         api_key._secret = config.sops.secrets."nixflix/radarr/api_key".path;
         delete_old_custom_formats = true;
-        quality_definition.type = "sqp-streaming";
+        # The standard size table, which HD Bluray + WEB is meant for. The SQP
+        # one rejected most encodes of older films outright (1080p Bluray under
+        # 3.1 GB), and there is only one table per instance.
+        quality_definition.type = "movie";
         quality_profiles = [
           {
+            # HD Bluray + WEB: TRaSH's general-purpose 1080p profile, minimum
+            # score 0, so decent public-tracker releases get through while LQ
+            # groups and junk are still scored out. The default in Radarr/Seerr.
+            trash_id = "d1d67249d3890e49bc12e275d989a7e9";
+            reset_unmatched_scores.enabled = true;
+          }
+          {
+            # [SQP] SQP-1 (1080p). Kept for titles worth waiting on a premium
+            # encode; on public trackers older films often have no release
+            # that passes, and it grabbed a dead one for The Breadwinner.
             trash_id = "0896c29d74de619df168d23b98104b22";
             min_format_score = 180;
             reset_unmatched_scores.enabled = true;
