@@ -15,7 +15,11 @@ in
   programs.umbriel = {
     enable = true;
     settings = {
-      include.files = [ "noctalia.toml" ];
+      # Under `optional`, which is what noctalia's umbriel template expects:
+      # anywhere else its apply hook rewrites config.toml, and this file is a
+      # read-only home-manager link. Optional also lets umbriel start before
+      # noctalia has rendered the file.
+      include.optional.files = [ "noctalia.toml" ];
       input = {
         touchpad = {
           tap = true;

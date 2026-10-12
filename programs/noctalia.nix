@@ -28,9 +28,13 @@ in
 
   # The phone-connect plugin (plugins.enabled below) shells out to gdbus for
   # KDE Connect's DBus calls and mounts device filesystems over sshfs.
+  # noctalia runs template hooks with the session PATH, so they find these
+  # too. The brave-origin template (community_ids below) installs its theme
+  # with python3 and renders the theme images with Pillow.
   home.packages = [
     pkgs.glib # gdbus
     pkgs.sshfs
+    (pkgs.python3.withPackages (ps: [ ps.pillow ]))
   ];
 
   home.file."Media/Pictures/Wallpapers/${defaultWallpaper}".source = defaultWallpaperFile;
