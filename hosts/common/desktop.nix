@@ -41,6 +41,12 @@ in
     ];
   };
 
+  # Root shell in the initrd when boot fails before the disk is unlocked
+  # (bad LUKS setup, broken TPM enrolment, ...). Behind the same bootstrap
+  # password as above, which can be looked up in Bitwarden from another
+  # device; `true` would hand that shell to anyone at the keyboard.
+  boot.initrd.systemd.emergencyAccess = config.users.users.${me.user}.initialHashedPassword;
+
   # Everything shared with the headless hosts is in ../common/nixos.nix; only
   # the desktop-specific bits stay here.
   nix = {

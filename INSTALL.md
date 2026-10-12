@@ -187,14 +187,15 @@ shred -u /run/user/1000/personal_key
 git clone git@github.com:agrshv/flake.git ~/Documents/flake
 nh os switch                                 # applies sops secrets now that the key exists
 
-# 4. TPM2 unlock as a second LUKS slot. Must run from the installed system, not
-#    the ISO: PCR 7 (Secure Boot state) differs between the two.
-sudo systemd-cryptenroll /dev/disk/by-partlabel/disk-main-luks --tpm2-device=auto --tpm2-pcrs=0+7
+# 4. TPM2 + PIN unlock as an extra LUKS slot, after Secure Boot is enabled with
+#    the own keys (PCR 7 is the Secure Boot state; enrolling before that binds
+#    to the wrong state). Must run from the installed system, not the ISO.
+sudo systemd-cryptenroll /dev/disk/by-partlabel/disk-main-luks --tpm2-device=auto --tpm2-pcrs=7 --tpm2-with-pin=yes
 ```
 
-If the passphrase prompt still appears on the next boot, add
-`crypttabExtraOpts = [ "tpm2-device=auto" ];` to
-`boot.initrd.luks.devices.cryptroot` in the host's `default.nix` and switch.
+The host already has `crypttabExtraOpts = [ "tpm2-device=auto" ];`, so the
+next boot asks for the PIN. Keep the passphrase (or a recovery key from
+`systemd-cryptenroll --recovery-key`) as the fallback.
 
 Browser: enable Bitwarden's browser integration in the app (it installs its own
 native-messaging manifest for Brave).

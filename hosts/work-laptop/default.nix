@@ -30,12 +30,25 @@ in
       luks.devices."cryptroot" = {
         device = "/dev/disk/by-partlabel/disk-main-luks";
         allowDiscards = true;
+        # Try the TPM first; with nothing enrolled this falls straight through
+        # to the passphrase. Enrolled with a PIN, bound to PCR 7 (Secure Boot
+        # state, own keys):
+        #   systemd-cryptenroll /dev/disk/by-partlabel/disk-main-luks \
+        #     --tpm2-device=auto --tpm2-pcrs=7 --tpm2-with-pin=yes
+        # A firmware or dbx update changes PCR 7: boot then asks for the
+        # passphrase once — re-enroll with --wipe-slot=tpm2 added. Always keep
+        # a typed fallback slot (passphrase or recovery key): it is the way in
+        # after that, or with a dead TPM.
+        crypttabExtraOpts = [ "tpm2-device=auto" ];
       };
     };
     loader = {
       efi.canTouchEfiVariables = true;
       limine = {
         enable = true;
+        # Each generation keeps its own kernel and initrd on the 1 GiB ESP;
+        # GC normally prunes them, this caps it if GC ever stops running.
+        maxGenerations = 10;
         secureBoot = {
           enable = true;
           # Without this the very first bootloader install aborts: signing needs
@@ -52,6 +65,11 @@ in
   };
 
   hardware.i2c.enable = true;
+
+  # Firmware updates from LVFS (`fwupdmgr refresh && fwupdmgr update`): little
+  # from ASUS itself, but the NVMe drive and UEFI revocation lists (dbx) land
+  # there.
+  services.fwupd.enable = true;
 
   hardware.enableRedistributableFirmware = true;
   hardware.bluetooth.enable = true;

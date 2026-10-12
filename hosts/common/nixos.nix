@@ -44,7 +44,13 @@
   services.openssh = {
     enable = true;
     startWhenNeeded = true;
-    settings.PasswordAuthentication = false;
+    settings = {
+      # Both, not just the first: with only PasswordAuthentication off, sshd
+      # still offers keyboard-interactive, which PAM answers with the account
+      # password — password logins would keep working.
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
   };
 
   # Show asterisks while typing the sudo password.
