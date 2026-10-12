@@ -1,10 +1,4 @@
 {
-  # Themed by noctalia instead: its community `discord` template (enabled in
-  # programs/noctalia.nix) writes ~/.config/vesktop/themes/noctalia.theme.css.
-  # The catppuccin module did the same job by pinning enabledThemes at a file
-  # that @imported the theme from catppuccin.github.io at runtime.
-  catppuccin.vesktop.enable = false;
-
   programs.vesktop = {
     enable = true;
     settings = {

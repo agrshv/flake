@@ -13,7 +13,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # millennium.url = "github:SteamClientHomebrew/Millennium/01a7f1f9?dir=packages/nix";
-    catppuccin.url = "github:catppuccin/nix/release-26.05";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -95,7 +94,6 @@
           modules = [
             inputs.disko.nixosModules.disko
             inputs.home-manager.nixosModules.home-manager
-            inputs.catppuccin.nixosModules.catppuccin
             inputs.sops-nix.nixosModules.sops
             inputs.work.nixosModules.default
             {
@@ -113,7 +111,6 @@
                 ];
                 users.${me.user}.imports = [
                   ./home.nix
-                  inputs.catppuccin.homeModules.catppuccin
                   inputs.noctalia.homeModules.default
                   inputs.umbriel.homeModules.default
                   inputs.work.homeModules.default

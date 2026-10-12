@@ -1,10 +1,6 @@
 { pkgs, pkgs-unstable, ... }:
 
 {
-  # Themed by noctalia instead (the `ghostty` builtin template in
-  # programs/noctalia.nix), so the terminal follows the shell's palette.
-  catppuccin.ghostty.enable = false;
-
   programs.ghostty = {
     enable = true;
     package = pkgs-unstable.ghostty;

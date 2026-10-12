@@ -5,10 +5,6 @@
   ...
 }:
 {
-  # Themed by noctalia instead: its community `zed` template (enabled in
-  # programs/noctalia.nix) renders ~/.config/zed/themes/noctalia.json.
-  catppuccin.zed.enable = false;
-
   home.sessionVariables.EDITOR = "${pkgs-unstable.zed-editor}/bin/zeditor -w";
 
   programs.zed-editor = {

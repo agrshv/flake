@@ -45,6 +45,9 @@ in
 
     pointerCursor = {
       enable = true;
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Classic";
+      size = 32;
       gtk.enable = true;
       x11.enable = true;
     };
@@ -70,13 +73,6 @@ in
       # Kubernetes TUI in the k9s mould — see the sofka input in flake.nix.
       inputs.sofka.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
-  };
-
-  catppuccin = {
-    enable = true;
-    cursors.enable = true;
-    cache.enable = true;
-    flavor = "mocha";
   };
 
   # Light/dark is noctalia's call (theme.mode in programs/noctalia.nix): it

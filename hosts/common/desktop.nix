@@ -14,11 +14,6 @@ in
   ];
   sops.age.keyFile = "/home/${me.user}/.config/sops/age/keys.txt";
 
-  catppuccin = {
-    enable = true;
-    cache.enable = true;
-  };
-
   nixpkgs.config = {
     allowUnfree = true;
     # bitwarden-desktop (programs/bitwarden.nix) is pinned upstream to an Electron

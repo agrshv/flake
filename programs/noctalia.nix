@@ -206,7 +206,7 @@ in
         mode = "light";
         source = "builtin";
         builtin = "Gruvbox";
-        # Apps whose colours noctalia owns instead of the catppuccin modules.
+        # Apps whose colours noctalia owns.
         # Both lists are opt-in: empty `builtin_ids`/`community_ids` apply
         # nothing, so only what is named here is ever written.
         #
