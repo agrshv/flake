@@ -15,6 +15,7 @@ in
     ./mollysocket.nix
     ./postgresql.nix
     ./restic.nix
+    ./jobscout
   ];
 
   # Same scheme as home-server: the host decrypts with its own SSH host key
