@@ -168,10 +168,12 @@
 
       packages.${system}.installer-iso = self.nixosConfigurations.installer.config.system.build.isoImage;
 
-      # `nix fmt` / `nix fmt -- --check`, in the style every .nix file here is
-      # already written in. aarch64 is covered so it also works on drake.
+      # `nix fmt` / `nix fmt -- --ci`, in the style every .nix file here is
+      # already written in. nixfmt-tree is nixfmt wrapped in treefmt, so a bare
+      # `nix fmt` walks the whole tree (plain nixfmt would read stdin). aarch64
+      # is covered so it also works on drake.
       formatter = nixpkgs.lib.genAttrs [ system "aarch64-linux" ] (
-        sys: nixpkgs.legacyPackages.${sys}.nixfmt
+        sys: nixpkgs.legacyPackages.${sys}.nixfmt-tree
       );
     };
 }
