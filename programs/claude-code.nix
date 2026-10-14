@@ -29,7 +29,7 @@
       - Kubernetes / Flux: read-only (`get`, `describe`, `logs`, `flux get`) unless
         told otherwise. Never `flux reconcile`, `kubectl apply/delete/edit` on your own.
       - Work GitLab is self-hosted at gitlab.frhc.one; use `glab` for MRs, pipelines
-        and issues.
+        and issues. Open MRs with the `gitlab-mr` skill: every MR links its Asana task.
     '';
 
     # Language servers give Claude go-to-definition and diagnostics instead of
@@ -115,6 +115,64 @@
       `nix shell nixpkgs#<pkg> -c <cmd>`.
     '';
 
+    skills.gitlab-mr = ''
+      ---
+      name: gitlab-mr
+      description: Open a merge request on the work GitLab (gitlab.frhc.one) with the Asana task linked in its description. Use whenever asked to create, open or submit an MR / merge request / PR in a work repo.
+      ---
+
+      # GitLab merge request with an Asana link
+
+      ## 1. Find the Asana task. Never invent or guess a URL.
+
+      In order, stop at the first hit:
+      1. A task URL or ID the user gave in this conversation.
+      2. An `app.asana.com` URL in the branch's commit messages
+         (`git log <default>..HEAD`), or in an earlier MR from this branch.
+      3. A task ID in the branch name (e.g. `DEVOPSSUP-6951`): look it up with
+         the Asana tools if they're available.
+      4. If the Asana tools are available, search the tasks assigned to me for
+         one matching the change, and ask me to confirm the match.
+      5. Otherwise ask me for it. If I say there is none, open the MR without one.
+
+      Use the task's permalink, in the form
+      `https://app.asana.com/1/1208507351529750/project/<project>/task/<task>`.
+
+      ## 2. Write the MR
+
+      - Title: Conventional Commits, `type(scope): lowercase summary`, same as
+        the commit title when the branch has a single commit.
+      - Description: plain prose, wrapped at ~72 columns, explaining why the
+        change is needed and anything a reviewer can't see in the diff.
+        No headings, no "Summary"/"Test plan" boilerplate. Skip the prose
+        entirely for trivial changes (fmt, version bumps).
+      - The Asana URL goes alone on the **last line** of the description, after
+        a blank line. If there's no prose, the URL is the whole description.
+
+      ## 3. Create it
+
+      Commit only what I asked for, push with `git push -u origin HEAD`, then:
+
+      ```sh
+      glab mr create \
+        --title "<title>" \
+        --description "<description>" \
+        --target-branch <default branch> \
+        --assignee anton.groshev \
+        --squash-before-merge=true \
+        --remove-source-branch=true \
+        --yes
+      ```
+
+      The default branch is `git symbolic-ref --short refs/remotes/origin/HEAD`
+      minus `origin/`; if that ref is missing, run `git remote set-head origin --auto`
+      first.
+
+      No reviewers, labels or `--draft` unless I ask. If an MR for the branch
+      already exists (`glab mr view`), update it with `glab mr update` instead
+      of opening a second one. Finish by printing the MR URL.
+    '';
+
     # Live Terraform Registry docs (providers, modules, resource schemas), so
     # it stops guessing argument names from training data. The official
     # marketplace's terraform plugin does the same through docker; this is the
@@ -154,9 +212,18 @@
       includeCoAuthoredBy = false;
 
       # `/plugin install` can't record these itself (settings.json is
-      # read-only), so they're enabled here. Both come from the official
-      # marketplace, which Claude Code registers on its own.
+      # read-only), so they're enabled here. Most come from the official
+      # marketplace, which Claude Code registers on its own; any other
+      # marketplace has to be declared too, since `/plugin marketplace add`
+      # can't record it either.
+      extraKnownMarketplaces.cloudflare.source = {
+        source = "github";
+        repo = "cloudflare/skills";
+      };
       enabledPlugins = {
+        # Cloudflare skills (Workers, Wrangler, etc.) plus the Cloudflare API
+        # MCP server, which asks for OAuth on first use.
+        "cloudflare@cloudflare" = true;
         # /revise-claude-md etc.: audit CLAUDE.md files and fold session
         # learnings back into them.
         "claude-md-management@claude-plugins-official" = true;
