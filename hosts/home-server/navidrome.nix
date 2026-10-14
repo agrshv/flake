@@ -9,7 +9,7 @@
       LastFM.Enabled = false;
     };
   };
-  
+
   services.nginx = {
     virtualHosts = {
       "music.agrshv.dev" = {

@@ -27,16 +27,15 @@ let
   ];
 in
 {
-  sops.secrets =
-    {
-      "amneziawg/private-key" = { };
-    }
-    // builtins.listToAttrs (
-      map (p: {
-        name = "amneziawg/psk-${p.name}";
-        value = { };
-      }) peers
-    );
+  sops.secrets = {
+    "amneziawg/private-key" = { };
+  }
+  // builtins.listToAttrs (
+    map (p: {
+      name = "amneziawg/psk-${p.name}";
+      value = { };
+    }) peers
+  );
 
   networking.wg-quick.interfaces.awg0 = {
     type = "amneziawg";
