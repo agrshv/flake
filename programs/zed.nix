@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   pkgs-unstable,
@@ -84,7 +85,9 @@
         # can't stick, because Zed persists that choice by rewriting
         # ~/.config/zed/settings.json, which mutableUserSettings = false makes
         # a read-only /nix/store symlink.
-        env.CLAUDE_CODE_EXECUTABLE = "${lib.getExe pkgs-unstable.claude-code}";
+        # The home-manager wrapper, not the bare package, so Zed threads get
+        # the same LSP and MCP servers as the CLI (programs/claude-code.nix).
+        env.CLAUDE_CODE_EXECUTABLE = "${lib.getExe config.programs.claude-code.finalPackage}";
       };
       ui_font_size = 16;
       buffer_font_size = 15;
