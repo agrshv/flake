@@ -49,9 +49,23 @@ in
     environmentVariables = {
       OLLAMA_NUM_PARALLEL = "1";
       OLLAMA_MAX_LOADED_MODELS = "1";
+      # ollama 0.32 runs llama-server, whose host-RAM prompt cache defaults to
+      # 8192 MiB and keeps ~200 MiB per scored ad. It hit MemoryMax and was
+      # OOM-killed ~25 ads into the 2026-10-15 and 2026-10-16 runs. Every ad is
+      # a new prompt sharing only the ~250-token profile, so the cache buys
+      # nothing here: off.
+      LLAMA_ARG_CACHE_RAM = "0";
     };
   };
-  systemd.services.ollama.serviceConfig.MemoryMax = "5G";
+  systemd.services.ollama.serviceConfig = {
+    MemoryMax = "5G";
+    # The cap held RAM but not swap: the killed runner had 3.9G swapped out.
+    MemorySwapMax = "1G";
+    # A crash mid-run otherwise leaves every remaining ad unscored until the
+    # next night (52 failed on 2026-10-16).
+    Restart = "on-failure";
+    RestartSec = "30s";
+  };
 
   # Nightly scrape → dedupe → hard-filter regexes → LLM score → ntfy "jobs".
   # A failed run alerts through ../common/ntfy-alerts.nix like any unit;
