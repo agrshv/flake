@@ -54,6 +54,7 @@
       "toml"
       "rego"
       "sql"
+      "make"
     ];
     userSettings = {
       # NixOS can't run Zed's auto-downloaded generic-linux node binary
