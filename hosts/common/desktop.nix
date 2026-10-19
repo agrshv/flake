@@ -169,6 +169,9 @@ in
     };
   };
 
+  # rootless k3d/kind: k3s needs cpuset delegated to the user session
+  systemd.services."user@".serviceConfig.Delegate = "cpu cpuset io memory pids";
+
   services.udisks2.enable = true;
 
   services.gnome = {
