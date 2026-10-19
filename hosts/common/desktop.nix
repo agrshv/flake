@@ -51,9 +51,13 @@ in
   # the desktop-specific bits stay here.
   nix = {
     settings = {
-      extra-substituters = [ "https://noctalia.cachix.org" ];
+      extra-substituters = [
+        "https://noctalia.cachix.org"
+        "https://nkl-sofka.cachix.org"
+      ];
       extra-trusted-public-keys = [
         "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+        "nkl-sofka.cachix.org-1:hLg9frFNJynrxe7SSBb/p6pbawlpZmG10bw+wLsTufw="
       ];
     };
     registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
