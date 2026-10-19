@@ -18,7 +18,6 @@ in
     ./programs/eza.nix
     ./programs/ghostty.nix
     ./programs/git.nix
-    ./programs/k9s.nix
     ./programs/nh.nix
     ./programs/niri.nix
     ./programs/noctalia.nix
@@ -70,7 +69,7 @@ in
       vim
       wl-clipboard
       pkgs-unstable.fluxcd
-      # Kubernetes TUI in the k9s mould — see the sofka input in flake.nix.
+      # Kubernetes TUI — see the sofka input in flake.nix.
       inputs.sofka.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
   };
