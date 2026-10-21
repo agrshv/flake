@@ -2,6 +2,13 @@
 {
   # security.lockKernelModules = true;
 
+  # Distrust these roots system-wide. Names must match the certificate labels
+  # in the cacert bundle exactly; a typo is silently ignored.
+  security.pki.caCertificateBlacklist = [
+    "Comodo AAA Services root"
+    "emSign ECC Root CA - G3"
+  ];
+
   # Shared by every host; per-host additions (extra substituters, the flake
   # registry pin) live next to the host that needs them. NB: @wheel is trusted
   # rather than just root, which is what lets `nixos-rebuild --target-host`
