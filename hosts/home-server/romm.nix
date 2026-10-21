@@ -1,36 +1,13 @@
-{
-  inputs,
-  pkgs-unstable,
-  config,
-  ...
-}:
+{ config, ... }:
 {
   # RomM — self-hosted ROM library manager: scans a ROM collection, scrapes
   # metadata/artwork (IGDB, ScreenScraper, MobyGames), syncs saves and save
   # states, and plays games in the browser through EmulatorJS. Served at
   # roms.agrshv.dev.
   #
-  # nixos-26.05 ships neither the `romm` package nor a services.romm module, so
-  # both come from nixpkgs-unstable:
-  #
-  #   * the module file is imported straight out of the input below, and
-  #   * the two packages it hardcodes by name — `romm` itself and `rahasher`,
-  #     which it puts on the units' PATH to compute Redump/No-Intro checksums —
-  #     are grafted into pkgs by the overlay. Neither attribute exists in
-  #     stable, so the overlay only adds; nothing else in the closure changes.
-  #
-  # `rahasher` has to go through pkgs (the module reads `pkgs.rahasher`
-  # directly, with no option to override), and once the overlay is there the
-  # module's own `package` default (pkgs.romm) resolves too — hence no explicit
-  # services.romm.package below. Drop the import and the overlay when a stable
-  # nixpkgs picks the module up.
-  imports = [
-    "${inputs.nixpkgs-unstable}/nixos/modules/services/web-apps/romm.nix"
-  ];
-
-  nixpkgs.overlays = [
-    (_: _: { inherit (pkgs-unstable) romm rahasher; })
-  ];
+  # The module and the `romm` / `rahasher` packages come from stable
+  # nixos-26.05 (backported in October 2026); they were imported from
+  # nixpkgs-unstable until then.
 
   services.romm = {
     enable = true;
