@@ -64,6 +64,11 @@ in
   };
 
   networking.networkmanager.enable = true;
+  # Per-link split DNS. Without it netbird falls back to rewriting
+  # /etc/resolv.conf and forwards everything to the nameservers it saw at
+  # startup, so a VPN connected afterwards (FRHC) never gets its DNS used.
+  # NetworkManager picks resolved up automatically.
+  services.resolved.enable = true;
 
   programs.niri.enable = true;
   # Session + portal come from the flake's NixOS module (registers with
