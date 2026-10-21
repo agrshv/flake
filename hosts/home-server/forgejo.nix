@@ -37,6 +37,15 @@
       # executes jobs lives in ./forgejo-runner.nix; this just turns the feature
       # on so runners can register and `.forgejo/workflows/*` files are picked up.
       actions.ENABLED = true;
+      # Forgejo's default session provider is in-memory, so every service
+      # restart logged everyone out. Keep sessions in PostgreSQL instead, and
+      # make them last longer: OAuth logins via Authelia don't set the
+      # "remember me" cookie, so the session is all there is.
+      session = {
+        PROVIDER = "db";
+        COOKIE_SECURE = true;
+        SESSION_LIFE_TIME = 30 * 86400; # 30 days
+      };
       # OAuth2/OIDC login via Authelia. This only configures client behaviour;
       # the authentication source itself lives in Forgejo's DB (no app.ini key
       # for it), so add it once via Site Administration → Authentication
