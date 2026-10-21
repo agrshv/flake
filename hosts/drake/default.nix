@@ -73,10 +73,6 @@ in
     openssh.authorizedKeys.keys = [ me.sshKey ];
   };
 
-  # Deploys run as root@drake: the box is aarch64, so closures are built on
-  # the host itself (see INSTALL.md "drake").
-  users.users.root.openssh.authorizedKeys.keys = [ me.sshKey ];
-
   environment.systemPackages = with pkgs; [
     vim
     git

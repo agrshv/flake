@@ -1,0 +1,24 @@
+# Formatting and evaluation of every host on each push. Evaluation only
+# (--no-build): building the closures here would mean compiling umbriel and
+# friends from source on every run.
+#
+# The `work` input is a private repo fetched over SSH. Give CI a read-only
+# deploy key for it: add the public half under agrshv/flake-work → Settings →
+# Deploy keys, and the private half as the WORK_DEPLOY_KEY secret here.
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@v31
+      - uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.WORK_DEPLOY_KEY }}
+      - run: nix fmt -- --ci
+      - run: nix flake check --no-build --all-systems

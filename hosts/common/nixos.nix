@@ -11,7 +11,7 @@
 
   # Shared by every host; per-host additions (extra substituters, the flake
   # registry pin) live next to the host that needs them. NB: @wheel is trusted
-  # rather than just root, which is what lets `nixos-rebuild --target-host`
+  # rather than just root, which is what lets remote `--target-host` / `--build-host`
   # deploys and `nh` run without sudo-ing the nix daemon calls.
   nix = {
     settings = {
@@ -57,6 +57,9 @@
       # password — password logins would keep working.
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
+      # No host authorizes a root key: deploys log in as me.user and sudo
+      # (@wheel is a trusted nix user, so remote builds work without root).
+      PermitRootLogin = "no";
     };
   };
 

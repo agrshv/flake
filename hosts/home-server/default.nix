@@ -79,9 +79,10 @@ in
   # server only ever builds what's committed and lockfile bumps stay deliberate
   # (run `nix flake update` + push to actually advance package versions).
   #
-  # Disabled for now: flip `enable = true` to activate. Keep `allowReboot =
-  # false` until the headless LUKS box has remote/TPM unlock — an auto-reboot
-  # would otherwise strand it at the passphrase prompt.
+  # Disabled for now: flip `enable = true` to activate. Rebooting is safe in
+  # principle — the systemd initrd unlocks LUKS from the TPM-enrolled key — but
+  # a change to the bound PCRs (firmware update, Secure Boot toggle) drops it
+  # back to the passphrase prompt, so only enable `allowReboot` knowingly.
   system.autoUpgrade = {
     enable = false;
     # Self-hosted Forgejo repo. The unit runs as root, so root needs an SSH key

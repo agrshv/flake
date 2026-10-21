@@ -32,7 +32,12 @@
     # to its own pinned nixpkgs, so overriding it forces a from-source rebuild
     # (cache miss). Track the `cachix` branch to stay on cached commits.
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
-    noctalia-greeter.url = "github:noctalia-dev/noctalia-greeter";
+    # No binary cache behind this one, so it builds from source either way;
+    # follow ours rather than fetch a third nixpkgs just for the greeter.
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Unlike noctalia, umbriel publishes no binary cache, so it builds from
     # source either way; follow our unstable (it pins nixos-unstable upstream
     # and needs wlroots_0_20) instead of fetching a third nixpkgs.
@@ -60,19 +65,28 @@
     }@inputs:
     let
       system = "x86_64-linux";
+      # drake is the one aarch64 host; everything else is x86_64.
+      systems = [
+        system
+        "aarch64-linux"
+      ];
       me = import ./hosts/common/me.nix;
 
-      # Evaluated once here and handed to every host (NixOS and home-manager) so
-      # no module needs to `import nixpkgs-unstable` again. drake is the one
-      # aarch64 host, so it gets its own instantiation below.
-      mkPkgsUnstable =
-        system:
+      # Evaluated once per system here and handed to every host (NixOS and
+      # home-manager) so no module needs to `import nixpkgs-unstable` again.
+      # The attrset is lazy, so the aarch64 one is only instantiated for drake.
+      pkgs-unstable = nixpkgs.lib.genAttrs systems (
+        sys:
         import nixpkgs-unstable {
-          inherit system;
+          system = sys;
           config.allowUnfree = true;
-        };
-      pkgs-unstable = mkPkgsUnstable system;
-      specialArgs = { inherit inputs pkgs-unstable; };
+        }
+      );
+      specialArgsFor = sys: {
+        inherit inputs;
+        pkgs-unstable = pkgs-unstable.${sys};
+      };
+      specialArgs = specialArgsFor system;
 
       # Stamp each host with the commit it was built from, so
       # `nixos-version --configuration-revision` on a box that was deployed by
@@ -118,38 +132,39 @@
             ./hosts/${host}
           ];
         };
+
+      # A headless server: NixOS with disko + sops, no home-manager.
+      mkServer =
+        {
+          host,
+          system ? "x86_64-linux",
+        }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = specialArgsFor system;
+          modules = [
+            inputs.disko.nixosModules.disko
+            inputs.sops-nix.nixosModules.sops
+            revision
+            ./hosts/${host}
+          ];
+        };
     in
     {
       nixosConfigurations = {
         work-laptop = mkWorkstation "work-laptop";
 
         # Headless. Deploy with:
-        #   nixos-rebuild switch --flake .#home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev --sudo --ask-sudo-password
-        home-server = nixpkgs.lib.nixosSystem {
-          inherit system specialArgs;
-          modules = [
-            inputs.disko.nixosModules.disko
-            inputs.sops-nix.nixosModules.sops
-            revision
-            ./hosts/home-server
-          ];
-        };
+        #   nh os switch -H home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev
+        home-server = mkServer { host = "home-server"; };
 
         # Oracle Cloud Ampere VM (aarch64, UEFI, virtio). Headless; no LUKS.
         # Install and day-2 deploys: see INSTALL.md "drake". Closures are built
-        # on the box itself — this machine can't build aarch64 locally.
-        drake = nixpkgs.lib.nixosSystem {
+        # on the box itself — this machine can't build aarch64 locally:
+        #   nh os switch -H drake --target-host drake --build-host drake
+        drake = mkServer {
+          host = "drake";
           system = "aarch64-linux";
-          specialArgs = {
-            inherit inputs;
-            pkgs-unstable = mkPkgsUnstable "aarch64-linux";
-          };
-          modules = [
-            inputs.disko.nixosModules.disko
-            inputs.sops-nix.nixosModules.sops
-            revision
-            ./hosts/drake
-          ];
         };
 
         # Thin bootstrap ISO — see INSTALL.md. Build with `nix build .#installer-iso`.
@@ -162,14 +177,25 @@
         };
       };
 
+      # Every host's system closure, grouped by the platform it builds on.
+      # `nix flake check --no-build` evaluates them all (what CI runs); a plain
+      # `nix flake check` also builds this machine's x86_64 hosts, home-server
+      # included — slow, so only when a real build is wanted.
+      checks = nixpkgs.lib.genAttrs systems (
+        sys:
+        nixpkgs.lib.mapAttrs (_: host: host.config.system.build.toplevel) (
+          nixpkgs.lib.filterAttrs (
+            _: host: host.pkgs.stdenv.hostPlatform.system == sys
+          ) self.nixosConfigurations
+        )
+      );
+
       packages.${system}.installer-iso = self.nixosConfigurations.installer.config.system.build.isoImage;
 
       # `nix fmt` / `nix fmt -- --ci`, in the style every .nix file here is
       # already written in. nixfmt-tree is nixfmt wrapped in treefmt, so a bare
       # `nix fmt` walks the whole tree (plain nixfmt would read stdin). aarch64
       # is covered so it also works on drake.
-      formatter = nixpkgs.lib.genAttrs [ system "aarch64-linux" ] (
-        sys: nixpkgs.legacyPackages.${sys}.nixfmt-tree
-      );
+      formatter = nixpkgs.lib.genAttrs systems (sys: nixpkgs.legacyPackages.${sys}.nixfmt-tree);
     };
 }

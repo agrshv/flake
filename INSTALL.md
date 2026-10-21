@@ -130,12 +130,12 @@ nix run github:nix-community/nixos-anywhere -- \
 git commit -am "drake: regenerate hardware config" && git push
 ```
 
-Day-2 deploys evaluate locally and build on the box (root@ is key-authorized
-precisely for this):
+Day-2 deploys evaluate locally and build on the box, logged in as your user
+(root login is disabled); nh prompts for the "drake sudo" password from
+Bitwarden to activate:
 
 ```sh
-nixos-rebuild switch --flake ~/Documents/flake#drake \
-  --target-host root@drake --build-host root@drake
+nh os switch -H drake --target-host drake --build-host drake
 ```
 
 Break-glass: OCI web console → Instance → Console Connection (serial console
@@ -205,7 +205,7 @@ native-messaging manifest for Brave).
 Every host uses `me.user` (`hosts/common/me.nix`, uid 1000). Switching a live
 host to a new name **without** the step below creates a second user and
 leaves the old one untouched. Do it from a root shell that is not the user's
-own session (e.g. `ssh root@host`, or a tty as root):
+own session (e.g. a root console/tty — root SSH login is disabled):
 
 ```sh
 usermod -l agrshv -d /home/agrshv -m d3spair
@@ -225,7 +225,7 @@ loginctl terminate-user d3spair && pkill -u d3spair
 
 ```sh
 nh os switch                                                    # local, as your user
-nixos-rebuild switch --flake ~/Documents/flake#home-server --target-host home-server.agrshv.dev --sudo --ask-sudo-password
+nh os switch -H home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev
 ```
 
 Run these as your user, not root: the `work` input is fetched with your agent.
