@@ -10,6 +10,9 @@
       # read-only store symlink, so the pointer is set here instead. The hook
       # sees it is already correct and leaves the file alone.
       theme = "noctalia";
+      # Ghostty binds ctrl+enter to toggle_fullscreen on Linux by default;
+      # unbind it so the key reaches the app (e.g. Claude Code) instead.
+      keybind = [ "ctrl+enter=unbind" ];
       custom-shader = toString (
         pkgs.fetchurl {
           url = "https://raw.githubusercontent.com/0xhckr/ghostty-shaders/aa6121ba2ddd5251ac75b92729c758fe41256e55/cursor_blaze.glsl";
