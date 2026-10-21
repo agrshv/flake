@@ -36,6 +36,9 @@ in
         touchpad {
             tap
             natural-scroll
+            // Ignore the touchpad while typing (niri leaves libinput's dwt off
+            // unless asked).
+            dwt
         }
         mouse {
             accel-profile "flat"
