@@ -33,6 +33,7 @@ let
     "auth.agrshv.dev"
     "monica.agrshv.dev"
     "nocodb.agrshv.dev"
+    "gramps.agrshv.dev"
     "recipes.agrshv.dev"
     "roms.agrshv.dev"
     "books.agrshv.dev"

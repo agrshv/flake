@@ -9,6 +9,9 @@ let
     "jellyfin.service" # /var/lib/jellyfin/data/{jellyfin,library}.db
     "kavita.service" # /var/lib/kavita/config/kavita.db
     "bazarr.service" # /var/lib/bazarr/db/bazarr.db
+    # /var/lib/grampsweb/{users,grampsdb}; the worker writes the tree too.
+    "podman-grampsweb.service"
+    "podman-grampsweb-celery.service"
   ];
 in
 {
@@ -72,6 +75,7 @@ in
       "/var/lib/private/readeck" # saved articles + assets
       "/var/lib/forgejo" # git repositories, LFS, generated app secrets
       "/var/lib/nocodb" # attachments
+      "/var/lib/grampsweb" # family tree, user accounts, media, Flask secret
       "/var/lib/romm" # save files + states, scraped config, generated auth secret
       "/var/lib/private/mealie" # recipe images + app secrets
       "/var/lib/monica" # uploads + APP_KEY (encrypts data in the DB dump)
@@ -118,6 +122,10 @@ in
       "/var/lib/private/seerr/logs"
       "/var/lib/bazarr/log"
       "/var/lib/vaultwarden/icon_cache"
+      # Rebuilt by Gramps Web from the tree and media.
+      "/var/lib/grampsweb/indexdir"
+      "/var/lib/grampsweb/thumbnail_cache"
+      "/var/lib/grampsweb/cache"
       "/var/lib/private/gitea-runner/home-server/.cache"
       # ROMs are re-obtainable and would dominate the repo; the artwork RomM
       # scraped is re-scrapable. What is kept is /var/lib/romm/assets (saves and

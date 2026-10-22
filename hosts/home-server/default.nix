@@ -28,6 +28,7 @@ in
     ./bulwark.nix
     ./forgejo.nix
     ./forgejo-runner.nix
+    ./grampsweb.nix
     ./nocodb.nix
     ./dufs.nix
     ./immich.nix
