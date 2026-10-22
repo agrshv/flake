@@ -102,5 +102,9 @@ in
     ddcutil
   ];
 
+  # German desktop; the headless hosts keep common/nixos.nix's en_GB so their
+  # logs and tool output stay searchable.
+  i18n.defaultLocale = "de_DE.UTF-8";
+
   system.stateVersion = "25.11";
 }
