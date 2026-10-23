@@ -277,7 +277,9 @@ in
         battery.hide_when_full = true;
         bluetooth = {
           show_label = true;
-          hide_when_adapter_off = true;
+          # Bluetooth starts off (hosts/work-laptop), so keep the widget visible:
+          # right-click toggles it.
+          hide_when_adapter_off = false;
         };
         network = {
           show_label = false;

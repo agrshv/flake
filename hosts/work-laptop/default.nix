@@ -72,7 +72,11 @@ in
   services.fwupd.enable = true;
 
   hardware.enableRedistributableFirmware = true;
-  hardware.bluetooth.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    # Off until needed; turn it on from noctalia's bluetooth widget.
+    powerOnBoot = false;
+  };
   services.blueman.enable = true;
   # Keep blueman-manager and its daemon, but not the tray applet: noctalia's
   # bluetooth widget already covers it. The package ships an XDG autostart
