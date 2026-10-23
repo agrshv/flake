@@ -9,6 +9,32 @@ let
   grim = lib.getExe pkgs.grim;
   slurp = lib.getExe pkgs.slurp;
   wlCopy = lib.getExe' pkgs.wl-clipboard "wl-copy";
+
+  # When the Lenovo is unplugged niri appends its workspaces after the laptop's;
+  # pull them to the front instead, so they stay on Mod+1/2 there too. Fires on
+  # every workspace change but only acts while `terminal` shares an output with
+  # `code`, and moves are by name, so it settles after one pass. niri itself
+  # comes from PATH so its IPC matches the running compositor.
+  lenovoWorkspacesFirst = pkgs.writeShellApplication {
+    name = "niri-lenovo-workspaces-first";
+    runtimeInputs = [ pkgs.jq ];
+    text = ''
+      niri msg --json event-stream | while read -r event; do
+        if jq -e '
+          .WorkspacesChanged.workspaces // empty
+          | (map(select(.name == "code"))[0].output) as $laptop
+          | map(select(.output == $laptop))
+          | select(any(.name == "terminal"))
+          | (map(select(.name == "terminal"))[0].idx != 1)
+            or (map(select(.name == "browser"))[0].idx != 2)
+          | select(.)
+        ' <<<"$event" >/dev/null; then
+          niri msg action move-workspace-to-index --reference terminal 1
+          niri msg action move-workspace-to-index --reference browser 2
+        fi
+      done
+    '';
+  };
 in
 {
   # niri has no built-in home-manager module (unlike sway), so the config is
@@ -57,6 +83,22 @@ in
         position x=0 y=1440
         scale 1
     }
+
+    // Pinned to their monitors and listed first there in declaration order,
+    // so Mod+1..3 still reach them by index. Matched by model rather than
+    // connector so the Lenovo keeps its workspaces on any port.
+    workspace "terminal" { open-on-output "Lenovo Group Limited N27q UT33383Y"; }
+    workspace "browser" { open-on-output "Lenovo Group Limited N27q UT33383Y"; }
+    workspace "code" { open-on-output "eDP-1"; }
+    workspace "chat" { open-on-output "eDP-1"; }
+    workspace "telegram" { open-on-output "eDP-1"; }
+
+    spawn-at-startup "${ghostty}"
+    spawn-at-startup "brave-origin"
+    spawn-at-startup "zeditor"
+    spawn-at-startup "vesktop"
+    spawn-at-startup "Telegram"
+    spawn-at-startup "${lib.getExe lenovoWorkspacesFirst}"
 
     layout {
         gaps 8
@@ -129,6 +171,35 @@ in
         blur true
         xray false
       }
+    }
+
+    // Only for the session's first minute (at-startup), so a terminal opened
+    // later with Mod+Return still lands on the focused workspace (at its usual
+    // width; only the startup windows open full-width).
+    window-rule {
+      match app-id=r#"^com\.mitchellh\.ghostty$"# at-startup=true
+      open-on-workspace "terminal"
+      default-column-width { proportion 1.0; }
+    }
+    window-rule {
+      match app-id="^brave-origin$" at-startup=true
+      open-on-workspace "browser"
+      default-column-width { proportion 1.0; }
+    }
+    window-rule {
+      match app-id=r#"^dev\.zed\.Zed$"# at-startup=true
+      open-on-workspace "code"
+      default-column-width { proportion 1.0; }
+    }
+    window-rule {
+      match app-id="^vesktop$" at-startup=true
+      open-on-workspace "chat"
+      default-column-width { proportion 1.0; }
+    }
+    window-rule {
+      match app-id=r#"^org\.telegram\.desktop$"# at-startup=true
+      open-on-workspace "telegram"
+      default-column-width { proportion 1.0; }
     }
 
     window-rule {
