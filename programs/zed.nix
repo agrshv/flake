@@ -117,12 +117,31 @@
           schemaStore.enable = true;
           # Apply the bundled Kubernetes schema only within manifest dirs, so
           # plain k8s resources get completions without redlining other YAML.
-          schemas.kubernetes = [
-            "k8s/**/*.{yaml,yml}"
-            "manifests/**/*.{yaml,yml}"
-            "deploy/**/*.{yaml,yml}"
-            "kube/**/*.{yaml,yml}"
-          ];
+          # The same globs also tell the server to drop the bogus "Matches
+          # multiple schemas" error the k8s all.json always raises, but that
+          # check uses a naive matcher: no {a,b} braces, and "dir/**/" needs a
+          # subdirectory. "dir/*.yaml" covers any depth there, "dir/**/*.yaml"
+          # covers it for the real schema association.
+          schemas.kubernetes =
+            lib.concatMap
+              (
+                dir:
+                lib.concatMap
+                  (ext: [
+                    "${dir}/*.${ext}"
+                    "${dir}/**/*.${ext}"
+                  ])
+                  [
+                    "yaml"
+                    "yml"
+                  ]
+              )
+              [
+                "k8s"
+                "manifests"
+                "deploy"
+                "kube"
+              ];
         };
       };
       show_whitespaces = "trailing";
