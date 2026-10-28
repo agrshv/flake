@@ -18,6 +18,7 @@ in
     ./programs/eza.nix
     ./programs/ghostty.nix
     ./programs/git.nix
+    ./programs/neovim.nix
     ./programs/nh.nix
     ./programs/niri.nix
     ./programs/noctalia.nix
