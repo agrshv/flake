@@ -1,6 +1,32 @@
 { config, ... }:
+let
+  inherit (config.xdg)
+    configHome
+    dataHome
+    stateHome
+    cacheHome
+    ;
+in
 {
+  # Keep $HOME clean (xdg-ninja). xdg.enable exports XDG_{CONFIG,DATA,STATE,CACHE}_HOME;
+  # preferXdgDirectories moves HM-written files (e.g. gtkrc-2.0) under ~/.config.
+  home.preferXdgDirectories = true;
+  home.pointerCursor.dotIcons.enable = false; # the cursor is also linked into ~/.local/share/icons
+  xresources.path = "${configHome}/X11/xresources";
+  programs.bash.historyFile = "${stateHome}/bash/history";
+
+  home.sessionVariables = {
+    ANSIBLE_HOME = "${dataHome}/ansible";
+    AWS_CONFIG_FILE = "${configHome}/aws/config";
+    AWS_SHARED_CREDENTIALS_FILE = "${configHome}/aws/credentials";
+    CUDA_CACHE_PATH = "${cacheHome}/nv";
+    DOCKER_CONFIG = "${configHome}/docker";
+    GNUPGHOME = "${dataHome}/gnupg";
+    NPM_CONFIG_CACHE = "${cacheHome}/npm";
+  };
+
   xdg = {
+    enable = true;
     autostart.enable = true;
     userDirs = {
       enable = true;
