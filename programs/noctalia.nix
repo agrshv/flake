@@ -30,10 +30,13 @@ in
   # KDE Connect's DBus calls and mounts device filesystems over sshfs.
   # noctalia runs template hooks with the session PATH, so they find these
   # too. The brave-origin template (community_ids below) installs its theme
-  # with python3 and renders the theme images with Pillow.
+  # with python3 and renders the theme images with Pillow. The screen_recorder
+  # plugin picks a region with slurp; its gpu-screen-recorder comes from
+  # hosts/common/desktop.nix.
   home.packages = [
     pkgs.glib # gdbus
     pkgs.sshfs
+    pkgs.slurp
     (pkgs.python3.withPackages (ps: [ ps.pillow ]))
   ];
 
@@ -49,10 +52,12 @@ in
           "workspaces"
         ];
         # noctalia's default end list (config_types.h), restated in full because
-        # setting `end` replaces it rather than appending, plus the phone-connect
-        # widget next to the laptop's own battery.
+        # setting `end` replaces it rather than appending, plus the recorder
+        # before the tray and the phone-connect widget next to the laptop's own
+        # battery.
         end = [
           "media"
+          "noctalia/screen_recorder:recorder"
           "tray"
           "notifications"
           "network"
@@ -71,9 +76,18 @@ in
       # templates, the plugin itself is fetched at runtime from noctalia's
       # community repo (a git clone under ~/.local/state/noctalia/plugins), so
       # it is not pinned by the lockfile.
-      plugins.enabled = [ "icefish/phone-connect" ];
+      #
+      # Screen Recorder (official plugin): gpu-screen-recorder behind a bar
+      # widget — left click starts/stops. Its default source, "portal", asks
+      # which screen or window to record. Saved under the XDG videos dir
+      # (programs/xdg.nix) rather than the plugin's ~/Videos/Recordings.
+      plugins.enabled = [
+        "icefish/phone-connect"
+        "noctalia/screen_recorder"
+      ];
       plugin_settings = {
         "icefish/phone-connect".battery_display = "percent";
+        "noctalia/screen_recorder".directory = "${config.xdg.userDirs.videos}/Recordings";
       };
       brightness.enable_ddcutil = true;
       idle = {

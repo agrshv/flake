@@ -123,6 +123,8 @@ in
         Mod+Comma { spawn "noctalia" "msg" "settings-toggle"; }
 
         Mod+Shift+S { spawn "noctalia" "msg" "screenshot-region"; }
+        // Start/stop noctalia's screen_recorder plugin (programs/noctalia.nix).
+        Mod+Shift+R { spawn "noctalia" "msg" "plugin" "noctalia/screen_recorder:service" "all" "toggle"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-up"; }
         XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-down"; }

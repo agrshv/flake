@@ -125,6 +125,11 @@ in
 
   hardware.graphics.enable = true;
 
+  # Backend of noctalia's screen_recorder plugin (programs/noctalia.nix). The
+  # module adds the capability-wrapped gsr-kms-server that "focused" capture
+  # needs; "portal" capture goes through xdg-desktop-portal-gnome from niri.
+  programs.gpu-screen-recorder.enable = true;
+
   # SSH_AUTH_SOCK is Bitwarden Desktop's agent (programs/bitwarden.nix); the
   # system ssh-agent would shadow it.
   programs.ssh.startAgent = false;
