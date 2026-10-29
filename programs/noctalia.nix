@@ -254,10 +254,17 @@ in
           # ~/.local/share/noctalia/brave-origin-theme — load it once from
           # brave://extensions (developer mode → Load unpacked); after palette
           # changes, Update there or restart Brave.
+          #
+          # neovim: renders ~/.config/nvim/lua/matugen.lua — inside this repo,
+          # as programs/neovim.nix links the checkout, hence the .gitignore
+          # entry — and SIGUSR1s running nvims to reload it. init.lua feeds the
+          # palette to mini.base16 and already has the loader the hook would
+          # otherwise append there.
           community_ids = [
             "brave-origin"
             "claude-code"
             "discord"
+            "neovim"
             "obsidian"
             "telegram"
             "zed"

@@ -121,3 +121,33 @@ Config.later = function(f) misc.safely('later', f) end
 Config.now_if_args = vim.fn.argc(-1) > 0 and Config.now or Config.later
 Config.on_event = function(ev, f) misc.safely('event:' .. ev, f) end
 Config.on_filetype = function(ft, f) misc.safely('filetype:' .. ft, f) end
+
+-- Colors =====================================================================
+-- Colors follow noctalia: its community 'neovim' template renders
+-- 'lua/matugen.lua' (gitignored) as a base16 palette and re-applies it on
+-- SIGUSR1 after every theme change. The template targets 'base16-nvim'; feed
+-- the palette to 'mini.base16' instead, which already ships with 'mini.nvim'.
+-- Until noctalia first renders the module, fall back to 'minischeme'.
+--
+-- This lives here rather than in 'plugin/30_mini.lua' because the template's
+-- hook appends its own loader to this file unless it finds the `pcall` below.
+package.preload['base16-colorscheme'] = function()
+  return {
+    setup = function(palette)
+      -- 'mini.base16' doesn't set 'background'; derive it from base00.
+      local r, g, b = palette.base00:match('#(%x%x)(%x%x)(%x%x)')
+      local luma = 0.299 * tonumber(r, 16) + 0.587 * tonumber(g, 16) + 0.114 * tonumber(b, 16)
+      vim.o.background = luma > 127 and 'light' or 'dark'
+      require('mini.base16').setup({ palette = palette })
+    end,
+  }
+end
+
+Config.now(function()
+  local ok, matugen = pcall(require, 'matugen')
+  if ok then
+    matugen.setup()
+  else
+    vim.cmd('colorscheme minischeme')
+  end
+end)
