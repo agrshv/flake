@@ -8,10 +8,10 @@
   # security.lockKernelModules = true;
 
   # Distrust these roots system-wide. Names must match the certificate labels
-  # in the cacert bundle exactly; a typo is silently ignored.
+  # in the cacert bundle exactly, and cacert's build fails on a name that isn't
+  # in the store (emSign ECC Root CA - G3 was dropped upstream in nss 3.131).
   security.pki.caCertificateBlacklist = [
     "Comodo AAA Services root"
-    "emSign ECC Root CA - G3"
   ];
 
   # Shared by every host; per-host additions (extra substituters, the flake
