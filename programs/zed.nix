@@ -73,6 +73,8 @@
         light = "Noctalia Light";
       };
       autosave.after_delay.milliseconds = 1000;
+      # Learn vim motions in the familiar editor before living in nvim.
+      vim_mode = true;
       agent_servers.claude-acp = {
         type = "registry";
         # NB: a per-agent `default_mode` is NOT a setting Zed 1.16 understands
