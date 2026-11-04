@@ -4,6 +4,7 @@ let
   # while the backup runs (see backupPrepareCommand below).
   sqliteServices = builtins.concatStringsSep " " [
     "navidrome.service" # /var/lib/navidrome/navidrome.db
+    "gonic.service" # /var/lib/gonic/gonic.db
     "wrtagweb.service" # /var/lib/wrtag/wrtag.db
     "paperless-scheduler.service" # /var/lib/paperless/celerybeat-schedule.db
     "jellyfin.service" # /var/lib/jellyfin/data/{jellyfin,library}.db
@@ -83,6 +84,7 @@ in
       "/var/lib/wrtag" # import queue db
       "/var/lib/jellyfin" # users, watch history/resume state, library settings
       "/var/lib/kavita" # books (library/), kavita.db: users, reading progress
+      "/var/lib/gonic" # gonic.db: users, playlists, play counts; podcasts
       # Media stack config; Sonarr, Radarr, Prowlarr and Seerr keep their
       # databases in Postgres (dumped above). The library itself in /data is not
       # backed up — it is re-downloadable and would dwarf everything else.
