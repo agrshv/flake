@@ -23,6 +23,7 @@
       "/var/lib/stalwart-migrate" # migration state: rollback needs it
       "/var/lib/netbird" # peer identity: keeps the overlay address across reinstalls
       "/var/lib/private/mollysocket" # linked Molly connections (DynamicUser, so the real path)
+      "/var/lib/private/jobscout" # seen ads and his applied/skipped labels (DynamicUser, so the real path)
       "/etc/ssh" # host keys — sops decrypts with them
       "/var/lib/nixos" # uid/gid maps
       "/root"
