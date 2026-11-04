@@ -125,125 +125,224 @@ in
         };
       };
       location.address = "Almaty, Kazakhstan";
-      # Ported from the layout arranged in noctalia's settings UI (it lived only
-      # in ~/.local/state/noctalia/settings.toml, which overrides this file).
-      # Positions are in each output's own pixels, so the layout is tied to
-      # these exact outputs. Per-box options and styling go under that box's
+      # A dashboard of tiles centred on the laptop screen: three system graphs
+      # | clock, weather and password | calendar. The external monitors show
+      # only the wallpaper.
+      #
+      # Positions are in each output's own pixels, so each output is listed
+      # with its size. Per-box options and styling go under that box's
       # `.settings` — a sibling `widget.settings` table is read as a widget
-      # named "settings" of no type, which is what the validator used to warn
-      # about.
+      # named "settings" of no type. Login boxes must be keyed
+      # `lockscreen-login-box@<output>`, everything else
+      # `lockscreen-widget-<anything>`.
       lockscreen_widgets =
         let
-          loginBoxOptions = {
-            center_password_text = false;
-            layout = "regular";
-            show_caps_lock = true;
-            show_keyboard_layout = true;
-            show_login_button = true;
-            show_media = true;
-            show_session_buttons = true;
-            show_unlock_hint = true;
-            show_weather = true;
+          # Outputs that get the dashboard. An optional `scale` grows the
+          # cluster, e.g. 2560.0 / 1920.0 on a 1440p screen to cover the same
+          # share of it as on 1080p.
+          outputs = {
+            "eDP-1" = {
+              width = 1920.0;
+              height = 1080.0;
+            };
           };
-          loginBoxStyle = {
-            background_color = "surface_variant";
-            background_opacity = 0.88;
-            background_radius = 12.0;
-            input_opacity = 1.0;
-            input_radius = 6.0;
-          };
-          loginBox =
-            output:
-            {
-              cx,
-              cy,
-              placement_width,
-              placement_height,
-            }:
-            {
-              inherit
-                output
-                cx
-                cy
-                placement_width
-                placement_height
-                ;
-              box_width = 810.0;
-              box_height = 196.0;
-              rotation = 0.0;
+
+          # Wallpaper only. noctalia adds a default login box to any output
+          # without one, so these get a disabled one instead. With the lid
+          # closed no output shows a password field.
+          bare = [
+            "HDMI-A-1"
+            "DP-2"
+          ];
+          bareOn = output: {
+            "lockscreen-login-box@${output}" = {
+              inherit output;
               type = "login_box";
-              settings = loginBoxOptions // loginBoxStyle;
+              enabled = false;
             };
-          clock =
+          };
+
+          # Shared tile look; the login box takes the same keys minus
+          # `background` (it always draws one).
+          tileStyle = {
+            background_color = "surface";
+            background_opacity = 0.8;
+            background_radius = 12;
+          };
+
+          # The cluster is 802 x 345 px around the output's centre:
+          #   graphs 170 wide | 16 gap | 300 centre column | 16 gap | calendar 300
+          # with the centre column split into clock 160, weather and password
+          # (see clusterOn; 83 and 70 at scale 1) with 16 px gaps, and the three
+          # graphs 105 high (15 px gaps).
+          # x/y are offsets of each tile's centre from the output's centre, at
+          # scale 1.
+          tiles = [
+            {
+              name = "cpu";
+              type = "sysmon";
+              x = -283.5;
+              y = -120.0;
+              w = 170.0;
+              h = 105.0;
+              settings = {
+                stat = "cpu_usage";
+                stat2 = "cpu_temp";
+                display = "graph";
+              };
+            }
+            {
+              name = "memory";
+              type = "sysmon";
+              x = -283.5;
+              y = 0.0;
+              w = 170.0;
+              h = 105.0;
+              settings = {
+                stat = "ram_pct";
+                stat2 = "swap_pct";
+                display = "graph";
+              };
+            }
+            {
+              name = "network";
+              type = "sysmon";
+              x = -283.5;
+              y = 120.0;
+              w = 170.0;
+              h = 105.0;
+              settings = {
+                stat = "net_rx";
+                stat2 = "net_tx";
+                display = "graph";
+              };
+            }
+            {
+              name = "clock";
+              type = "clock";
+              x = -33.0;
+              y = -92.5;
+              w = 300.0;
+              h = 160.0;
+            }
+            # Weather for location.address above; an audio_visualizer here sat as a flat
+            # line unless something played while locked. y/h are its scale-1
+            # slot; clusterOn stretches it to whatever the login box leaves.
+            {
+              name = "weather";
+              type = "weather";
+              x = -33.0;
+              y = 45.0;
+              w = 300.0;
+              h = 83.0;
+            }
+            {
+              name = "calendar";
+              type = "calendar";
+              x = 283.5;
+              y = 0.0;
+              w = 300.0;
+              h = 345.0;
+              # Events take half the tile and shrink the month to fit.
+              settings.show_events = false;
+            }
+          ];
+
+          clusterOn =
             output:
             {
-              cx,
-              cy,
-              placement_width,
-              placement_height,
+              width,
+              height,
+              scale ? 1.0,
             }:
-            {
-              inherit
-                output
-                cx
-                cy
-                placement_width
-                placement_height
-                ;
-              box_width = 288.0;
-              box_height = 160.0;
-              rotation = 0.0;
-              type = "clock";
+            let
+              place =
+                {
+                  x,
+                  y,
+                  w,
+                  h,
+                  ...
+                }:
+                {
+                  inherit output;
+                  cx = width / 2 + x * scale;
+                  cy = height / 2 + y * scale;
+                  box_width = w * scale;
+                  box_height = h * scale;
+                  placement_width = width;
+                  placement_height = height;
+                  rotation = 0.0;
+                };
+
+              # The compact login box always draws at its floor (padding + one
+              # input row) whatever box_height says, centred in the box. So it
+              # is given exactly that, unscaled, with its bottom on the
+              # cluster's bottom edge, and the weather tile above takes up the
+              # difference, keeping both 16 px (scaled) gaps.
+              loginHeight = 70.0;
+              bottom = 172.5 * scale;
+              loginTop = bottom - loginHeight;
+              weatherTop = (-12.5 + 16.0) * scale; # clock bottom + gap
+              weatherBottom = loginTop - 16.0 * scale;
+            in
+            builtins.listToAttrs (
+              map (t: {
+                name = "lockscreen-widget-${t.name}@${output}";
+                value = place t // {
+                  inherit (t) type;
+                  settings = tileStyle // t.settings or { };
+                };
+              }) tiles
+            )
+            // {
+              "lockscreen-widget-weather@${output}" =
+                (place (builtins.head (builtins.filter (t: t.name == "weather") tiles)))
+                // {
+                  type = "weather";
+                  settings = tileStyle;
+                  cy = height / 2 + (weatherTop + weatherBottom) / 2;
+                  box_height = weatherBottom - weatherTop;
+                };
+              "lockscreen-login-box@${output}" =
+                place {
+                  x = -33.0;
+                  y = 0.0;
+                  w = 300.0;
+                  h = 0.0;
+                }
+                // {
+                  cy = height / 2 + bottom - loginHeight / 2;
+                  box_height = loginHeight;
+                  type = "login_box";
+                  settings = tileStyle // {
+                    layout = "compact";
+                    center_password_text = true;
+                    show_caps_lock = true;
+                    show_keyboard_layout = true;
+                    show_login_button = false;
+                    show_session_buttons = false;
+                    show_unlock_hint = false;
+                    input_opacity = 1.0;
+                    input_radius = 6.0;
+                  };
+                };
             };
+
+          widget =
+            builtins.foldl' (acc: o: acc // clusterOn o outputs.${o}) { } (builtins.attrNames outputs)
+            // builtins.foldl' (acc: o: acc // bareOn o) { } bare;
         in
         {
           enabled = true;
           schema_version = 2;
-          widget_order = [
-            "lockscreen-login-box@HDMI-A-1"
-            "lockscreen-login-box@eDP-1"
-            "lockscreen-login-box@DP-2"
-            "lockscreen-widget-clock"
-            "lockscreen-widget-clock@HDMI-A-1"
-          ];
+          widget_order = builtins.attrNames widget;
           grid = {
             cell_size = 16;
             major_interval = 4;
             visible = true;
           };
-          widget = {
-            "lockscreen-login-box@HDMI-A-1" = loginBox "HDMI-A-1" {
-              cx = 1280.0;
-              cy = 1258.0;
-              placement_width = 2560.0;
-              placement_height = 1440.0;
-            };
-            "lockscreen-login-box@eDP-1" = loginBox "eDP-1" {
-              cx = 960.0;
-              cy = 898.0;
-              placement_width = 1920.0;
-              placement_height = 1080.0;
-            };
-            "lockscreen-login-box@DP-2" = loginBox "DP-2" {
-              cx = 960.0;
-              cy = 957.0;
-              placement_width = 1920.0;
-              placement_height = 1080.0;
-            };
-            "lockscreen-widget-clock" = clock "eDP-1" {
-              cx = 960.0;
-              cy = 220.0;
-              placement_width = 1920.0;
-              placement_height = 1080.0;
-            };
-            # Same offset from the top as on eDP-1, centred on the wider screen.
-            "lockscreen-widget-clock@HDMI-A-1" = clock "HDMI-A-1" {
-              cx = 1280.0;
-              cy = 220.0;
-              placement_width = 2560.0;
-              placement_height = 1440.0;
-            };
-          };
+          inherit widget;
         };
       nightlight.enabled = true;
       shell = {
