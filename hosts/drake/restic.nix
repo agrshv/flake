@@ -18,7 +18,9 @@
 
     paths = [
       "/var/backup/postgresql" # nightly pg_dumpall (see ./postgresql.nix)
-      "/var/lib/stalwart" # the mail store — accounts, mail, certs, DKIM
+      "/var/lib/stalwart-v1" # the mail store — accounts, mail, certs, DKIM
+      "/var/lib/stalwart" # the frozen 0.16 store, until 1.0 has proved itself
+      "/var/lib/stalwart-migrate" # migration state: rollback needs it
       "/var/lib/netbird" # peer identity: keeps the overlay address across reinstalls
       "/var/lib/private/mollysocket" # linked Molly connections (DynamicUser, so the real path)
       "/etc/ssh" # host keys — sops decrypts with them
