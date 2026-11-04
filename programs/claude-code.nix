@@ -33,8 +33,9 @@
       - Nix: format with `nix fmt`; rebuild with `nh os switch` / `nh home switch`,
         never call `nixos-rebuild` directly.
       - Secrets are sops-encrypted (`secrets/*.yaml`); never decrypt or print them.
-      - Terraform: `terraform fmt` and `terraform validate` freely; never `apply` or
-        `destroy` without asking.
+      - Terraform / OpenTofu: use `tofu` where the lock file pins
+        `registry.opentofu.org` (all work repos), `terraform` otherwise. `fmt` and
+        `validate` freely; never `apply` or `destroy` without asking.
       - Kubernetes / Flux: read-only (`get`, `describe`, `logs`, `flux get`) unless
         told otherwise. Never `flux reconcile`, `kubectl apply/delete/edit` on your own.
       - Work GitLab is self-hosted at gitlab.frhc.one; use `glab` for MRs, pipelines
@@ -48,12 +49,16 @@
         command = "${pkgs.nixd}/bin/nixd";
         extensionToLanguage.".nix" = "nix";
       };
-      terraform = {
-        command = "${pkgs.terraform-ls}/bin/terraform-ls";
+      # OpenTofu's fork of terraform-ls: work repos are OpenTofu, and it also
+      # serves plain Terraform code.
+      opentofu = {
+        command = "${pkgs.tofu-ls}/bin/tofu-ls";
         args = [ "serve" ];
         extensionToLanguage = {
-          ".tf" = "terraform";
-          ".tfvars" = "terraform-vars";
+          ".tf" = "opentofu";
+          ".tofu" = "opentofu";
+          ".tfvars" = "opentofu-vars";
+          ".tofuvars" = "opentofu-vars";
         };
       };
       yaml = {
@@ -92,20 +97,25 @@
       ## Nix flake
 
       1. `nix fmt -- --ci` (fails if anything needs formatting)
-      2. `nix flake check --no-build` (evaluates every output)
+      2. `lowprio nix flake check --no-build` (evaluates every output)
       3. Build each host the change can affect. For a NixOS host:
-         `nix build --no-link .#nixosConfigurations.<host>.config.system.build.toplevel`.
+         `lowprio nix build --no-link .#nixosConfigurations.<host>.config.system.build.toplevel`.
          If the host's system differs from this machine's (e.g. aarch64), only
-         evaluate it: `nix eval --raw .#nixosConfigurations.<host>.config.system.build.toplevel.drvPath`.
+         evaluate it: `lowprio nix eval --raw .#nixosConfigurations.<host>.config.system.build.toplevel.drvPath`.
          Home-manager only: `.#nixosConfigurations.<host>.config.home-manager.users.<user>.home.activationPackage`.
       4. Do not run `nh os switch` or anything that activates a configuration
          unless asked.
 
       ## Terraform / OpenTofu
 
-      1. `terraform fmt -check -recursive`
-      2. `terraform init -backend=false` if `.terraform/` is missing, then `terraform validate`
-      3. `terraform plan` only when credentials and state access are already
+      Use `tofu` if `.terraform.lock.hcl` pins providers from
+      `registry.opentofu.org` (every work repo does), `terraform` otherwise;
+      `<tf>` below is whichever applies. Neither is on PATH globally: use the
+      repo's dev shell if it has one, else `nix shell nixpkgs#opentofu`.
+
+      1. `<tf> fmt -check -recursive`
+      2. `<tf> init -backend=false` if `.terraform/` is missing, then `<tf> validate`
+      3. `lowprio <tf> plan` only when credentials and state access are already
          set up; summarize what it adds, changes and destroys, and call out
          anything destroyed or replaced. Never `apply`.
 
@@ -219,6 +229,8 @@
           "Read(~/.ssh/id_*)"
           "Bash(terraform apply:*)"
           "Bash(terraform destroy:*)"
+          "Bash(tofu apply:*)"
+          "Bash(tofu destroy:*)"
         ];
       };
       # Stop it appending a "Co-Authored-By: Claude" trailer to commits it
