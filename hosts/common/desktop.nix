@@ -105,6 +105,20 @@ in
     # The passwordless path is appearance-only and never takes a session command.
     passwordless-sync-users = [ me.user ];
     settings = {
+      # Start on the password step for the only account, into niri.
+      session.default = "Niri";
+      user.default = me.user;
+      # The password is typed in us; niri's ru/de layouts are session-only.
+      keyboard.layout = "us";
+      # Monitor positions and modes as niri sets them (programs/niri.nix), so
+      # there is no modeset at login and the pointer crosses edges the same
+      # way. Declared here rather than left to greeter sync, which only
+      # records a layout while several outputs are connected. DP-2, unplaced
+      # in niri too, is appended to the right.
+      output = {
+        layout = "HDMI-A-1:0,0; eDP-1:0,1440";
+        refresh_rate = "DP-2:240; HDMI-A-1:100";
+      };
       appearance.font_family = "Inter";
       cursor = {
         theme = "Adwaita";
