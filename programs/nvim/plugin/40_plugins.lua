@@ -112,6 +112,10 @@ end)
 now_if_args(function()
   add({ 'https://github.com/neovim/nvim-lspconfig' })
 
+  -- OpenTofu's own extensions. Neovim doesn't know them; as terraform they get
+  -- the tree-sitter parser too, and tofu-ls accepts terraform language IDs.
+  vim.filetype.add({ extension = { tofu = 'terraform', tofuvars = 'terraform-vars' } })
+
   -- Use `:h vim.lsp.enable()` to automatically enable language server based on
   -- the rules provided by 'nvim-lspconfig'.
   -- Use `:h vim.lsp.config()` or 'after/lsp/' directory to configure servers.
@@ -125,7 +129,7 @@ now_if_args(function()
     'pyright',
     'regal',
     'taplo',
-    'terraformls',
+    'tofu_ls',
     'yamlls',
   })
 end)

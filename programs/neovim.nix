@@ -20,7 +20,7 @@
     pyright
     regal
     taplo
-    terraform-ls
+    tofu-ls
     yaml-language-server
   ];
 
