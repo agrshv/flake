@@ -6,6 +6,15 @@
     jq
     fd
     yq-go
+    # Runs a heavy command (flake evaluation, builds) at the back of the CPU
+    # and IO queue in its own cgroup. Over the memory cap it gets OOM-killed
+    # instead of pushing the desktop into swap. `nix flake check` peaks
+    # around 3.5G.
+    (writeShellScriptBin "lowprio" ''
+      exec systemd-run --user --scope --quiet \
+        -p MemoryMax=6G -p MemorySwapMax=0 -p CPUWeight=20 -p IOWeight=20 \
+        -- nice -n 19 "$@"
+    '')
   ];
 
   programs.claude-code = {
@@ -71,6 +80,11 @@
       # Verify
 
       Run the checks for every kind of file you touched, from the repo root.
+      Prefix every evaluation or build (`nix flake check`, `nix build`,
+      `nix eval`, `tofu plan`) with `lowprio` so it can't freeze the
+      desktop; if one gets OOM-killed under it, report that rather than
+      retrying without it.
+
       Stop at the first failure, fix it, and re-run from that step. Report
       what ran and what passed; never claim success for a check you skipped,
       and say why it was skipped.
