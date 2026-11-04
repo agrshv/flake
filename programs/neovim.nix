@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
 {
+  home.sessionVariables.EDITOR = "${pkgs.neovim}/bin/nvim";
+
   # MiniMax (github.com/nvim-mini/MiniMax, configs/nvim-0.12) — a starter
   # config, not a distribution: ./nvim is ours to edit and never syncs back.
   home.packages = with pkgs; [
