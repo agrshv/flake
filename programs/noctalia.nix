@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }:
@@ -52,9 +51,9 @@ in
           "workspaces"
         ];
         # noctalia's default end list (config_types.h), restated in full because
-        # setting `end` replaces it rather than appending, plus the recorder
-        # before the tray and the phone-connect widget next to the laptop's own
-        # battery.
+        # setting `end` replaces it rather than appending, minus `clipboard`
+        # (shell.clipboard_enabled is off), plus the recorder before the tray
+        # and the phone-connect widget next to the laptop's own battery.
         end = [
           "media"
           "noctalia/screen_recorder:recorder"
@@ -66,6 +65,7 @@ in
           "brightness"
           "icefish/phone-connect:bar"
           "battery"
+          "control-center"
           "session"
         ];
       };
@@ -148,9 +148,8 @@ in
             {
               cx,
               cy,
-              placement_width ? 0.0,
-              placement_height ? 0.0,
-              styled ? true,
+              placement_width,
+              placement_height,
             }:
             {
               inherit
@@ -164,7 +163,28 @@ in
               box_height = 196.0;
               rotation = 0.0;
               type = "login_box";
-              settings = loginBoxOptions // lib.optionalAttrs styled loginBoxStyle;
+              settings = loginBoxOptions // loginBoxStyle;
+            };
+          clock =
+            output:
+            {
+              cx,
+              cy,
+              placement_width,
+              placement_height,
+            }:
+            {
+              inherit
+                output
+                cx
+                cy
+                placement_width
+                placement_height
+                ;
+              box_width = 288.0;
+              box_height = 160.0;
+              rotation = 0.0;
+              type = "clock";
             };
         in
         {
@@ -175,6 +195,7 @@ in
             "lockscreen-login-box@eDP-1"
             "lockscreen-login-box@DP-2"
             "lockscreen-widget-clock"
+            "lockscreen-widget-clock@HDMI-A-1"
           ];
           grid = {
             cell_size = 16;
@@ -194,22 +215,24 @@ in
               placement_width = 1920.0;
               placement_height = 1080.0;
             };
-            # Unstyled, as it was in the UI; drop `styled` to match the others.
             "lockscreen-login-box@DP-2" = loginBox "DP-2" {
               cx = 960.0;
               cy = 957.0;
-              styled = false;
-            };
-            "lockscreen-widget-clock" = {
-              box_width = 288.0;
-              box_height = 160.0;
-              cx = 960.0;
-              cy = 220.0;
-              output = "eDP-1";
               placement_width = 1920.0;
               placement_height = 1080.0;
-              rotation = 0.0;
-              type = "clock";
+            };
+            "lockscreen-widget-clock" = clock "eDP-1" {
+              cx = 960.0;
+              cy = 220.0;
+              placement_width = 1920.0;
+              placement_height = 1080.0;
+            };
+            # Same offset from the top as on eDP-1, centred on the wider screen.
+            "lockscreen-widget-clock@HDMI-A-1" = clock "HDMI-A-1" {
+              cx = 1280.0;
+              cy = 220.0;
+              placement_width = 2560.0;
+              placement_height = 1440.0;
             };
           };
         };
@@ -295,6 +318,12 @@ in
         default.path = "${wallpapers}/${defaultWallpaper}";
       };
       widget = {
+        # The NixOS snowflake instead of noctalia's own logo, tinted like the
+        # other bar icons (there is no NixOS glyph in its tabler icon set).
+        control-center = {
+          custom_image = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+          custom_image_colorize = true;
+        };
         media.hide_when_no_media = true;
         tray.hidden = [ "nm-applet" ];
         battery.hide_when_full = true;
