@@ -20,14 +20,20 @@
   # supplied via sops as `bulwark/env`, an environment file holding:
   #   SESSION_SECRET=<openssl rand -base64 32>
   #
-  # First launch: with JMAP_SERVER_URL preset, Bulwark still runs a one-time
-  # web setup wizard (server probe, auth mode, admin account). Visit
-  # https://webmail.agrshv.dev and complete it; the wizard writes config + an
-  # admin password hash into the /app/data/admin volume below.
+  # Admin console (/admin): the setup wizard is skipped because JMAP_SERVER_URL
+  # is preset, so no admin password exists until one is bootstrapped — add
+  # ADMIN_PASSWORD=… to `bulwark/env`, deploy once (Bulwark hashes it into
+  # /app/data/admin/admin.json, after which the variable is ignored), then drop
+  # it again. Stalwart Admin-role accounts get in without it
+  # (STALWART_ADMIN_ACCESS=auto, the default).
   virtualisation.oci-containers = {
     backend = "podman";
     containers.bulwark = {
-      image = "ghcr.io/bulwarkmail/webmail:latest";
+      # Digest-pinned: podman never re-pulls a tag it already has, so :latest
+      # silently froze at the first pull. Bump deliberately. 1.18+ is needed
+      # for Stalwart 1.0 (then run Admin > Authentication > Auto-configure
+      # OAuth once).
+      image = "ghcr.io/bulwarkmail/webmail:1.20.0@sha256:df2074bd1f714f89643da127acf547d4167b4960a22cc1a3fa1570b4584ad16f";
       autoStart = true;
       # Loopback only; nginx terminates TLS and applies the country gate.
       ports = [ "127.0.0.1:3456:3000" ];
