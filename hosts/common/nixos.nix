@@ -1,4 +1,9 @@
-{ lib, pkgs-unstable, ... }:
+{
+  lib,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
 {
   # security.lockKernelModules = true;
 
@@ -56,6 +61,35 @@
     # until stable catches up.
     package = pkgs-unstable.netbird;
   };
+
+  # System-wide rather than home-manager, so the servers (no home-manager) get
+  # the same config as the laptop. Mainly for sessions that outlive an SSH
+  # connection, and for Claude Code's agent-team split panes, which need tmux.
+  programs.tmux = {
+    enable = true;
+    terminal = "tmux-256color";
+    # Windows and panes from 1, like the niri workspaces and the number row.
+    baseIndex = 1;
+    clock24 = true;
+    # The 500ms default makes Esc lag in editors and Claude Code.
+    escapeTime = 10;
+    historyLimit = 50000;
+    extraConfig = ''
+      set -g mouse on
+      set -g renumber-windows on
+      # Editors and Claude Code redraw/refresh on focus changes.
+      set -g focus-events on
+      # Ghostty does truecolor, and modified keys like Shift+Enter (newline in
+      # Claude Code) only get through with extended keys.
+      set -as terminal-features ",xterm-ghostty:RGB:extkeys"
+      set -s extended-keys on
+    '';
+  };
+
+  # Ghostty's terminfo, which this ncurses doesn't ship yet. Over SSH from
+  # Ghostty, TERM is xterm-ghostty, and without the entry tmux refuses to start
+  # ("missing or unsuitable terminal") and other TUIs fall back to dumb.
+  environment.systemPackages = [ pkgs.ghostty.terminfo ];
 
   services.openssh = {
     enable = true;
