@@ -295,7 +295,7 @@ in
           # (Noctalia {Dark,Light}[ Transparent]); programs/zed.nix selects by
           # name. discord: writes three stylesheets into the themes directory
           # of whichever clients are installed — programs/vesktop.nix enables
-          # noctalia-material.theme.css. telegram: drops a .tdesktop-theme into
+          # noctalia.theme.css (midnight). telegram: drops a .tdesktop-theme into
           # ~/.config/telegram-desktop/themes, which has to be picked once from
           # Settings → Chat Settings → Themes, as the client keeps that choice
           # in its own state. None of these three has an apply hook, so read-only
