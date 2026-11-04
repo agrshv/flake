@@ -259,8 +259,11 @@ in
       };
       theme = {
         mode = "light";
-        source = "builtin";
-        builtin = "Gruvbox";
+        # Palette generated from the current wallpaper (default m3-content
+        # scheme), so it changes with wallpaper.automation below, and every
+        # template follows. `source = "builtin"; builtin = "Gruvbox";` was the
+        # previous fixed palette.
+        source = "wallpaper";
         # Apps whose colours noctalia owns.
         # Both lists are opt-in: empty `builtin_ids`/`community_ids` apply
         # nothing, so only what is named here is ever written.
@@ -327,6 +330,13 @@ in
         # the one it starts on, which home-manager links in below.
         directory = wallpapers;
         default.path = "${wallpapers}/${defaultWallpaper}";
+        # Cycle through `directory` at random every hour; each change also
+        # re-themes (theme.source) and syncs to the greeter. Hourly rather
+        # than the 30-minute default since every change repaints all apps.
+        automation = {
+          enabled = true;
+          interval_seconds = 3600;
+        };
       };
       # Blur and tint the wallpaper behind open panels (launcher, control
       # centre, ...).
