@@ -54,6 +54,11 @@
     # if you are reusing this flake, drop this input and the two
     # `inputs.work.*Modules.default` lines in mkWorkstation below.
     work.url = "git+ssh://git@github.com/agrshv/flake-work.git";
+    # Nightly job-ad scout for drake; private repo, fetched over SSH like work.
+    jobscout = {
+      url = "git+ssh://git@github.com/agrshv/jobscout.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

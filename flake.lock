@@ -78,6 +78,26 @@
         "type": "github"
       }
     },
+    "jobscout": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793727491,
+        "narHash": "sha256-hUOCYFNmXc1bprtd7ysCSLplBttdIlFTeSGmff4r79U=",
+        "ref": "refs/heads/main",
+        "rev": "455003de2c654dbf89074a1d26fb4407bff8aa6d",
+        "revCount": 1,
+        "type": "git",
+        "url": "ssh://git@github.com/agrshv/jobscout.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/agrshv/jobscout.git"
+      }
+    },
     "nix-index-database": {
       "inputs": {
         "nixpkgs": [
@@ -222,6 +242,7 @@
       "inputs": {
         "disko": "disko",
         "home-manager": "home-manager",
+        "jobscout": "jobscout",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",

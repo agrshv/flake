@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   me = import ../common/me.nix;
 in
@@ -15,7 +20,8 @@ in
     ./mollysocket.nix
     ./postgresql.nix
     ./restic.nix
-    ./jobscout
+    ./jobscout.nix
+    inputs.jobscout.nixosModules.default
   ];
 
   # Same scheme as home-server: the host decrypts with its own SSH host key
