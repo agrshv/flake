@@ -10,6 +10,11 @@
       # read-only store symlink, so the pointer is set here instead. The hook
       # sees it is already correct and leaves the file alone.
       theme = "noctalia";
+      # Colour the tab/title bar from that theme rather than from GTK. GTK reads
+      # noctalia's gtk.css only at startup, and one long-lived ghostty process
+      # serves every window, so the bar kept a stale palette; the theme file is
+      # reloaded live on every palette change.
+      window-theme = "ghostty";
       # Ghostty binds ctrl+enter to toggle_fullscreen on Linux by default;
       # unbind it so the key reaches the app (e.g. Claude Code) instead.
       keybind = [ "ctrl+enter=unbind" ];
