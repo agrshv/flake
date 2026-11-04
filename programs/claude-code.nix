@@ -302,6 +302,8 @@
         );
       };
 
+      # No "while you were away" session recap after 5+ idle minutes.
+      awaySummaryEnabled = false;
       tui = "fullscreen";
       theme = "auto";
       agentPushNotifEnabled = true;
