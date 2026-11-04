@@ -25,6 +25,7 @@ in
 
     ./arr.nix
     ./authelia.nix
+    ./blocky.nix
     ./bulwark.nix
     ./forgejo.nix
     ./forgejo-runner.nix
