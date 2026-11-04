@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   # Forgejo Actions runner (forgejo-runner, the maintained `act` fork). Registers
   # against the local Forgejo at git.agrshv.dev and runs workflow jobs in
@@ -34,7 +39,35 @@
     enable = true;
     autoPrune.enable = true;
     defaultNetwork.settings.dns_enabled = true;
+    # podman 5.8.7/5.8.8 (buildah 1.43.4) refuse archive copies through an
+    # absolute symlink, and Debian images ship /var/run -> /run, where the
+    # runner copies every action: "statat var/run/act/...: path escapes from
+    # parent". Fixed in 5.8.9 (buildah 1.43.5), which nixpkgs doesn't have
+    # yet; podman-container-tools/podman#29805. Drops out by itself once it
+    # does.
+    package = lib.mkIf (lib.versionOlder pkgs.podman.version "5.8.9") (
+      pkgs.podman.overrideAttrs {
+        version = "5.8.9";
+        src = pkgs.fetchFromGitHub {
+          owner = "podman-container-tools";
+          repo = "podman";
+          tag = "v5.8.9";
+          hash = "sha256-nIWwG5QyIent0vJtEm8zDQLbqfTZmD4oKMbf2N5r2wA=";
+        };
+      }
+    );
   };
+  # Containers' aardvark-dns forwards to the host's resolv.conf by default,
+  # which is NetBird's resolver. That one answers plain (non-EDNS) queries with
+  # uncompressed responses over 512 bytes and no TC bit — 588 bytes for
+  # registry.npmjs.org AAAA — which aardvark drops, so musl images (job
+  # containers) fail with EAI_AGAIN. Blocky (./blocky.nix) compresses and
+  # stays well under, and answers git.agrshv.dev itself for actions/checkout;
+  # Cloudflare is the fallback if blocky is down.
+  virtualisation.containers.containersConf.settings.containers.dns_servers = [
+    "192.168.88.23"
+    "1.1.1.1"
+  ];
 
   services.gitea-actions-runner = {
     package = pkgs.forgejo-runner;
