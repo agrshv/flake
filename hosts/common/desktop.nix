@@ -100,6 +100,10 @@ in
   services.displayManager.noctalia-greeter = {
     enable = true;
     package = inputs.noctalia-greeter.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    # noctalia's greeter_sync.auto_sync (programs/noctalia.nix) pushes every
+    # theme/wallpaper change here; without this each one is a polkit prompt.
+    # The passwordless path is appearance-only and never takes a session command.
+    passwordless-sync-users = [ me.user ];
     settings = {
       cursor = {
         theme = "Adwaita";
