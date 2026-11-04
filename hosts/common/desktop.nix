@@ -70,10 +70,13 @@ in
       extra-substituters = [
         "https://noctalia.cachix.org"
         "https://nkl-sofka.cachix.org"
+        # umbriel + its portal, built and pushed by .github/workflows/check.yml.
+        "https://agrshv.cachix.org"
       ];
       extra-trusted-public-keys = [
         "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
         "nkl-sofka.cachix.org-1:hLg9frFNJynrxe7SSBb/p6pbawlpZmG10bw+wLsTufw="
+        "agrshv.cachix.org-1:XiYuLBe6RL8hAgYB8Yi9/7dxk+OJMmOGTs2CGgJrsQQ="
       ];
     };
     registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;

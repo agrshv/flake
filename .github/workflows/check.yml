@@ -1,6 +1,9 @@
 # Formatting and evaluation of every host on each push. Evaluation only
-# (--no-build): building the closures here would mean compiling umbriel and
-# friends from source on every run.
+# (--no-build) for the hosts; on master, umbriel and its portal (which have no
+# upstream binary cache) are then built and pushed to agrshv.cachix.org so the
+# laptop substitutes them instead of compiling after every lock update. Only
+# those two are pushed: the cache is public, and a full system build would
+# drag in config generated from the private `work` input.
 #
 # The `work` and `jobscout` inputs are private repos fetched over SSH. Each
 # gets its own read-only deploy key (GitHub scopes a deploy key to one repo):
@@ -47,3 +50,18 @@ jobs:
           done
       - run: nix fmt -- --ci
       - run: nix flake check --no-build --all-systems
+      - uses: cachix/cachix-action@v16
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: agrshv
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          # Push explicitly below instead of everything the job built.
+          skipPush: true
+      - name: Build and cache umbriel
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          # The laptop's own derivations (built against our nixpkgs-unstable),
+          # not the umbriel flake's packages, so the hashes match.
+          cfg=.#nixosConfigurations.work-laptop.config.programs.umbriel
+          nix build --no-link --print-out-paths "$cfg.package" "$cfg.portalPackage" \
+            | cachix push agrshv
