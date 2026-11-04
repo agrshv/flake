@@ -46,14 +46,24 @@ in
     systemd.enable = true;
     settings = {
       bar.default = {
+        # Floating off the screen edge, slightly translucent so niri's blur
+        # (the noctalia layer-rule in programs/niri.nix) shows through, with
+        # every widget in its own pill.
+        margin_edge = 6;
+        background_opacity = 0.85;
+        capsule = true;
+        # control-center wears the NixOS snowflake (widget.control-center
+        # below), so it leads the bar like a distro logo.
         start = [
+          "control-center"
           "launcher"
           "workspaces"
         ];
         # noctalia's default end list (config_types.h), restated in full because
         # setting `end` replaces it rather than appending, minus `clipboard`
-        # (shell.clipboard_enabled is off), plus the recorder before the tray
-        # and the phone-connect widget next to the laptop's own battery.
+        # (shell.clipboard_enabled is off) and `control-center` (moved to
+        # `start`), plus the recorder before the tray and the phone-connect
+        # widget next to the laptop's own battery.
         end = [
           "media"
           "noctalia/screen_recorder:recorder"
@@ -65,7 +75,6 @@ in
           "brightness"
           "icefish/phone-connect:bar"
           "battery"
-          "control-center"
           "session"
         ];
       };
@@ -240,6 +249,8 @@ in
       shell = {
         # Installed system-wide in hosts/common/desktop.nix.
         font_family = "Inter";
+        # Rounded screen corners, matching the bar's.
+        screen_corners.enabled = true;
         polkit_agent = true;
         launch_apps_as_systemd_services = true;
         readline_shortcuts = true;
@@ -317,6 +328,9 @@ in
         directory = wallpapers;
         default.path = "${wallpapers}/${defaultWallpaper}";
       };
+      # Blur and tint the wallpaper behind open panels (launcher, control
+      # centre, ...).
+      backdrop.enabled = true;
       widget = {
         # The NixOS snowflake instead of noctalia's own logo, tinted like the
         # other bar icons (there is no NixOS glyph in its tabler icon set).
