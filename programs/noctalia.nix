@@ -41,6 +41,21 @@ in
 
   home.file."Media/Pictures/Wallpapers/${defaultWallpaper}".source = defaultWallpaperFile;
 
+  # noctalia's lockscreen editor saves the whole layout it shows into its state
+  # file (even on "Done" with nothing moved, and again later from memory), and
+  # that table overrides lockscreen_widgets below — so after one visit the Nix
+  # layout silently stops applying. Drop it before every start; the module
+  # already restarts noctalia when its config changes.
+  systemd.user.services.noctalia.Service.ExecStartPre =
+    "${pkgs.writeShellScript "noctalia-drop-lockscreen-state" ''
+      f="${config.xdg.stateHome}/noctalia/settings.toml"
+      [ -f "$f" ] || exit 0
+      ${pkgs.gawk}/bin/awk '
+        /^[[:space:]]*\[/ { skip = ($0 ~ /^[[:space:]]*\[\[?lockscreen_widgets[].]/) }
+        !skip
+      ' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+    ''}";
+
   programs.noctalia = {
     enable = true;
     systemd.enable = true;
