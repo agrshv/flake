@@ -60,7 +60,9 @@ in
     };
     plymouth = {
       enable = true;
-      font = "${pkgs.dejavu_fonts.minimal}/share/fonts/truetype/DejaVuSans.ttf";
+      # Same UI font as noctalia and the greeter (hosts/common/desktop.nix).
+      # The variable font renders at its default (Regular) weight.
+      font = "${pkgs.inter}/share/fonts/truetype/InterVariable.ttf";
     };
   };
 

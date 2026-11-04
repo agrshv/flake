@@ -215,6 +215,8 @@ in
         };
       nightlight.enabled = true;
       shell = {
+        # Installed system-wide in hosts/common/desktop.nix.
+        font_family = "Inter";
         polkit_agent = true;
         launch_apps_as_systemd_services = true;
         readline_shortcuts = true;

@@ -105,6 +105,7 @@ in
     # The passwordless path is appearance-only and never takes a session command.
     passwordless-sync-users = [ me.user ];
     settings = {
+      appearance.font_family = "Inter";
       cursor = {
         theme = "Adwaita";
         size = 24;
@@ -161,11 +162,18 @@ in
   };
 
   fonts.packages = with pkgs; [
+    inter
     noto-fonts
     noto-fonts-cjk-sans
     nerd-fonts.jetbrains-mono
     jetbrains-mono
     nerd-fonts.symbols-only
+  ];
+  # UI font for noctalia (shell.font_family), the greeter, and anything that
+  # asks for plain `sans-serif` — which otherwise resolves to DejaVu Sans.
+  fonts.fontconfig.defaultFonts.sansSerif = [
+    "Inter"
+    "Noto Sans"
   ];
 
   services.syncthing = {
