@@ -28,6 +28,17 @@ in
 
   time.timeZone = "Asia/Almaty";
 
+  # Kill the worst offender when memory pressure stalls the session, instead of
+  # thrashing swap for minutes until the kernel OOM killer finally acts. oomd
+  # runs by default but watches no slice until told to: these kill a cgroup
+  # stalled on memory >80% of the time for 20s, and the root-slice swap rule
+  # kills the biggest swap user once swap is 90% full.
+  systemd.oomd = {
+    enableRootSlice = true;
+    enableUserSlices = true;
+  };
+  systemd.slices."-".sliceConfig.ManagedOOMSwap = "kill";
+
   users.users.${me.user} = {
     isNormalUser = true;
     uid = 1000;

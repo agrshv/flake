@@ -31,8 +31,17 @@
     };
     # Hard-link identical files in the store to reclaim space after each build.
     optimise.automatic = true;
+    # Builds run in the daemon, so priority has to be set here: idle CPU and
+    # IO scheduling keeps the desktop responsive while a build uses every core.
+    daemonCPUSchedPolicy = "idle";
+    daemonIOSchedClass = "idle";
     channel.enable = false;
   };
+
+  # Every host has a disk swapfile (disko). zswap keeps recently swapped pages
+  # compressed in RAM and writes only the coldest to disk once its pool fills,
+  # so swapping stays cheap. Module defaults: zstd, zsmalloc, 25% pool, shrinker.
+  boot.zswap.enable = true;
 
   services.netbird = {
     enable = true;
