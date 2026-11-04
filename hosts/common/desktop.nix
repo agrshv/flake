@@ -13,6 +13,11 @@ in
     inputs.umbriel.nixosModules.default
   ];
   sops.age.keyFile = "/home/${me.user}/.config/sops/age/keys.txt";
+  # The key lives on /home, which isn't mounted yet when the default activation
+  # script decrypts secrets (in the initrd), so system secrets (the Office VPN
+  # key, flake-work) never appeared after a boot. As a unit it waits for the
+  # key file's mount.
+  sops.useSystemdActivation = true;
 
   nixpkgs.config = {
     allowUnfree = true;
