@@ -85,11 +85,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793783797,
-        "narHash": "sha256-wJiZVRQJLU5N920LlwA8O3w3/Mo8DPr2p8exQD0gxgE=",
+        "lastModified": 1793786551,
+        "narHash": "sha256-+hxxHKZ+DsB9silbZHYV0vuAc9TtuKpEXQK7uOb0asc=",
         "ref": "refs/heads/main",
-        "rev": "fe87aa7d2754640a0ddca0b4785eb5461c7f22a3",
-        "revCount": 6,
+        "rev": "eccc86be4ac5946b29108f139e36c7a7410fc37d",
+        "revCount": 7,
         "type": "git",
         "url": "ssh://git@github.com/agrshv/jobscout.git"
       },

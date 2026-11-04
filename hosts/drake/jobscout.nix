@@ -17,6 +17,9 @@
       config.sops.secrets."ntfy/env".path
       config.sops.secrets."jobscout/env".path
     ];
+    # `ssh drake sudo jobscout-db list` without a password: Claude reads the
+    # night's matches from here instead of him copying them out of ntfy.
+    dbUsers = [ "agrshv" ];
     # 05:00 UTC = 10:00 Almaty: yesterday's German ads, read over breakfast.
     # Clear of postgresqlBackup (02:00) and restic (03:00).
     onCalendar = "*-*-* 05:00:00";
