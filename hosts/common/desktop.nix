@@ -119,7 +119,12 @@ in
         layout = "HDMI-A-1:0,0; eDP-1:0,1440";
         refresh_rate = "DP-2:240; HDMI-A-1:100";
       };
-      appearance.font_family = "Inter";
+      appearance = {
+        font_family = "Inter";
+        # Cycle glyph shapes in the password field instead of plain dots.
+        password_style = "random";
+        hide_logo = true;
+      };
       cursor = {
         theme = "Adwaita";
         size = 24;
