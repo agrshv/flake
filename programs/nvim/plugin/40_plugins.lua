@@ -171,6 +171,18 @@ end)
 -- See `:h MiniSnippets.gen_loader.from_lang()`.
 later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 
+-- Habits =====================================================================
+
+-- 'm4xshen/hardtime.nvim' blocks repeated hjkl/arrow presses and hints at the
+-- faster motion instead, to unlearn the habits brought over from other
+-- editors. Hints show in insert and visual mode too, since 'showmode' is off
+-- (see 'plugin/10_options.lua'). `:Hardtime report` lists the most common
+-- offences; `:Hardtime toggle` turns it off for a session.
+later(function()
+  add({ 'https://github.com/MunifTanjim/nui.nvim', 'https://github.com/m4xshen/hardtime.nvim' })
+  require('hardtime').setup()
+end)
+
 -- Honorable mentions =========================================================
 
 -- 'mason-org/mason.nvim' (a.k.a. "Mason") is a great tool (package manager) for
