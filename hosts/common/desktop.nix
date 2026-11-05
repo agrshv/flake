@@ -187,7 +187,6 @@ in
     inter
     noto-fonts
     noto-fonts-cjk-sans
-    nerd-fonts.jetbrains-mono
     jetbrains-mono
     nerd-fonts.symbols-only
   ];
