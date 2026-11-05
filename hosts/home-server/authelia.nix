@@ -1,4 +1,4 @@
-{ ... }:
+_:
 let
   # Where Authelia keeps its runtime state. systemd's StateDirectory creates
   # this as authelia-main:authelia-main 0700 on start.

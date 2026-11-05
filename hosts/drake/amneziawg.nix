@@ -60,7 +60,7 @@ in
     };
 
     peers = map (p: {
-      publicKey = p.publicKey;
+      inherit (p) publicKey;
       presharedKeyFile = config.sops.secrets."amneziawg/psk-${p.name}".path;
       allowedIPs = [ "${p.ip}/32" ];
     }) peers;

@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   programs.direnv = {
     enable = true;
     # Caches nix-shell/flake environments in .direnv/ so entering a directory

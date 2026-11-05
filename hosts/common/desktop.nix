@@ -197,7 +197,7 @@
 
   services.syncthing = {
     enable = true;
-    user = me.user;
+    inherit (me) user;
     dataDir = "/home/${me.user}";
     openDefaultPorts = true;
     settings = {

@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   # drake's own layout: the same GPT + btrfs-subvolume scheme as
   # ../common/disko.nix, minus LUKS — a headless cloud VM has no TPM and
   # nobody at a console, so a passphrase would strand every reboot. The boot

@@ -1,8 +1,3 @@
-{ pkgs, lib, ... }:
-
-let
-  ghostty = lib.getExe pkgs.ghostty;
-in
 {
   # Session/portal/package come from the umbriel flake's NixOS module
   # (hosts/common/desktop.nix); this module only writes
@@ -80,7 +75,7 @@ in
     #   };
 
     #   keybinds = {
-    #     "Mod+Return" = "spawn:${ghostty}";
+    #     "Mod+Return" = "spawn:ghostty";
     #     "Mod+Shift+Q" = "window-close";
 
     #     # Built-in Mod+Escape is session-quit; lock wins (niri/sway habit)

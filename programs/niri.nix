@@ -6,9 +6,6 @@
 
 let
   ghostty = lib.getExe pkgs.ghostty;
-  grim = lib.getExe pkgs.grim;
-  slurp = lib.getExe pkgs.slurp;
-  wlCopy = lib.getExe' pkgs.wl-clipboard "wl-copy";
 
   # When the Lenovo is unplugged niri appends its workspaces after the laptop's;
   # pull them to the front instead, so they stay on Mod+1/2 there too. Fires on
