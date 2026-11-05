@@ -48,6 +48,11 @@
   # so swapping stays cheap. Module defaults: zstd, zsmalloc, 25% pool, shrinker.
   boot.zswap.enable = true;
 
+  # Every host is btrfs (disko). A monthly scrub re-reads all data against its
+  # checksums, so silent corruption shows up in the journal while the other
+  # copies (restic, syncthing) are still good, not on the day a file is needed.
+  services.btrfs.autoScrub.enable = true;
+
   services.netbird = {
     enable = true;
     # nixos-26.05 ships netbird 0.71.4, which predates the protocol change that
