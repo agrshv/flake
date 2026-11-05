@@ -148,14 +148,15 @@
         };
 
       # A headless server: NixOS with disko + sops, no home-manager.
+      # `hostSystem` overrides the default x86_64 platform (drake).
       mkServer =
         {
           host,
-          system ? "x86_64-linux",
+          hostSystem ? system,
         }:
         nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = specialArgsFor system;
+          system = hostSystem;
+          specialArgs = specialArgsFor hostSystem;
           modules = [
             inputs.disko.nixosModules.disko
             inputs.sops-nix.nixosModules.sops
@@ -180,7 +181,7 @@
         #   nixos-rebuild switch --flake .#drake --target-host drake --build-host drake --sudo --ask-sudo-password
         drake = mkServer {
           host = "drake";
-          system = "aarch64-linux";
+          hostSystem = "aarch64-linux";
         };
 
         # Thin bootstrap ISO — see INSTALL.md. Build with `nix build .#installer-iso`.
