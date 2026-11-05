@@ -66,7 +66,6 @@ in
       gh
       ouch
       btop
-      vim
       wl-clipboard
       pkgs-unstable.fluxcd
       # Kubernetes TUI — see the sofka input in flake.nix.
