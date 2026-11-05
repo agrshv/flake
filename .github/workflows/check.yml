@@ -24,6 +24,10 @@ jobs:
           work-deploy-key: ${{ secrets.WORK_DEPLOY_KEY }}
           jobscout-deploy-key: ${{ secrets.JOBSCOUT_DEPLOY_KEY }}
       - run: nix fmt -- --ci
+      # Linters from the locked nixpkgs. hardware-configuration.nix is
+      # generated (and regenerated on reinstall), so it is left as written.
+      - run: nix run --inputs-from . nixpkgs#statix -- check
+      - run: nix run --inputs-from . nixpkgs#deadnix -- --fail --exclude hosts/*/hardware-configuration.nix
       - run: nix flake check --no-build --all-systems
       - uses: cachix/cachix-action@3ba601ff5bbb07c7220846facfa2cd81eeee15a1 # v16
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
