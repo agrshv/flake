@@ -22,6 +22,14 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Remote deploys of the servers (`deploy .#<host>`), with rollback if the
+    # box stops answering after activation. Only its lib is used: the
+    # deploy-rs binary and activate-rs come from our nixpkgs (see deployPkgs),
+    # so they're substituted from cache.nixos.org instead of built.
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -109,6 +117,36 @@
         system.configurationRevision = self.rev or self.dirtyRev or "dirty";
       };
 
+      # deploy-rs' lib per system, with the deploy-rs package swapped for
+      # nixpkgs' own build (the overlay pattern from its README): activate-rs
+      # lands in every deployed closure, and nixpkgs' copy is in the binary
+      # cache for aarch64 too, so drake doesn't compile it.
+      deployLib = nixpkgs.lib.genAttrs systems (
+        sys:
+        (import nixpkgs {
+          system = sys;
+          overlays = [
+            inputs.deploy-rs.overlays.default
+            (_: super: {
+              deploy-rs = {
+                inherit (nixpkgs.legacyPackages.${sys}) deploy-rs;
+                inherit (super.deploy-rs) lib;
+              };
+            })
+          ];
+        }).deploy-rs.lib
+      );
+
+      # A deploy-rs node for one of nixosConfigurations, reached at `hostname`.
+      mkNode = name: hostname: {
+        inherit hostname;
+        profiles.system.path =
+          let
+            host = self.nixosConfigurations.${name};
+          in
+          deployLib.${host.pkgs.stdenv.hostPlatform.system}.activate.nixos host;
+      };
+
       # A graphical workstation: NixOS + home-manager for me.user with the shared
       # desktop/work modules wired in. `host` names a directory under ./hosts.
       mkWorkstation =
@@ -169,16 +207,11 @@
       nixosConfigurations = {
         work-laptop = mkWorkstation "work-laptop";
 
-        # Headless. Deploy with either:
-        #   nh os switch -H home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev
-        #   nixos-rebuild switch --flake .#home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev --sudo --ask-sudo-password
+        # Headless. Deployed with deploy-rs; see `deploy` below.
         home-server = mkServer { host = "home-server"; };
 
         # Oracle Cloud Ampere VM (aarch64, UEFI, virtio). Headless; no LUKS.
-        # Install and day-2 deploys: see INSTALL.md "drake". Closures are built
-        # on the box itself — this machine can't build aarch64 locally:
-        #   nh os switch -H drake --target-host drake --build-host drake
-        #   nixos-rebuild switch --flake .#drake --target-host drake --build-host drake --sudo --ask-sudo-password
+        # Install: see INSTALL.md "drake". Deployed with deploy-rs.
         drake = mkServer {
           host = "drake";
           hostSystem = "aarch64-linux";
@@ -208,8 +241,45 @@
         )
         // {
           treefmt = treefmt.${sys}.config.build.check self;
+          # No deploy-rs deployChecks: even its schema check takes every node's
+          # profile as input, so it would build home-server and drake here.
+          # `deploy` validates the same schema itself before it does anything.
         }
       );
+
+      # `nix run .#deploy -- .#home-server` (or `.#drake`, or `.` for both).
+      # Logs in as me.user, builds on the target itself (drake is aarch64, and
+      # home-server builds its own closures), and asks once for the sudo
+      # password (Bitwarden: "home-server sudo" / "drake sudo"). Activation
+      # rolls back on its own unless deploy-rs can still reach the box
+      # afterwards, so a firewall or netbird mistake can't lock it out.
+      deploy = {
+        sshUser = me.user;
+        user = "root";
+        interactiveSudo = true;
+        remoteBuild = true;
+        nodes = {
+          home-server = mkNode "home-server" "home-server.agrshv.dev";
+          drake = mkNode "drake" "drake";
+        };
+      };
+
+      # --skip-checks: deploy-rs otherwise runs a plain `nix flake check` first,
+      # which builds every check for this machine — home-server's whole system
+      # included. CI already evaluates every host on each push.
+      apps.${system}.deploy =
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          type = "app";
+          program = toString (
+            pkgs.writeShellScript "deploy" ''
+              exec ${nixpkgs.lib.getExe' pkgs.deploy-rs "deploy"} --skip-checks "$@"
+            ''
+          );
+          meta.description = "Deploy home-server and drake with deploy-rs";
+        };
 
       packages.${system}.installer-iso = self.nixosConfigurations.installer.config.system.build.isoImage;
 

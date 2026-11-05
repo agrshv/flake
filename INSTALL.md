@@ -130,15 +130,7 @@ nix run github:nix-community/nixos-anywhere -- \
 git commit -am "drake: regenerate hardware config" && git push
 ```
 
-Day-2 deploys evaluate locally and build on the box, logged in as your user
-(root login is disabled); nh prompts for the "drake sudo" password from
-Bitwarden to activate:
-
-```sh
-nh os switch -H drake --target-host drake --build-host drake
-# or:
-nixos-rebuild switch --flake .#drake --target-host drake --build-host drake --sudo --ask-sudo-password
-```
+Day-2 deploys go through deploy-rs (see "Day-2 deploys"): `nix run .#deploy -- .#drake`.
 
 Break-glass: OCI web console → Instance → Console Connection (serial console
 is on the kernel cmdline); log in as `agrshv` with the "drake sudo" password
@@ -226,9 +218,18 @@ loginctl terminate-user d3spair && pkill -u d3spair
 ## Day-2 deploys
 
 ```sh
-nh os switch                                                    # local, as your user
-nh os switch -H home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev
-nixos-rebuild switch --flake .#home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev --sudo --ask-sudo-password
+nh os switch                         # this machine
+nix run .#deploy -- .#home-server    # one server
+nix run .#deploy -- .#drake
+nix run .#deploy -- .                # both servers
 ```
+
+The servers go through deploy-rs (`deploy` in `flake.nix`). It evaluates
+locally, logs in as your user (root login is disabled), builds on the server
+itself, and asks once for its sudo password (Bitwarden: "home-server sudo" /
+"drake sudo"). After activation it has to reach the box again within 30s or the
+box rolls itself back to the previous generation, so a firewall, SSH or netbird
+mistake can't lock you out. The app passes `--skip-checks`: deploy-rs would
+otherwise run a plain `nix flake check` first, building every host locally.
 
 Run these as your user, not root: the `work` input is fetched with your agent.
