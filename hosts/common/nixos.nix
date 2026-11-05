@@ -111,6 +111,13 @@
     };
   };
 
+  # Hardware comes from each host's facter report (flake.nix), but not its
+  # networking: facter's DHCP module sets useDHCP on every interface the report
+  # lists. On the laptop that starts dhcpcd next to NetworkManager; the servers
+  # already DHCP every interface by default; and a report taken with a tunnel
+  # up (drake's awg0) would put DHCP on the tunnel too.
+  hardware.facter.detected.dhcp.enable = false;
+
   # Show asterisks while typing the sudo password.
   security.sudo.extraConfig = ''
     Defaults pwfeedback

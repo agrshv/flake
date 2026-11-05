@@ -117,6 +117,14 @@
         system.configurationRevision = self.rev or self.dirtyRev or "dirty";
       };
 
+      # Hardware detection from each host's nixos-facter report (kernel
+      # modules, microcode, firmware, platform), in place of a generated
+      # hardware-configuration.nix. Regenerate on the host (see INSTALL.md):
+      #   sudo nix run nixpkgs#nixos-facter -- -o hosts/<host>/facter.json
+      facter = host: {
+        hardware.facter.reportPath = ./hosts/${host}/facter.json;
+      };
+
       # deploy-rs' lib per system, with the deploy-rs package swapped for
       # nixpkgs' own build (the overlay pattern from its README): activate-rs
       # lands in every deployed closure, and nixpkgs' copy is in the binary
@@ -181,6 +189,7 @@
               };
             }
             revision
+            (facter host)
             ./hosts/${host}
           ];
         };
@@ -199,6 +208,7 @@
             inputs.disko.nixosModules.disko
             inputs.sops-nix.nixosModules.sops
             revision
+            (facter host)
             ./hosts/${host}
           ];
         };

@@ -8,7 +8,6 @@
 {
   imports = [
     ./disko.nix
-    ./hardware-configuration.nix
     ../common/nixos.nix
     ../common/ntfy-alerts.nix
     ./stalwart.nix
@@ -29,6 +28,10 @@
     defaultSopsFile = ../../secrets/drake.yaml;
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   };
+
+  # OCI's virtual console counts as a monitor in the facter report; there's no
+  # use for Mesa on a headless VM.
+  hardware.facter.detected.graphics.enable = false;
 
   boot.loader = {
     efi.canTouchEfiVariables = true;

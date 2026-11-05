@@ -8,7 +8,6 @@
 {
   imports = [
     ../common/disko.nix
-    ./hardware-configuration.nix
     ../common/nixos.nix
     ../common/ntfy-alerts.nix
 
@@ -53,6 +52,10 @@
     ./vaultwarden.nix
     ./wrtag.nix
   ];
+
+  # facter's AMD module adds amd_pstate=active on any bare-metal AMD box and has
+  # no switch of its own; drop the module to keep amd_pstate off (see above).
+  disabledModules = [ "hardware/facter/amd-cpu.nix" ];
 
   disko.devices.disk.main.device = "/dev/disk/by-id/ata-Apacer_AST280_480GB_0E4080B001124";
 

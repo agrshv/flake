@@ -17,7 +17,6 @@ in
 {
   imports = [
     ../common/disko.nix
-    ./hardware-configuration.nix
     ../common/nixos.nix
     ../common/desktop.nix
 

@@ -41,17 +41,19 @@ read -rs pw && printf '%s' "$pw" > /tmp/disk.key && unset pw
 
 nix run github:nix-community/nixos-anywhere -- \
   --flake .#work-laptop \
-  --generate-hardware-config nixos-generate-config ./hosts/work-laptop/hardware-configuration.nix \
+  --generate-hardware-config nixos-facter ./hosts/work-laptop/facter.json \
   --disk-encryption-keys /tmp/disk.key /tmp/disk.key \
   --target-host nixos@<target-ip>
 
 shred -u /tmp/disk.key
-git commit -am "work-laptop: regenerate hardware config" && git push
+git commit -am "chore(work-laptop): regenerate facter report" && git push
 ```
 
-`--generate-hardware-config` runs `nixos-generate-config` on the live target and
-writes the result into the checkout before installing — use it whenever the
-hardware changed since the file was last generated.
+`--generate-hardware-config` runs `nixos-facter` on the live target and writes
+its hardware report into the checkout before installing — use it whenever the
+hardware changed since the report was last generated. Each host reads
+`hosts/<host>/facter.json` (wired up in `flake.nix`); there is no
+`hardware-configuration.nix`.
 
 Target disk is `disko.devices.disk.main.device`. The shared default is
 `/dev/nvme0n1`; a host whose disk differs — or that gets installed next to a
@@ -75,8 +77,8 @@ repo on a stick (it holds only sops-encrypted secrets) and point the lock at it.
 git clone https://github.com/agrshv/flake && cd flake
 nix flake lock --override-input work path:/run/media/nixos/<stick>/flake-work
 
-# refresh the hardware config from this machine
-sudo nixos-generate-config --no-filesystems --show-hardware-config > hosts/work-laptop/hardware-configuration.nix
+# refresh the hardware report from this machine
+sudo nix run --inputs-from . nixpkgs#nixos-facter -- -o hosts/work-laptop/facter.json
 git add -A
 
 read -rs pw && printf '%s' "$pw" | sudo tee /tmp/disk.key >/dev/null && unset pw
@@ -86,7 +88,7 @@ sudo disko-install --flake .#work-laptop      # host pins its disk; no --disk ne
 
 Alternative to the stick: `ssh -A nixos@<ip>` from a machine whose agent has
 the GitHub key, then `sudo -E disko-install --flake github:agrshv/flake#work-laptop`
-(`-E` keeps `SSH_AUTH_SOCK` for root). Commit the regenerated hardware config
+(`-E` keeps `SSH_AUTH_SOCK` for root). Commit the regenerated facter report
 from the installed system afterwards.
 
 ## drake — Oracle Cloud Ampere VM (aarch64)
@@ -122,12 +124,12 @@ scp 'root@drake:/var/lib/netbird/*.json' /tmp/drake-extra/var/lib/netbird/
 
 nix run github:nix-community/nixos-anywhere -- \
   --flake .#drake \
-  --generate-hardware-config nixos-generate-config ./hosts/drake/hardware-configuration.nix \
+  --generate-hardware-config nixos-facter ./hosts/drake/facter.json \
   --extra-files /tmp/drake-extra \
   --build-on-remote \
   --target-host root@<public-ip>
 
-git commit -am "drake: regenerate hardware config" && git push
+git commit -am "chore(drake): regenerate facter report" && git push
 ```
 
 Day-2 deploys go through deploy-rs (see "Day-2 deploys"): `nix run .#deploy -- .#drake`.
@@ -231,5 +233,12 @@ itself, and asks once for its sudo password (Bitwarden: "home-server sudo" /
 box rolls itself back to the previous generation, so a firewall, SSH or netbird
 mistake can't lock you out. The app passes `--skip-checks`: deploy-rs would
 otherwise run a plain `nix flake check` first, building every host locally.
+
+Hardware reports: after a hardware change, regenerate the host's report on the
+host and commit it:
+
+```sh
+sudo nix run nixpkgs#nixos-facter -- -o facter.json   # then copy to hosts/<host>/facter.json
+```
 
 Run these as your user, not root: the `work` input is fetched with your agent.
