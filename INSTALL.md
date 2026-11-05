@@ -136,6 +136,8 @@ Bitwarden to activate:
 
 ```sh
 nh os switch -H drake --target-host drake --build-host drake
+# or, to also make it the boot default (see "Day-2 deploys"):
+nixos-rebuild switch --flake .#drake --target-host drake --build-host drake --sudo --ask-sudo-password
 ```
 
 Break-glass: OCI web console → Instance → Console Connection (serial console
@@ -226,6 +228,13 @@ loginctl terminate-user d3spair && pkill -u d3spair
 ```sh
 nh os switch                                                    # local, as your user
 nh os switch -H home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev
+nixos-rebuild switch --flake .#home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev --sudo --ask-sudo-password
 ```
+
+`nh` (4.4.2) activates a remote host but never registers the new system
+generation as the boot default, so a reboot rolls it back — home-server did
+exactly that on 2026-10-22 and Immich crash-looped on an already-migrated
+database. `nixos-rebuild` does register it. After an `nh` deploy, check that
+`/nix/var/nix/profiles/system` points at `/run/current-system`.
 
 Run these as your user, not root: the `work` input is fetched with your agent.
