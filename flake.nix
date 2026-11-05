@@ -17,6 +17,11 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # `nix fmt` and its flake check; formatters are configured in ./treefmt.nix.
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -92,6 +97,10 @@
         pkgs-unstable = pkgs-unstable.${sys};
       };
       specialArgs = specialArgsFor system;
+
+      treefmt = nixpkgs.lib.genAttrs systems (
+        sys: inputs.treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${sys} ./treefmt.nix
+      );
 
       # Stamp each host with the commit it was built from, so
       # `nixos-version --configuration-revision` on a box that was deployed by
@@ -188,6 +197,7 @@
       # `nix flake check --no-build` evaluates them all (what CI runs); a plain
       # `nix flake check` also builds this machine's x86_64 hosts, home-server
       # included — slow, so only when a real build is wanted.
+      # Plus `treefmt`, which fails if any file isn't formatted or linted clean.
       checks = nixpkgs.lib.genAttrs systems (
         sys:
         nixpkgs.lib.mapAttrs (_: host: host.config.system.build.toplevel) (
@@ -195,14 +205,16 @@
             _: host: host.pkgs.stdenv.hostPlatform.system == sys
           ) self.nixosConfigurations
         )
+        // {
+          treefmt = treefmt.${sys}.config.build.check self;
+        }
       );
 
       packages.${system}.installer-iso = self.nixosConfigurations.installer.config.system.build.isoImage;
 
-      # `nix fmt` / `nix fmt -- --ci`, in the style every .nix file here is
-      # already written in. nixfmt-tree is nixfmt wrapped in treefmt, so a bare
-      # `nix fmt` walks the whole tree (plain nixfmt would read stdin). aarch64
-      # is covered so it also works on drake.
-      formatter = nixpkgs.lib.genAttrs systems (sys: nixpkgs.legacyPackages.${sys}.nixfmt-tree);
+      # `nix fmt` formats and lints the whole tree; `nix fmt -- --ci` (what CI
+      # runs) fails instead of rewriting. aarch64 is covered so it also works
+      # on drake.
+      formatter = nixpkgs.lib.genAttrs systems (sys: treefmt.${sys}.config.build.wrapper);
     };
 }

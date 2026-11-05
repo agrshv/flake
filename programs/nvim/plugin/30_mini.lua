@@ -193,9 +193,7 @@ now_if_args(function()
   })
 
   -- Set 'omnifunc' for LSP completion only when needed.
-  local on_attach = function(ev)
-    vim.bo[ev.buf].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp'
-  end
+  local on_attach = function(ev) vim.bo[ev.buf].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp' end
   Config.new_autocmd('LspAttach', nil, on_attach, "Set 'omnifunc'")
 
   -- Advertise to servers that Neovim now supports certain set of completion and
