@@ -1,0 +1,50 @@
+# Weekly `nix flake update`, opened as a PR on the update-flake-lock branch
+# (force-pushed, so there is only ever one). PRs made with GITHUB_TOKEN don't
+# trigger other workflows, so check.yml would never run on it: the same
+# fmt + eval runs here before the PR is opened, and check.yml then builds and
+# caches umbriel once the PR is merged to master.
+#
+# Needs Settings → Actions → General → "Allow GitHub Actions to create and
+# approve pull requests".
+name: update-flake-lock
+
+on:
+  schedule:
+    - cron: "0 3 * * 1" # Mondays, 08:00 Asia/Almaty
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@v31
+      - uses: ./.github/actions/private-inputs
+        with:
+          work-deploy-key: ${{ secrets.WORK_DEPLOY_KEY }}
+          jobscout-deploy-key: ${{ secrets.JOBSCOUT_DEPLOY_KEY }}
+      - name: Update inputs
+        run: |
+          nix flake update 2>&1 | tee update.log
+          {
+            echo 'body<<EOF'
+            echo '```'
+            grep -E "^• Updated input|^    '|^  →" update.log || echo 'no changes'
+            echo '```'
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+          rm update.log
+        id: update
+      - run: nix fmt -- --ci
+      - run: nix flake check --no-build --all-systems
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: update-flake-lock
+          commit-message: "chore(flake): update inputs"
+          title: "chore(flake): update inputs"
+          body: ${{ steps.update.outputs.body }}
+          delete-branch: true

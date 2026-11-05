@@ -1,0 +1,42 @@
+# SSH access to the private flake inputs (`work`, `jobscout`), shared by every
+# workflow that evaluates the flake. Each repo gets its own read-only deploy
+# key (GitHub scopes a deploy key to one repo): the public half under that
+# repo's Settings → Deploy keys, the private half as WORK_DEPLOY_KEY /
+# JOBSCOUT_DEPLOY_KEY in this repo's secrets. Nix fetches with the git CLI, so
+# an insteadOf rule per input sends it through an SSH host alias that offers
+# only that repo's key.
+name: Private flake inputs
+description: Deploy keys and git rewrites for the private SSH inputs
+inputs:
+  work-deploy-key:
+    required: true
+  jobscout-deploy-key:
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        WORK_DEPLOY_KEY: ${{ inputs.work-deploy-key }}
+        JOBSCOUT_DEPLOY_KEY: ${{ inputs.jobscout-deploy-key }}
+      run: |
+        install -d -m 700 ~/.ssh
+        # GitHub's published host keys rather than trusting ssh-keyscan.
+        curl -fsS https://api.github.com/meta \
+          | jq -r '.ssh_keys[] | "github.com " + .' > ~/.ssh/known_hosts
+        for repo in flake-work jobscout; do
+          case $repo in
+            flake-work) key=$WORK_DEPLOY_KEY ;;
+            jobscout) key=$JOBSCOUT_DEPLOY_KEY ;;
+          esac
+          if [ -z "$key" ]; then
+            echo "::error::no deploy key secret for agrshv/$repo"
+            exit 1
+          fi
+          (umask 077 && printf '%s\n' "$key" > ~/.ssh/$repo)
+          printf 'Host github-%s\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/%s\n  IdentitiesOnly yes\n' \
+            "$repo" "$repo" >> ~/.ssh/config
+          git config --global \
+            url."ssh://git@github-$repo/agrshv/$repo".insteadOf \
+            "ssh://git@github.com/agrshv/$repo"
+        done

@@ -5,12 +5,8 @@
 # those two are pushed: the cache is public, and a full system build would
 # drag in config generated from the private `work` input.
 #
-# The `work` and `jobscout` inputs are private repos fetched over SSH. Each
-# gets its own read-only deploy key (GitHub scopes a deploy key to one repo):
-# the public half under that repo's Settings → Deploy keys, the private half
-# as WORK_DEPLOY_KEY / JOBSCOUT_DEPLOY_KEY here. Nix fetches with the git CLI,
-# so an insteadOf rule per input sends it through an SSH host alias that
-# offers only that repo's key.
+# The private `work` and `jobscout` inputs are reached through
+# .github/actions/private-inputs.
 name: check
 
 on:
@@ -23,31 +19,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: cachix/install-nix-action@v31
-      - name: Deploy keys for the private inputs
-        env:
-          WORK_DEPLOY_KEY: ${{ secrets.WORK_DEPLOY_KEY }}
-          JOBSCOUT_DEPLOY_KEY: ${{ secrets.JOBSCOUT_DEPLOY_KEY }}
-        run: |
-          install -d -m 700 ~/.ssh
-          # GitHub's published host keys rather than trusting ssh-keyscan.
-          curl -fsS https://api.github.com/meta \
-            | jq -r '.ssh_keys[] | "github.com " + .' > ~/.ssh/known_hosts
-          for repo in flake-work jobscout; do
-            case $repo in
-              flake-work) key=$WORK_DEPLOY_KEY ;;
-              jobscout) key=$JOBSCOUT_DEPLOY_KEY ;;
-            esac
-            if [ -z "$key" ]; then
-              echo "::error::no deploy key secret for agrshv/$repo"
-              exit 1
-            fi
-            (umask 077 && printf '%s\n' "$key" > ~/.ssh/$repo)
-            printf 'Host github-%s\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/%s\n  IdentitiesOnly yes\n' \
-              "$repo" "$repo" >> ~/.ssh/config
-            git config --global \
-              url."ssh://git@github-$repo/agrshv/$repo".insteadOf \
-              "ssh://git@github.com/agrshv/$repo"
-          done
+      - uses: ./.github/actions/private-inputs
+        with:
+          work-deploy-key: ${{ secrets.WORK_DEPLOY_KEY }}
+          jobscout-deploy-key: ${{ secrets.JOBSCOUT_DEPLOY_KEY }}
       - run: nix fmt -- --ci
       - run: nix flake check --no-build --all-systems
       - uses: cachix/cachix-action@v16
