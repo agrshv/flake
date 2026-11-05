@@ -159,7 +159,7 @@
       nixosConfigurations = {
         work-laptop = mkWorkstation "work-laptop";
 
-        # Headless. Deploy with either; see INSTALL.md for why nixos-rebuild:
+        # Headless. Deploy with either:
         #   nh os switch -H home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev
         #   nixos-rebuild switch --flake .#home-server --target-host home-server.agrshv.dev --build-host home-server.agrshv.dev --sudo --ask-sudo-password
         home-server = mkServer { host = "home-server"; };
