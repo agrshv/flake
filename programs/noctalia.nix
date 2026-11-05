@@ -405,14 +405,12 @@ in
             "umbriel"
           ];
           enable_community_templates = true;
-          # zed: writes ~/.config/zed/themes/noctalia.json with four variants
-          # (Noctalia {Dark,Light}[ Transparent]); programs/zed.nix selects by
-          # name. discord: writes three stylesheets into the themes directory
+          # discord: writes three stylesheets into the themes directory
           # of whichever clients are installed — programs/vesktop.nix enables
           # noctalia.theme.css (midnight). telegram: drops a .tdesktop-theme into
           # ~/.config/telegram-desktop/themes, which has to be picked once from
           # Settings → Chat Settings → Themes, as the client keeps that choice
-          # in its own state. None of these three has an apply hook, so read-only
+          # in its own state. Neither has an apply hook, so read-only
           # settings files home-manager owns are untouched.
           #
           # claude-code: ~/.claude/themes/noctalia.json, picked once via /theme.
@@ -434,7 +432,6 @@ in
             "neovim"
             "obsidian"
             "telegram"
-            "zed"
           ];
         };
       };

@@ -1,4 +1,3 @@
--- Same schema setup as Zed's yaml-language-server (programs/zed.nix).
 local kubernetes = {}
 for _, dir in ipairs({ 'k8s', 'manifests', 'deploy', 'kube' }) do
   for _, ext in ipairs({ 'yaml', 'yml' }) do

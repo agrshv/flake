@@ -30,7 +30,6 @@ in
     ./programs/umbriel.nix
     ./programs/vesktop.nix
     ./programs/xdg.nix
-    ./programs/zed.nix
   ];
 
   sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";

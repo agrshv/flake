@@ -94,8 +94,9 @@ in
     workspace "telegram" { open-on-output "eDP-1"; }
 
     spawn-at-startup "${ghostty}"
+    // Its own class, so the rule below can tell it from the plain terminal.
+    spawn-at-startup "${ghostty}" "--class=dev.agrshv.nvim" "-e" "nvim"
     spawn-at-startup "brave-origin"
-    spawn-at-startup "zeditor"
     spawn-at-startup "vesktop"
     spawn-at-startup "Telegram"
     spawn-at-startup "${lib.getExe lenovoWorkspacesFirst}"
@@ -184,13 +185,13 @@ in
       default-column-width { proportion 1.0; }
     }
     window-rule {
-      match app-id="^brave-origin$" at-startup=true
-      open-on-workspace "browser"
+      match app-id=r#"^dev\.agrshv\.nvim$"# at-startup=true
+      open-on-workspace "code"
       default-column-width { proportion 1.0; }
     }
     window-rule {
-      match app-id=r#"^dev\.zed\.Zed$"# at-startup=true
-      open-on-workspace "code"
+      match app-id="^brave-origin$" at-startup=true
+      open-on-workspace "browser"
       default-column-width { proportion 1.0; }
     }
     window-rule {

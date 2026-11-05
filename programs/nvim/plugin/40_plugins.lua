@@ -55,7 +55,6 @@ now_if_args(function()
     'lua',
     'vimdoc',
     'markdown',
-    -- Languages that had a Zed extension or built-in support.
     'nix',
     'yaml',
     'hcl',
