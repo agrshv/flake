@@ -1,6 +1,18 @@
-{ inputs, pkgs, ... }:
+{
+  inputs,
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 let
   me = import ../common/me.nix;
+  # Copies, not symlinks: the initrd only gets this path, not what links point to.
+  plymouthFonts = pkgs.runCommand "plymouth-fonts" { } ''
+    mkdir -p $out
+    cp ${lib.escapeShellArg config.boot.plymouth.font} $out
+    cp '${pkgs.jetbrains-mono}/share/fonts/truetype/JetBrainsMono[wght].ttf' $out
+  '';
 in
 {
   imports = [
@@ -60,11 +72,22 @@ in
     };
     plymouth = {
       enable = true;
+      theme = "glow";
       # Same UI font as noctalia and the greeter (hosts/common/desktop.nix).
       # The variable font renders at its default (Regular) weight.
       font = "${pkgs.inter}/share/fonts/truetype/InterVariable.ttf";
     };
+    # The module puts only `font` in the initrd's /etc/plymouth/fonts, which is
+    # also all the fontconfig there can see. Two problems with that:
+    # - plymouthd outlives switch-root and keeps that fontconfig, but the
+    #   stage-2 /etc has no plymouth/fonts, so text pango lays out after it
+    #   (the systemd lines behind Escape) can't open a font file and draws
+    #   tofu boxes. environment.etc below puts the same files back there.
+    # - The console view asks for "monospace", which with Inter alone falls
+    #   back to proportional Inter. JetBrains Mono (the terminal font) fills it.
+    initrd.systemd.contents."/etc/plymouth/fonts".source = lib.mkForce plymouthFonts;
   };
+  environment.etc."plymouth/fonts".source = plymouthFonts;
 
   hardware.i2c.enable = true;
 
