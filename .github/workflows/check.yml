@@ -17,15 +17,15 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: cachix/install-nix-action@v31
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31.11.3
       - uses: ./.github/actions/private-inputs
         with:
           work-deploy-key: ${{ secrets.WORK_DEPLOY_KEY }}
           jobscout-deploy-key: ${{ secrets.JOBSCOUT_DEPLOY_KEY }}
       - run: nix fmt -- --ci
       - run: nix flake check --no-build --all-systems
-      - uses: cachix/cachix-action@v16
+      - uses: cachix/cachix-action@3ba601ff5bbb07c7220846facfa2cd81eeee15a1 # v16
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           name: agrshv
