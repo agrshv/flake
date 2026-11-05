@@ -1,11 +1,11 @@
 {
+  me,
   pkgs,
   inputs,
   modulesPath,
   ...
 }:
 let
-  me = import ../common/me.nix;
   system = pkgs.stdenv.hostPlatform.system;
 in
 {

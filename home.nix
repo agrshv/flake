@@ -1,13 +1,11 @@
 {
+  me,
   config,
   inputs,
   pkgs,
   pkgs-unstable,
   ...
 }:
-let
-  me = import ./hosts/common/me.nix;
-in
 {
   imports = [
     ./programs/bash.nix

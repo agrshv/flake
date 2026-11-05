@@ -88,7 +88,7 @@
         }
       );
       specialArgsFor = sys: {
-        inherit inputs;
+        inherit inputs me;
         pkgs-unstable = pkgs-unstable.${sys};
       };
       specialArgs = specialArgsFor system;

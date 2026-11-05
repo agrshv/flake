@@ -1,4 +1,5 @@
 {
+  me,
   inputs,
   pkgs,
   lib,
@@ -6,7 +7,6 @@
   ...
 }:
 let
-  me = import ../common/me.nix;
   # Copies, not symlinks: the initrd only gets this path, not what links point to.
   plymouthFonts = pkgs.runCommand "plymouth-fonts" { } ''
     mkdir -p $out

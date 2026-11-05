@@ -1,4 +1,5 @@
-# Plain attribute set (not a module): `import ../common/me.nix` where needed.
+# Plain attribute set (not a module). flake.nix hands it to every NixOS and
+# home-manager module as the `me` argument.
 {
   # Login user on every host (uid 1000). Renaming it on a live host needs the
   # manual usermod step first — see INSTALL.md "Renaming the login user".

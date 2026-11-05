@@ -1,12 +1,10 @@
 {
+  me,
   config,
   pkgs,
   inputs,
   ...
 }:
-let
-  me = import ./me.nix;
-in
 {
   imports = [
     inputs.noctalia-greeter.nixosModules.default

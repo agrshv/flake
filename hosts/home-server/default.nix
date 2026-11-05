@@ -1,12 +1,10 @@
 {
+  me,
   config,
   inputs,
   pkgs,
   ...
 }:
-let
-  me = import ../common/me.nix;
-in
 {
   imports = [
     ../common/disko.nix
