@@ -40,6 +40,9 @@
         told otherwise. Never `flux reconcile`, `kubectl apply/delete/edit` on your own.
       - Work GitLab is self-hosted at gitlab.frhc.one; use `glab` for MRs, pipelines
         and issues. Open MRs with the `gitlab-mr` skill: every MR links its Asana task.
+      - Asana tasks are written in Russian (title and description), whatever
+        language the conversation is in. Technical names (GitLab, Terraform,
+        service names, MR numbers) stay as they are.
     '';
 
     # Language servers give Claude go-to-definition and diagnostics instead of
@@ -142,12 +145,12 @@
     skills.gitlab-mr = ''
       ---
       name: gitlab-mr
-      description: Open a merge request on the work GitLab (gitlab.frhc.one) with the Asana task linked in its description. Use whenever asked to create, open or submit an MR / merge request / PR in a work repo.
+      description: Open a merge request on the work GitLab (gitlab.frhc.one) with the Asana task linked in its description, creating the task (in Russian) when there is none. Use whenever asked to create, open or submit an MR / merge request / PR in a work repo.
       ---
 
       # GitLab merge request with an Asana link
 
-      ## 1. Find the Asana task. Never invent or guess a URL.
+      ## 1. Find the Asana task, or create one. Never invent or guess a URL.
 
       In order, stop at the first hit:
       1. A task URL or ID the user gave in this conversation.
@@ -155,9 +158,31 @@
          (`git log <default>..HEAD`), or in an earlier MR from this branch.
       3. A task ID in the branch name (e.g. `DEVOPSSUP-6951`): look it up with
          the Asana tools if they're available.
-      4. If the Asana tools are available, search the tasks assigned to me for
-         one matching the change, and ask me to confirm the match.
-      5. Otherwise ask me for it. If I say there is none, open the MR without one.
+      4. If the Asana tools are available, search the incomplete tasks assigned
+         to me for one matching the change, and ask me to confirm the match.
+      5. Still nothing (no candidates, or I said none of them fits): create the
+         task as below.
+      6. Only if the Asana tools aren't available: ask me for the task. If I say
+         there is none, open the MR without one.
+
+      ### Creating the task
+
+      Write it in **Russian**, like the rest of my tasks; technical names
+      (GitLab, Terraform, service and repo names) stay as they are.
+
+      - Name: `<область>: <что сделано>`, sentence case, no trailing period,
+        e.g. `Бэкап PostgreSQL: не выдавать упавший pg_dump за успешный` or
+        `CI devops: заменить переменные ручного запуска на pipeline inputs`.
+      - Notes: two or three plain sentences on what the change does and why —
+        the MR description's prose, in Russian. No headings.
+      - Assignee: `me`.
+      - Project: **Travel Infrastructure Tasks** (`1210670586512180`), section
+        **В работе** (`1210670771566690`), the MR being open. If the change
+        answers someone else's request (a developer asking for a variable, an
+        access, a CI fix in their repo), use **Devops Support**
+        (`1210945785187568`) instead and ask me which section.
+
+      Tell me the task's name and URL when it's created.
 
       Use the task's permalink, in the form
       `https://app.asana.com/1/1208507351529750/project/<project>/task/<task>`.
@@ -194,7 +219,8 @@
 
       No reviewers, labels or `--draft` unless I ask. If an MR for the branch
       already exists (`glab mr view`), update it with `glab mr update` instead
-      of opening a second one. Finish by printing the MR URL.
+      of opening a second one. If step 1 created the task, add the MR URL to it
+      as a comment. Finish by printing the MR URL.
     '';
 
     # Live Terraform Registry docs (providers, modules, resource schemas), so
@@ -230,9 +256,18 @@
           "Bash(tofu destroy:*)"
         ];
       };
-      # Stop it appending a "Co-Authored-By: Claude" trailer to commits it
-      # writes (and the matching footer on pull request descriptions).
-      includeCoAuthoredBy = false;
+      # No attribution in commits or PRs/MRs it writes: no "Co-Authored-By:
+      # Claude" trailer or "Generated with Claude Code" footer (empty strings),
+      # and no claude.ai session link (the Claude-Session trailer and PR-body
+      # link). Replaces the deprecated includeCoAuthoredBy = false.
+      attribution = {
+        commit = "";
+        pr = "";
+        sessionUrl = false;
+      };
+
+      # No "How is Claude doing this session?" rating prompt.
+      env.CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
 
       # `/plugin install` can't record these itself (settings.json is
       # read-only), so they're enabled here. Most come from the official
