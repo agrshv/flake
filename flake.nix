@@ -12,7 +12,6 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # millennium.url = "github:SteamClientHomebrew/Millennium/01a7f1f9?dir=packages/nix";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -24,7 +23,7 @@
     };
     # Remote deploys of the servers (`deploy .#<host>`), with rollback if the
     # box stops answering after activation. Only its lib is used: the
-    # deploy-rs binary and activate-rs come from our nixpkgs (see deployPkgs),
+    # deploy-rs binary and activate-rs come from our nixpkgs (see deployLib),
     # so they're substituted from cache.nixos.org instead of built.
     deploy-rs = {
       url = "github:serokell/deploy-rs";

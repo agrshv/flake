@@ -9,8 +9,10 @@
 # .github/actions/private-inputs.
 name: check
 
+# Pushes to master and PRs; a push to a PR branch would otherwise run twice.
 on:
   push:
+    branches: [master]
   pull_request:
 
 jobs:

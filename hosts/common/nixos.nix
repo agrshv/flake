@@ -16,8 +16,8 @@
 
   # Shared by every host; per-host additions (extra substituters, the flake
   # registry pin) live next to the host that needs them. NB: @wheel is trusted
-  # rather than just root, which is what lets remote `--target-host` / `--build-host`
-  # deploys and `nh` run without sudo-ing the nix daemon calls.
+  # rather than just root: deploy-rs copies closures and builds on the servers
+  # as the login user, and `nh` runs without sudo-ing the nix daemon calls.
   nix = {
     settings = {
       experimental-features = [

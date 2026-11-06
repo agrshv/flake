@@ -9,8 +9,10 @@ name: Private flake inputs
 description: Deploy keys and git rewrites for the private SSH inputs
 inputs:
   work-deploy-key:
+    description: Private half of agrshv/flake-work's read-only deploy key
     required: true
   jobscout-deploy-key:
+    description: Private half of agrshv/jobscout's read-only deploy key
     required: true
 runs:
   using: composite

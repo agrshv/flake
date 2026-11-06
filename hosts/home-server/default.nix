@@ -79,25 +79,6 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  # Scheduled `nixos-rebuild switch --flake` against the remote repo, so the
-  # server only ever builds what's committed and lockfile bumps stay deliberate
-  # (run `nix flake update` + push to actually advance package versions).
-  #
-  # Disabled for now: flip `enable = true` to activate. Rebooting is safe in
-  # principle — the systemd initrd unlocks LUKS from the TPM-enrolled key — but
-  # a change to the bound PCRs (firmware update, Secure Boot toggle) drops it
-  # back to the passphrase prompt, so only enable `allowReboot` knowingly.
-  system.autoUpgrade = {
-    enable = false;
-    # Self-hosted Forgejo repo. The unit runs as root, so root needs an SSH key
-    # authorized for the `forgejo` user (the repo is private + signin-required).
-    # Alternatively point this at a local checkout path on the host.
-    flake = "git+ssh://forgejo@git.agrshv.dev/d3spair/flake.git#home-server";
-    dates = "04:00";
-    randomizedDelaySec = "45min";
-    allowReboot = false;
-  };
-
   boot = {
     initrd = {
       systemd.enable = true;
@@ -105,13 +86,6 @@
         device = "/dev/disk/by-partlabel/disk-main-luks";
         allowDiscards = true;
       };
-      # availableKernelModules = [ "r8169" ];
-      # network = {
-      #   enable = true;
-      #   ssh = {
-      #     enable = true;
-      #   };
-      # };
     };
     loader = {
       efi.canTouchEfiVariables = true;
@@ -147,8 +121,8 @@
   # creation (neededForUsers → lands under /run/secrets-for-users). With
   # mutableUsers (the default) it only applies when the user is *created*, i.e.
   # on a fresh install — a live host keeps whatever `passwd` last set. The
-  # plaintext lives in Bitwarden ("home-server sudo"); deploys use it for
-  # --ask-sudo-password after a reinstall. NB: a reinstall must restore
+  # plaintext lives in Bitwarden ("home-server sudo"); deploy-rs asks for it
+  # (interactiveSudo) on every deploy. NB: a reinstall must restore
   # /etc/ssh first (see restic.nix) or no sops secret decrypts, this one
   # included — the user is then created passwordless (SSH key still works;
   # fix with a root console + `passwd`).
