@@ -21,9 +21,12 @@ runs:
         JOBSCOUT_DEPLOY_KEY: ${{ inputs.jobscout-deploy-key }}
       run: |
         install -d -m 700 ~/.ssh
-        # GitHub's published host keys rather than trusting ssh-keyscan.
-        curl -fsS https://api.github.com/meta \
-          | jq -r '.ssh_keys[] | "github.com " + .' > ~/.ssh/known_hosts
+        # GitHub's ed25519 host key, pinned from https://api.github.com/meta
+        # rather than fetched each run (unauthenticated API calls from shared
+        # runners get rate-limited) or trusted on first use via ssh-keyscan.
+        # A host-key mismatch here means GitHub rotated it: re-pin from there.
+        echo 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' \
+          > ~/.ssh/known_hosts
         for repo in flake-work jobscout; do
           case $repo in
             flake-work) key=$WORK_DEPLOY_KEY ;;
