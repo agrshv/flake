@@ -372,7 +372,11 @@ in
         clipboard_enabled = false;
       };
       theme = {
-        mode = "light";
+        # Light by day, dark by night: `auto` follows sunrise/sunset for
+        # location.address above (Almaty), re-checked at each boundary. The
+        # shell follows it (shell_mode defaults to "follow"), and so do the
+        # templates and the GTK/portal color-scheme preference.
+        mode = "auto";
         # Palette generated from the current wallpaper (default m3-content
         # scheme), so it changes with wallpaper.automation below, and every
         # template follows. `source = "builtin"; builtin = "Gruvbox";` was the
