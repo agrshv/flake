@@ -121,13 +121,26 @@ in
     };
   };
 
-  # Workaround for a bug in this nixpkgs' geoipupdate module: its ExecStartPre
-  # runs `chown geoip <dbdir>` with full privileges (`+`), but with
-  # PrivateUsers = true the dynamically-allocated `geoip` user isn't resolvable
-  # by name in that context, so the chown fails with `invalid user: 'geoip'` and
-  # the unit aborts. Dropping PrivateUsers for this unit makes the dynamic user
-  # host-visible so the chown resolves. (No secrets are handed to this unit.)
-  systemd.services.geoipupdate.serviceConfig.PrivateUsers = lib.mkForce false;
+  # The module runs geoipupdate as a DynamicUser and its root ExecStartPre does
+  # `chown geoip <dbdir>`. Dynamic user names only resolve through nsncd, which
+  # a switch restarts on nixpkgs bumps; geoipupdate (pulled in by nginx) then
+  # fails with `invalid user: 'geoip'`, the switch exits 4 and deploy-rs rolls
+  # back (NixOS/nixpkgs#328404). A static user lives in /etc/passwd, which
+  # glibc reads without nsncd. The hardening DynamicUser implied is restated.
+  users.users.geoip = {
+    isSystemUser = true;
+    group = "geoip";
+  };
+  users.groups.geoip = { };
+  systemd.services.geoipupdate.serviceConfig = {
+    DynamicUser = lib.mkForce false;
+    Group = "geoip";
+    ProtectSystem = "strict";
+    PrivateTmp = true;
+    RemoveIPC = true;
+    NoNewPrivileges = true;
+    RestrictSUIDSGID = true;
+  };
 
   # nginx's geoip2 module opens the .mmdb at startup, so make sure the DB has
   # been fetched first. `wants` (not `requires`) so a failed update doesn't hard
