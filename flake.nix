@@ -57,6 +57,13 @@
       url = "github:noctalia-dev/umbriel";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    # NCALayer, the EDS signing agent egov.kz needs (not in nixpkgs). Only its
+    # home module is used, which builds the package with our pkgs, so follow
+    # ours rather than lock a second nixos-unstable.
+    ncalayer = {
+      url = "github:ar175-lol/ncalayer-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Kubernetes TUI (k9s replacement). Do NOT set inputs.nixpkgs.follows: the
     # nkl-sofka cachix builds (substituter in hosts/common/desktop.nix) are
     # keyed to upstream's own nixpkgs, so following ours forces a local build.
@@ -183,6 +190,7 @@
                   inputs.noctalia.homeModules.default
                   inputs.umbriel.homeModules.default
                   inputs.work.homeModules.default
+                  inputs.ncalayer.homeModules.default
                 ];
                 extraSpecialArgs = specialArgs;
               };

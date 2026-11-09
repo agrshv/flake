@@ -231,6 +231,11 @@
 
   services.udisks2.enable = true;
 
+  # Smart-card daemon for NCALayer's hardware EDS keys (Kaztoken, ID card
+  # reader); file-based .p12 keys work without it. The ncalayer home module
+  # (home.nix) can't enable a system service itself.
+  services.pcscd.enable = true;
+
   services.gnome = {
     gnome-keyring.enable = true;
     gcr-ssh-agent.enable = false;

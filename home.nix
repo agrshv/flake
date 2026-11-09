@@ -32,6 +32,11 @@
 
   sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
+  # egov.kz signing agent (ncalayer input in flake.nix): installs the app,
+  # trusts the NCA roots in the browser NSS DBs and autostarts it with the
+  # session. Hardware tokens also need services.pcscd (hosts/common/desktop.nix).
+  services.ncalayer.enable = true;
+
   home = {
     username = me.user;
     homeDirectory = "/home/${me.user}";

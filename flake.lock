@@ -136,6 +136,26 @@
         "url": "ssh://git@github.com/agrshv/jobscout.git"
       }
     },
+    "ncalayer": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793089171,
+        "narHash": "sha256-aAXRYVkILP2l60hAUKBPGCXjlqQ0hsgODj26489fVs4=",
+        "owner": "ar175-lol",
+        "repo": "ncalayer-nix",
+        "rev": "511f2f2b6b4faa81d3f2f927b7d0c767b6f2f3be",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ar175-lol",
+        "repo": "ncalayer-nix",
+        "type": "github"
+      }
+    },
     "nix-index-database": {
       "inputs": {
         "nixpkgs": [
@@ -282,6 +302,7 @@
         "disko": "disko",
         "home-manager": "home-manager",
         "jobscout": "jobscout",
+        "ncalayer": "ncalayer",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
