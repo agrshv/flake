@@ -31,6 +31,11 @@ let
 in
 {
   options.ntfyAlerts = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to install the ntfy-alert@ handler at all.";
+    };
     url = lib.mkOption {
       type = lib.types.str;
       example = "https://ntfy.agrshv.dev:2443/alerts";
@@ -40,10 +45,18 @@ in
       type = lib.types.str;
       description = "File providing NTFY_TOKEN=<access token> for the publish.";
     };
+    allServices = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Alert on a failure of any system service. When false, only units
+        that list `ntfy-alert@%N.service` in their own OnFailure= alert.
+      '';
+    };
   };
 
-  config = {
-    systemd.packages = [ dropins ];
+  config = lib.mkIf cfg.enable {
+    systemd.packages = lib.optional cfg.allServices dropins;
 
     # The instance (%i) is the failed unit's name without the .service suffix.
     systemd.services."ntfy-alert@" = {

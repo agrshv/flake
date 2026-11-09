@@ -9,6 +9,7 @@
   imports = [
     inputs.noctalia-greeter.nixosModules.default
     inputs.umbriel.nixosModules.default
+    ./desktop-backup.nix
   ];
   sops.age.keyFile = "/home/${me.user}/.config/sops/age/keys.txt";
   # The key lives on /home, which isn't mounted yet when the default activation

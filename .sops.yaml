@@ -25,6 +25,13 @@ creation_rules:
       - age:
           - *personal_key
 
+  # Desktop-only secrets (restic for /home, ntfy token). The desktops decrypt
+  # with the personal key, so it is the only recipient.
+  - path_regex: secrets/desktop\.yaml$
+    key_groups:
+      - age:
+          - *personal_key
+
   # home-server service credentials. Readable by the host itself and by me.
   - path_regex: secrets/home-server\.yaml$
     key_groups:
