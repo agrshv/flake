@@ -10,6 +10,9 @@
     ./disko.nix
     ../common/nixos.nix
     ../common/ntfy-alerts.nix
+    ../common/monitoring-agent.nix
+    ./monitoring.nix
+    ./nginx.nix
     ./stalwart.nix
     ./amneziawg.nix
     ./xray.nix

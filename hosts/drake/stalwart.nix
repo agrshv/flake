@@ -41,12 +41,12 @@ in
   # accountless server answering on :25. Refuse to start instead.
   systemd.services.podman-stalwart.unitConfig.ConditionPathExists = "${dataDir}/CURRENT";
 
-  # SMTP, HTTPS (JMAP/web-admin/ACME), submissions, submission, IMAPS, sieve.
-  # POP3 (110/995) and the plain-HTTP 8080 stay closed; the OCI security list
-  # gates these again upstream.
+  # SMTP, submissions, submission, IMAPS, sieve. HTTPS (JMAP/web-admin) is
+  # reached through nginx's SNI router on :443 (./nginx.nix), which forwards
+  # to Stalwart's https listener on 127.0.0.1:10443. POP3 (110/995) and the
+  # plain-HTTP 8080 stay closed; the OCI security list gates these again upstream.
   networking.firewall.allowedTCPPorts = [
     25
-    443
     465
     587
     993

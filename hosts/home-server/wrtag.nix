@@ -97,7 +97,13 @@ in
       # forces group navidrome), new paths become navidrome:navidrome 2775.
       UMask = "0002";
       ExecStart = "${wrtag}/bin/wrtagweb";
-      Restart = "on-failure";
+      # wrtagweb exits 1 ("wait for jobs: context canceled") on a normal
+      # SIGTERM, so the nightly restic stop (./restic.nix) and every restart
+      # counted as a failure. Treat 1 as success, and restart on any exit so a
+      # real crash with status 1 still comes back (a crash loop still hits the
+      # start limit and alerts).
+      SuccessExitStatus = [ 1 ];
+      Restart = "always";
     };
   };
 

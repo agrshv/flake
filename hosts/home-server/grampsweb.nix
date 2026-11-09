@@ -10,6 +10,9 @@ let
   common = {
     inherit image;
     autoStart = true;
+    # podman's 10s default is shorter than gunicorn's 30s graceful shutdown and
+    # Celery's warm shutdown, so both were SIGKILLed (exit 137) on every stop.
+    extraOptions = [ "--stop-timeout=40" ];
     volumes = [
       "${dataDir}/users:/app/users" # user accounts (SQLite)
       "${dataDir}/grampsdb:/root/.gramps/grampsdb" # the family tree (SQLite)
@@ -68,6 +71,9 @@ in
       afterRedis = {
         after = [ "redis-grampsweb.service" ];
         requires = [ "redis-grampsweb.service" ];
+        # restic stops both nightly (./restic.nix). A normal stop exits
+        # 128+SIGTERM, so that counts as success too.
+        serviceConfig.SuccessExitStatus = [ 143 ];
       };
     in
     {

@@ -69,6 +69,21 @@
     "1.1.1.1"
   ];
 
+  # The runner declares itself to https://git.agrshv.dev as it starts. At boot
+  # and on deploys it raced Forgejo and nginx, got a 502 and failed (alerting)
+  # until Forgejo was up. Forgejo is Type=notify, so ordering after it waits
+  # until it is actually serving.
+  systemd.services.gitea-runner-home = {
+    after = [
+      "forgejo.service"
+      "nginx.service"
+    ];
+    wants = [
+      "forgejo.service"
+      "nginx.service"
+    ];
+  };
+
   services.gitea-actions-runner = {
     package = pkgs.forgejo-runner;
     instances.home = {

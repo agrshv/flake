@@ -9,9 +9,10 @@ let
 
   # A top-level `service.d/` drop-in applies to every system service, so any
   # unit that ends up failed triggers ntfy-alert@<its name> without having to
-  # list it. Units entering "failed" is the trigger: a service with Restart=
-  # only gets there once its restart limit is exhausted, so flapping is one
-  # alert, not one per attempt.
+  # list it. systemd fires OnFailure= on every failure, even one a Restart=
+  # policy will retry, so the handler checks the unit is still failed before
+  # alerting (see the script): flapping is one alert at the start limit, not
+  # one per attempt.
   #
   # The second drop-in keeps the handler from alerting about itself. systemd
   # reads all drop-ins in file-name order regardless of directory, so the
@@ -55,6 +56,16 @@ in
       };
       scriptArgs = "%i";
       script = ''
+        # OnFailure= fires on every failure, including ones a Restart= policy
+        # is about to retry. Alert only if the unit is still failed: a unit
+        # that is waiting to restart or already back up recovered by itself,
+        # and a real crash loop ends in "failed" once it hits its start limit.
+        state=$(${pkgs.systemd}/bin/systemctl show -P ActiveState "$1.service" || true)
+        if [ "$state" != failed ]; then
+          echo "$1 is $state, not failed; not alerting"
+          exit 0
+        fi
+
         status=$(${pkgs.systemd}/bin/systemctl status --no-pager -n 12 "$1" 2>&1 | tail -12 || true)
         # A failure at boot can come before the network is fully usable, and
         # one lost alert is the failure mode this exists to prevent: retry.

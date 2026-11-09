@@ -41,7 +41,13 @@
 
   # Upstream sets 0077; let the media group work with what Jellyfin writes into
   # the library while keeping its state closed to everyone else.
-  systemd.services.jellyfin.serviceConfig.UMask = lib.mkForce "0007";
+  systemd.services.jellyfin.serviceConfig = {
+    UMask = lib.mkForce "0007";
+    # The packaged unit allows 15s, which Jellyfin regularly overruns when
+    # restic stops it nightly (./restic.nix): it gets SIGKILLed and the stop
+    # counts as a failure.
+    TimeoutStopSec = "60s";
+  };
 
   services.nginx.virtualHosts."jellyfin.agrshv.dev" = {
     forceSSL = true;

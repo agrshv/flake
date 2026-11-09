@@ -142,6 +142,13 @@ in
               "user:d3spair"
             ];
           }
+          # Grafana on drake (../drake/monitoring.nix) signs everyone it lets
+          # in up as an admin, so only admins get there.
+          {
+            domain = "grafana.agrshv.dev";
+            policy = "one_factor";
+            subject = [ "group:admins" ];
+          }
           {
             domain = "*.agrshv.dev";
             policy = "one_factor";

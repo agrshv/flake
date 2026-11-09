@@ -55,6 +55,9 @@
   systemd.services.podman-nocodb = {
     after = [ "postgresql.service" ];
     wants = [ "postgresql.service" ];
+    # The container exits 128+SIGTERM on a normal stop; without this every
+    # deploy that restarts it counts as a failure (and an ntfy alert).
+    serviceConfig.SuccessExitStatus = [ 143 ];
   };
 
   services.nginx.virtualHosts."nocodb.agrshv.dev" = {

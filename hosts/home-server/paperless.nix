@@ -19,4 +19,8 @@
       PAPERLESS_FILENAME_FORMAT_REMOVE_NONE = true;
     };
   };
+
+  # Tika (from configureTika) is a JVM: it exits 128+SIGTERM on a normal stop,
+  # which would count every deploy that restarts it as a failure.
+  systemd.services.tika.serviceConfig.SuccessExitStatus = [ 143 ];
 }

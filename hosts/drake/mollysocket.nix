@@ -19,7 +19,7 @@ in
   sops.secrets."mollysocket/env".restartUnits = [ "mollysocket.service" ];
 
   # Signal push for Molly via UnifiedPush, delivered through ./ntfy.nix.
-  # Air-gapped: no web server, so nothing to expose next to stalwart on 443.
+  # Air-gapped: no web server, so nothing to put behind nginx.
   # Linking is manual, as root on drake:
   #   mollysocket-admin qrcode airgapped     # scan in Molly (light theme!)
   #   mollysocket-admin connection add ...   # the command Molly then shows

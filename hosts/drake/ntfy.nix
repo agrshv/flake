@@ -8,24 +8,16 @@
     "ntfy/env".restartUnits = [ "ntfy-sh.service" ];
   };
 
-  # DNS-01 like home-server, so no port 80 is needed and issuance works even
-  # while ntfy.agrshv.dev has no A record yet (clients need the record, the
-  # challenge doesn't).
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "acme@agrshv.dev";
-    certs."ntfy.agrshv.dev" = {
-      dnsProvider = "cloudflare";
-      environmentFile = config.sops.secrets."acme/env".path;
-      reloadServices = [ "ntfy-sh.service" ];
-    };
-  };
+  # DNS-01 via the drake-wide ACME defaults in ./nginx.nix. ntfy keeps its own
+  # :2443 listener and cert (clients have the port in their URLs) rather than
+  # going through nginx.
+  security.acme.certs."ntfy.agrshv.dev".reloadServices = [ "ntfy-sh.service" ];
 
   services.ntfy-sh = {
     enable = true;
     environmentFile = config.sops.secrets."ntfy/env".path;
     settings = {
-      # 2443 because stalwart owns 443. The module's default listen-http on
+      # 2443 because stalwart owned 443 when this was set up. The module's default listen-http on
       # 127.0.0.1:2586 stays too — the alert units publish there, so local
       # notifications never depend on the certificate or the firewall.
       base-url = "https://ntfy.agrshv.dev:2443";

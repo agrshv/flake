@@ -62,6 +62,7 @@ let
   # Vhosts deliberately outside both gates.
   exemptHosts = [
     "_" # the catch-all default server below: listens on :80 only, serves nothing
+    "blocky-metrics" # :9110, NetBird-only by firewall, /metrics only (./metrics.nix)
   ];
 
   # guardedHosts can't be derived from config.services.nginx.virtualHosts —

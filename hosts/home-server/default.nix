@@ -10,6 +10,8 @@
     ../common/disko.nix
     ../common/nixos.nix
     ../common/ntfy-alerts.nix
+    ../common/monitoring-agent.nix
+    ./metrics.nix
 
     # AMD box on a SATA SSD. Both of these only pin what NixOS already
     # defaults to here (microcode updates, weekly fstrim) — they are in for

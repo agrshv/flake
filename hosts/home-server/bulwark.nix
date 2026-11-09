@@ -69,6 +69,10 @@
     "d /var/lib/bulwark/settings    0750 1001 1001 -"
   ];
 
+  # The container exits 128+SIGTERM on a normal stop; without this every
+  # deploy that restarts it counts as a failure (and an ntfy alert).
+  systemd.services.podman-bulwark.serviceConfig.SuccessExitStatus = [ 143 ];
+
   services.nginx.virtualHosts."webmail.agrshv.dev" = {
     forceSSL = true;
     useACMEHost = "agrshv.dev";

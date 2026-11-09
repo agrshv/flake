@@ -2,7 +2,7 @@
 let
   # VLESS + Reality: TCP that is indistinguishable from ordinary HTTPS to the
   # decoy below (the TLS handshake is proxied from it). On 8443, not 443 —
-  # stalwart owns 443. One UUID + shortId per relative, matching the vless://
+  # nginx owns 443 (./nginx.nix). One UUID + shortId per relative, matching the vless://
   # links generated off-repo.
   clients = [
     {
