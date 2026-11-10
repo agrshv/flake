@@ -220,7 +220,58 @@
       No reviewers, labels or `--draft` unless I ask. If an MR for the branch
       already exists (`glab mr view`), update it with `glab mr update` instead
       of opening a second one. If step 1 created the task, add the MR URL to it
-      as a comment. Finish by printing the MR URL.
+      as a comment.
+
+      ## 4. Add dependencies on MRs that must merge first
+
+      Use GitLab's merge request dependencies whenever ordering matters, so
+      the MR can't be merged before what it relies on. Treat this as the
+      default whenever any of these is true, not as an extra:
+
+      - **Stacked branch**: the branch is built on another branch with an
+        open MR. Check my open MRs in this project
+        (`glab mr list --author=@me`) and, for each source branch, whether
+        `git merge-base --is-ancestor origin/<branch> HEAD` holds while that
+        branch isn't merged into the default. Target that parent branch
+        (`--target-branch <parent>`) so the diff shows only this change, and
+        add the parent MR as a dependency.
+      - **Cross-repo order**: the change uses something another open MR
+        introduces: a Terraform module version, a CI template or component,
+        a Helm chart, a Flux/infra change an app needs, a new variable or
+        secret. Search my open MRs (`glab api "merge_requests?scope=created_by_me&state=opened"`)
+        for it, or ask me which MR it is when I mention one.
+      - I say "after !123", "once X is merged", "depends on", or the work was
+        split into several MRs meant to land in sequence: each MR depends on
+        the previous one.
+
+      If one of these looks likely but you can't find the blocking MR, ask me
+      rather than skipping it.
+
+      Add the dependency through the API (glab has no flag for it). `:id` is
+      the project path URL-encoded or its numeric ID, and
+      `blocking_merge_request_id` is the blocking MR's **global** `id` (not
+      its `iid`), taken from `glab api projects/<blocking project>/merge_requests/<iid>`:
+
+      ```sh
+      glab api --method POST \
+        "projects/:id/merge_requests/<iid>/blocks" \
+        -f blocking_merge_request_id=<global id>
+      ```
+
+      Then read it back with `glab api "projects/:id/merge_requests/<iid>/blocks"`
+      and check that the blocking MR's `iid` and `web_url` are the ones you
+      meant. If they're wrong, delete the entry
+      (`--method DELETE ".../blocks/<block id>"`) and retry with the other ID
+      form. Don't add one that's already listed.
+
+      When a blocking MR is closed without merging, it still blocks: ask me
+      whether to remove the dependency. When a stacked parent merges, GitLab
+      retargets this MR to the parent's target; since parents are squashed,
+      rebase onto the default branch
+      (`git rebase --onto origin/<default> <old parent tip>`) and force-push
+      with `--force-with-lease`, after asking.
+
+      Finish by printing the MR URL and any dependencies you added.
     '';
 
     # Live Terraform Registry docs (providers, modules, resource schemas), so
