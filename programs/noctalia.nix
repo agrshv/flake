@@ -422,7 +422,13 @@ in
           # vault's appearance.json. brave-origin: an unpacked theme extension in
           # ~/.local/share/noctalia/brave-origin-theme — load it once from
           # brave://extensions (developer mode → Load unpacked); after palette
-          # changes, Update there or restart Brave.
+          # changes, click Update there: a restart reuses the stale Cached
+          # Theme.pak and keeps the old colours.
+          #
+          # pywalfox: writes ~/.cache/wal/colors.json, (re)writes its own
+          # native-messaging manifest in ~/.mozilla/native-messaging-hosts and
+          # pushes the palette live to the Pywalfox add-on, which
+          # programs/firefox.nix installs.
           #
           # neovim: renders ~/.config/nvim/lua/matugen.lua — inside this repo,
           # as programs/neovim.nix links the checkout, hence the .gitignore
@@ -435,6 +441,7 @@ in
             "discord"
             "neovim"
             "obsidian"
+            "pywalfox"
             "telegram"
           ];
         };

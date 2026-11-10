@@ -14,6 +14,7 @@
     ./programs/claude-code.nix
     ./programs/direnv.nix
     ./programs/eza.nix
+    ./programs/firefox.nix
     ./programs/ghostty.nix
     ./programs/git.nix
     ./programs/neovim.nix
