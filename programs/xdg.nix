@@ -64,4 +64,22 @@ in
       };
     };
   };
+
+  # Sidebar entries of every GTK file picker (GTK3 apps, GTK4 apps and the
+  # portal one Firefox and Electron apps use) come from this bookmarks file;
+  # without it the sidebar shows only Recent, Home and Other Locations. It is
+  # a read-only link, so folders pinned from the picker itself don't stick:
+  # add them here.
+  gtk.gtk3.bookmarks =
+    let
+      dirs = config.xdg.userDirs;
+    in
+    map (d: "file://${d}") [
+      dirs.download
+      dirs.documents
+      dirs.pictures
+      dirs.videos
+      dirs.music
+      "${config.home.homeDirectory}/Projects"
+    ];
 }
