@@ -116,6 +116,11 @@ in
 
   networking.hostName = "work-laptop";
 
+  # The claude.ai org pushes managed settings that point Claude Code's OTel
+  # exporters at this host; managed env can't be overridden locally, so the
+  # endpoint is sunk to loopback (instant connection refused, no hang on exit).
+  networking.extraHosts = "127.0.0.1 metrics.dev.cloud.aviata.team";
+
   # This host *uses* an exit node (drake, see hosts/drake/default.nix) rather
   # than being one. "client" relaxes networking.firewall.checkReversePath from
   # strict to loose: with the default route pointed at wt0, replies come back
