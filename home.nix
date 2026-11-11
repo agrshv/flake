@@ -8,6 +8,7 @@
 }:
 {
   imports = [
+    ./programs/anki.nix
     ./programs/bash.nix
     ./programs/bitwarden.nix
     ./programs/chromium.nix
