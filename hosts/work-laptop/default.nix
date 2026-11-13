@@ -71,7 +71,11 @@ in
     };
     plymouth = {
       enable = true;
-      theme = "glow";
+      # Plymouth's own spinner, with the NixOS snowflake as its watermark
+      # (the module links `logo` there). glow was a "Bizcom" corporate demo.
+      theme = "spinner";
+      # The default 48px snowflake is a speck on the laptop panel.
+      logo = "${pkgs.nixos-icons}/share/icons/hicolor/128x128/apps/nix-snowflake-white.png";
       # Same UI font as noctalia and the greeter (hosts/common/desktop.nix).
       # The variable font renders at its default (Regular) weight.
       font = "${pkgs.inter}/share/fonts/truetype/InterVariable.ttf";
