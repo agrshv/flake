@@ -83,6 +83,12 @@
   };
 
   networking.networkmanager.enable = true;
+
+  # fish is the interactive shell (programs/fish.nix, home-manager); enabled
+  # system-wide too so it gets the NixOS environment and completions for
+  # system packages. The login shell stays bash.
+  programs.fish.enable = true;
+
   # Per-link split DNS. Without it netbird falls back to rewriting
   # /etc/resolv.conf and forwards everything to the nameservers it saw at
   # startup, so a VPN connected afterwards (FRHC) never gets its DNS used.

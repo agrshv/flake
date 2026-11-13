@@ -96,6 +96,12 @@
   # ("missing or unsuitable terminal") and other TUIs fall back to dumb.
   environment.systemPackages = [ pkgs.ghostty.terminfo ];
 
+  # One confirmation before removing more than three files or recursing, for
+  # every interactive shell on every host, root's included (`sudo rm` and
+  # `\rm` skip it). The laptop's own shells trash instead (programs/cli.nix);
+  # the servers have no trash, and a prompt is the safer habit there.
+  environment.shellAliases.rm = "rm -I";
+
   services.openssh = {
     enable = true;
     startWhenNeeded = true;

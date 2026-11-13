@@ -13,9 +13,11 @@
     ./programs/bitwarden.nix
     ./programs/chromium.nix
     ./programs/claude-code.nix
+    ./programs/cli.nix
     ./programs/direnv.nix
     ./programs/eza.nix
     ./programs/firefox.nix
+    ./programs/fish.nix
     ./programs/ghostty.nix
     ./programs/git.nix
     ./programs/mango.nix
@@ -45,6 +47,7 @@
 
     shell = {
       enableBashIntegration = true;
+      enableFishIntegration = true;
     };
 
     pointerCursor = {
