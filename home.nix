@@ -18,9 +18,9 @@
     ./programs/firefox.nix
     ./programs/ghostty.nix
     ./programs/git.nix
+    ./programs/mango.nix
     ./programs/neovim.nix
     ./programs/nh.nix
-    ./programs/niri.nix
     ./programs/noctalia.nix
     ./programs/obsidian.nix
     ./programs/remmina.nix

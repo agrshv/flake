@@ -5,7 +5,7 @@ NixOS and home-manager configuration for my machines, in one flake on
 
 | Host          | What it is                                                                                     |
 | ------------- | ---------------------------------------------------------------------------------------------- |
-| `work-laptop` | Zenbook laptop: niri + noctalia desktop, home-manager for the user, work modules               |
+| `work-laptop` | Zenbook laptop: mango + noctalia desktop, home-manager for the user, work modules               |
 | `home-server` | AMD box at home: Immich, Jellyfin and the *arr stack, Forgejo, Paperless, Vaultwarden and more behind nginx, limited to Kazakhstan and the LAN/VPN |
 | `drake`       | Oracle Cloud Ampere VM (aarch64): Stalwart mail, AmneziaWG and Xray, ntfy, NetBird exit node   |
 | `installer`   | Thin bootstrap ISO; it carries no config (see [INSTALL.md](INSTALL.md))                        |

@@ -2,6 +2,7 @@
   me,
   config,
   pkgs,
+  pkgs-unstable,
   inputs,
   ...
 }:
@@ -88,7 +89,13 @@
   # NetworkManager picks resolved up automatically.
   services.resolved.enable = true;
 
-  programs.niri.enable = true;
+  # The NixOS module registers the session and the wlr/gtk portals; the user
+  # config lives in programs/mango.nix (home-manager). From unstable: noctalia's
+  # mango template needs >= 0.18, and 26.05 ships 0.12.
+  programs.mangowc = {
+    enable = true;
+    package = pkgs-unstable.mangowc;
+  };
   # Session + portal come from the flake's NixOS module (registers with
   # noctalia-greeter via displayManager.sessionPackages); the user config
   # lives in programs/umbriel.nix (home-manager).
@@ -107,16 +114,16 @@
     # The passwordless path is appearance-only and never takes a session command.
     passwordless-sync-users = [ me.user ];
     settings = {
-      # Start on the password step for the only account, into niri.
-      session.default = "Niri";
+      # Start on the password step for the only account, into mango.
+      session.default = "Mango";
       user.default = me.user;
-      # The password is typed in us; niri's ru/de layouts are session-only.
+      # The password is typed in us; the ru/de layouts are session-only.
       keyboard.layout = "us";
-      # Monitor positions and modes as niri sets them (programs/niri.nix), so
+      # Monitor positions and modes as mango sets them (programs/mango.nix), so
       # there is no modeset at login and the pointer crosses edges the same
       # way. Declared here rather than left to greeter sync, which only
       # records a layout while several outputs are connected. DP-2, unplaced
-      # in niri too, is appended to the right.
+      # in mango too, is appended to the right.
       output = {
         layout = "HDMI-A-1:0,0; eDP-1:0,1440";
         refresh_rate = "DP-2:240; HDMI-A-1:100";
@@ -169,7 +176,8 @@
 
   # Backend of noctalia's screen_recorder plugin (programs/noctalia.nix). The
   # module adds the capability-wrapped gsr-kms-server that "focused" capture
-  # needs; "portal" capture goes through xdg-desktop-portal-gnome from niri.
+  # needs; "portal" capture goes through xdg-desktop-portal-wlr (mango's
+  # ScreenCast portal) or umbriel's own.
   programs.gpu-screen-recorder.enable = true;
 
   # SSH_AUTH_SOCK is Bitwarden Desktop's agent (programs/bitwarden.nix); the
@@ -244,8 +252,8 @@
 
   services.upower.enable = true;
 
-  # Normally pulled in by GNOME/Plasma, which we don't run — niri needs it
-  # enabled by hand. Backs Noctalia's power-profile switcher over D-Bus.
+  # Normally pulled in by GNOME/Plasma, which we don't run, so it is enabled
+  # by hand. Backs Noctalia's power-profile switcher over D-Bus.
   services.power-profiles-daemon.enable = true;
 
   # Opens firewall ports 1714-1764 (TCP/UDP) for device discovery; the daemon

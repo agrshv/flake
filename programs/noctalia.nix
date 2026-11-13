@@ -21,7 +21,7 @@ in
 {
   sops.secrets."stalwart/noctalia".sopsFile = ../secrets/common.yaml;
 
-  # kdeconnectd user service; niri doesn't run XDG autostart entries, so the
+  # kdeconnectd user service; mango doesn't run XDG autostart entries, so the
   # NixOS module alone wouldn't get the daemon started.
   services.kdeconnect.enable = true;
 
@@ -61,8 +61,8 @@ in
     systemd.enable = true;
     settings = {
       bar.default = {
-        # Floating off the screen edge, slightly translucent so niri's blur
-        # (the noctalia layer-rule in programs/niri.nix) shows through, with
+        # Floating off the screen edge, slightly translucent so the
+        # compositor's layer blur (blur_layer in programs/mango.nix) shows through, with
         # every widget in its own pill.
         margin_edge = 6;
         background_opacity = 0.85;
@@ -396,8 +396,8 @@ in
           # noctalia.css to each gtk.css. home-manager owns settings.ini in
           # those directories but not gtk.css, so the two do not collide.
           #
-          # niri: renders ~/.config/niri/noctalia.kdl, included (optional=true)
-          # from programs/niri.nix. umbriel: renders noctalia.toml, which
+          # mango: renders ~/.config/mango/noctalia.conf, sourced at the end
+          # of programs/mango.nix. umbriel: renders noctalia.toml, which
           # programs/umbriel.nix already includes. btop: writes a noctalia theme
           # and selects it in btop.conf (created by btop on first run).
           builtin_ids = [
@@ -405,7 +405,7 @@ in
             "ghostty"
             "gtk3"
             "gtk4"
-            "niri"
+            "mango"
             "umbriel"
           ];
           enable_community_templates = true;

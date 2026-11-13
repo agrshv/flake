@@ -73,7 +73,7 @@
   programs.tmux = {
     enable = true;
     terminal = "tmux-256color";
-    # Windows and panes from 1, like the niri workspaces and the number row.
+    # Windows and panes from 1, like the compositor's tags and the number row.
     baseIndex = 1;
     clock24 = true;
     # The 500ms default makes Esc lag in editors and Claude Code.

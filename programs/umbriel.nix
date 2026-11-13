@@ -3,7 +3,7 @@
   # (hosts/common/desktop.nix); this module only writes
   # ~/.config/umbriel/config.toml (validated at build time via
   # `umbriel validate`). Input/output/keybind wiring mirrors
-  # programs/niri.nix; chords not set here keep umbriel's built-ins
+  # programs/mango.nix; chords not set here keep umbriel's built-ins
   # (Mod+1..9 workspaces, Mod+arrows focus, Mod+Shift+arrows move, Mod+F
   # fullscreen, Mod+R cycle width). Noctalia starts via its systemd service
   # under any Wayland compositor, so no autostart entry is needed.
