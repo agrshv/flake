@@ -25,12 +25,6 @@ let
       output = lenovo;
       app_id = "^firefox$";
     }
-    # Kept for the numbering, but nothing opens there at login.
-    {
-      name = "code";
-      output = "eDP-1";
-      app_id = null;
-    }
     {
       name = "chat";
       output = "eDP-1";
@@ -211,7 +205,7 @@ in
         };
         default_workspace = w.name;
         default_output = w.output;
-      }) (lib.filter (w: w.app_id != null) workspaces)
+      }) workspaces
       ++ [
         {
           match.app_id = ''^dev\.noctalia\.Noctalia\.Settings$'';

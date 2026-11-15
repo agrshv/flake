@@ -11,10 +11,9 @@ let
   noctalia = "noctalia msg";
 
   # Fixed tag per app, whatever is plugged in: the Lenovo gets 1-2, the laptop
-  # 3-5. Undocked, the Lenovo rules find no monitor and everything lands on
-  # the laptop as 1-5 (the order the niri reorder script used to force).
-  # Docked, tags are per monitor, so Mod+3 on the laptop is code. Tag 3 starts
-  # empty: nothing is opened there at login.
+  # 3-4. Undocked, the Lenovo rules find no monitor and everything lands on
+  # the laptop as 1-4 (the order the niri reorder script used to force).
+  # Docked, tags are per monitor, so Mod+3 on the laptop is chat.
   lenovo = "model:N27q";
   startup = [
     {
@@ -29,12 +28,12 @@ let
     }
     {
       app_id = "^vesktop$";
-      tag = 4;
+      tag = 3;
       monitor = "^eDP-1$";
     }
     {
       app_id = ''^org\.telegram\.desktop$'';
-      tag = 5;
+      tag = 4;
       monitor = "^eDP-1$";
     }
   ];
