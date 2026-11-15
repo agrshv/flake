@@ -23,7 +23,7 @@ let
     {
       name = "browser";
       output = lenovo;
-      app_id = "^brave-origin$";
+      app_id = "^firefox$";
     }
     # Kept for the numbering, but nothing opens there at login.
     {
@@ -79,7 +79,7 @@ in
       general = {
         autostart = [
           ghostty
-          "brave-origin"
+          "firefox"
           "vesktop"
           "Telegram"
         ];

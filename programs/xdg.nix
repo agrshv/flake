@@ -50,10 +50,10 @@ in
       enable = true;
       #TODO research into xdg.mimeApps.defaultApplicationPackages
       defaultApplications = {
-        # brave-origin's own desktop file (programs/chromium.nix).
-        "text/html" = [ "brave-origin.desktop" ];
-        "x-scheme-handler/http" = [ "brave-origin.desktop" ];
-        "x-scheme-handler/https" = [ "brave-origin.desktop" ];
+        # Firefox (programs/firefox.nix); Brave stays installed alongside.
+        "text/html" = [ "firefox.desktop" ];
+        "x-scheme-handler/http" = [ "firefox.desktop" ];
+        "x-scheme-handler/https" = [ "firefox.desktop" ];
         "x-scheme-handler/discord" = [ "vesktop.desktop" ];
         "x-scheme-handler/tg" = [ "org.telegram.desktop.desktop" ];
         "x-scheme-handler/tonsite" = [ "org.telegram.desktop.desktop" ];

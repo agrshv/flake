@@ -23,7 +23,7 @@ let
       monitor = lenovo;
     }
     {
-      app_id = "^brave-origin$";
+      app_id = "^firefox$";
       tag = 2;
       monitor = lenovo;
     }
@@ -114,7 +114,7 @@ let
     # starts noctalia (and every other graphical user service).
     exec_once=${startSession}
     exec_once=${ghostty}
-    exec_once=brave-origin
+    exec_once=firefox
     exec_once=vesktop
     exec_once=Telegram
 

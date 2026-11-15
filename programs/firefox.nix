@@ -12,8 +12,8 @@ let
   };
 in
 {
-  # Trial alongside Brave (programs/chromium.nix stays the default browser in
-  # programs/xdg.nix until this one wins).
+  # The default browser (programs/xdg.nix); Brave (programs/chromium.nix)
+  # stays installed alongside.
   programs.firefox = {
     enable = true;
     # New default since home-manager 26.05; set so it doesn't warn. A fresh
