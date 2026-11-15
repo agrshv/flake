@@ -120,8 +120,9 @@
     # The passwordless path is appearance-only and never takes a session command.
     passwordless-sync-users = [ me.user ];
     settings = {
-      # Start on the password step for the only account, into mango.
-      session.default = "Mango";
+      # Start on the password step for the only account, into umbriel; mango
+      # stays in the session list as the fallback.
+      session.default = "Umbriel";
       user.default = me.user;
       # The password is typed in us; the ru layout is session-only.
       keyboard.layout = "us";
