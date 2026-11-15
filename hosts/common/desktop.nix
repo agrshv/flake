@@ -123,7 +123,7 @@
       # Start on the password step for the only account, into mango.
       session.default = "Mango";
       user.default = me.user;
-      # The password is typed in us; the ru/de layouts are session-only.
+      # The password is typed in us; the ru layout is session-only.
       keyboard.layout = "us";
       # Monitor positions and modes as mango sets them (programs/mango.nix), so
       # there is no modeset at login and the pointer crosses edges the same

@@ -52,16 +52,6 @@ in
         (addon "{446900e4-71c2-419f-a6a7-df9c091e268b}" "bitwarden-password-manager")
         (addon "pywalfox@frewacom.org" "pywalfox")
         (addon "sponsorBlocker@ajay.app" "sponsorblock")
-        # German UI language pack, from Mozilla's release server for exactly
-        # this Firefox version: a language pack only loads on the version it
-        # was built for, and AMO's "latest" can run ahead of nixpkgs.
-        {
-          name = "langpack-de@firefox.mozilla.org";
-          value = {
-            installation_mode = "force_installed";
-            install_url = "https://releases.mozilla.org/pub/firefox/releases/${config.programs.firefox.package.version}/linux-x86_64/xpi/de.xpi";
-          };
-        }
       ];
 
       # uBlock Origin's filter lists, applied on every start (lists toggled
@@ -122,8 +112,7 @@ in
         # VA-API video decode, like the AcceleratedVideoDecodeLinuxGL flag
         # Brave gets from nixpkgs.
         "media.ffmpeg.vaapi.enabled" = true;
-        # Follow the system language (i18n.defaultLocale; de_DE on
-        # work-laptop) instead of the en-US the build ships with: an empty
+        # Follow the system language (i18n.defaultLocale) instead of the en-US the build ships with: an empty
         # list means "use the OS locales", falling back to English where no
         # language pack is installed. Dates and numbers follow it as well.
         "intl.locale.requested" = "";

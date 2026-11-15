@@ -129,6 +129,6 @@
     Defaults pwfeedback
   '';
 
-  # Hosts with a desktop may override (work-laptop is German).
+  # Hosts with a desktop may override.
   i18n.defaultLocale = lib.mkDefault "en_GB.UTF-8";
 }

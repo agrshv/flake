@@ -91,7 +91,7 @@ in
 
       input = {
         keyboard = {
-          layout = "us,ru,de";
+          layout = "us,ru";
           options = "grp:alt_shift_toggle";
           repeat_rate = 50;
           repeat_delay = 300;

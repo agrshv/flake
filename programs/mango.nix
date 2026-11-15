@@ -54,7 +54,7 @@ let
   # time without the runtime-rendered file.
   body = ''
     # --- Input ------------------------------------------------------------
-    xkb_rules_layout=us,ru,de
+    xkb_rules_layout=us,ru
     xkb_rules_options=grp:alt_shift_toggle
     repeat_delay=300
     repeat_rate=50
