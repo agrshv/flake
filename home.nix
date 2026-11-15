@@ -11,7 +11,6 @@
     ./programs/anki.nix
     ./programs/bash.nix
     ./programs/bitwarden.nix
-    ./programs/chromium.nix
     ./programs/claude-code.nix
     ./programs/cli.nix
     ./programs/direnv.nix

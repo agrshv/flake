@@ -12,8 +12,7 @@ let
   };
 in
 {
-  # The default browser (programs/xdg.nix); Brave (programs/chromium.nix)
-  # stays installed alongside.
+  # The default browser (programs/xdg.nix).
   programs.firefox = {
     enable = true;
     # New default since home-manager 26.05; set so it doesn't warn. A fresh
@@ -109,12 +108,12 @@ in
         };
       };
       settings = {
-        # VA-API video decode, like the AcceleratedVideoDecodeLinuxGL flag
-        # Brave gets from nixpkgs.
+        # VA-API video decode.
         "media.ffmpeg.vaapi.enabled" = true;
-        # Follow the system language (i18n.defaultLocale) instead of the en-US the build ships with: an empty
-        # list means "use the OS locales", falling back to English where no
-        # language pack is installed. Dates and numbers follow it as well.
+        # Follow the system language (i18n.defaultLocale) instead of the
+        # en-US the build ships with: an empty list means "use the OS
+        # locales", falling back to English where no language pack is
+        # installed. Dates and numbers follow it as well.
         "intl.locale.requested" = "";
         "intl.regional_prefs.use_os_locales" = true;
         # Skip the language prompt and the privacy-notice tab on first start.

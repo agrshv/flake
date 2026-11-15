@@ -194,7 +194,7 @@ next boot asks for the PIN. Keep the passphrase (or a recovery key from
 `systemd-cryptenroll --recovery-key`) as the fallback.
 
 Browser: enable Bitwarden's browser integration in the app (it installs its own
-native-messaging manifest for Brave).
+native-messaging manifest).
 
 ## Renaming the login user on an existing host
 

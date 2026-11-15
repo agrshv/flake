@@ -28,15 +28,13 @@ in
   # The phone-connect plugin (plugins.enabled below) shells out to gdbus for
   # KDE Connect's DBus calls and mounts device filesystems over sshfs.
   # noctalia runs template hooks with the session PATH, so they find these
-  # too. The brave-origin template (community_ids below) installs its theme
-  # with python3 and renders the theme images with Pillow. The screen_recorder
+  # too. The screen_recorder
   # plugin picks a region with slurp; its gpu-screen-recorder comes from
   # hosts/common/desktop.nix.
   home.packages = [
     pkgs.glib # gdbus
     pkgs.sshfs
     pkgs.slurp
-    (pkgs.python3.withPackages (ps: [ ps.pillow ]))
   ];
 
   home.file."Media/Pictures/Wallpapers/${defaultWallpaper}".source = defaultWallpaperFile;
@@ -419,11 +417,7 @@ in
           #
           # claude-code: ~/.claude/themes/noctalia.json, picked once via /theme.
           # obsidian: a noctalia.css snippet in each vault, switched on in the
-          # vault's appearance.json. brave-origin: an unpacked theme extension in
-          # ~/.local/share/noctalia/brave-origin-theme — load it once from
-          # brave://extensions (developer mode → Load unpacked); after palette
-          # changes, click Update there: a restart reuses the stale Cached
-          # Theme.pak and keeps the old colours.
+          # vault's appearance.json.
           #
           # pywalfox: writes ~/.cache/wal/colors.json, (re)writes its own
           # native-messaging manifest in ~/.mozilla/native-messaging-hosts and
@@ -436,7 +430,6 @@ in
           # palette to mini.base16 and already has the loader the hook would
           # otherwise append there.
           community_ids = [
-            "brave-origin"
             "claude-code"
             "discord"
             "neovim"

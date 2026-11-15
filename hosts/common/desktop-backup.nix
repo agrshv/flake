@@ -125,7 +125,7 @@ in
           "${home}/.local/share/TelegramDesktop/tdata/user_data*" # media cache; login is in tdata
           "node_modules"
           ".direnv"
-          # Chromium/Electron caches inside ~/.config (Brave, Vesktop, Teams, …).
+          # Chromium/Electron caches inside ~/.config (Vesktop, Teams, …).
           "Cache"
           "Code Cache"
           "GPUCache"

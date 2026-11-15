@@ -50,7 +50,7 @@ in
       enable = true;
       #TODO research into xdg.mimeApps.defaultApplicationPackages
       defaultApplications = {
-        # Firefox (programs/firefox.nix); Brave stays installed alongside.
+        # Firefox (programs/firefox.nix).
         "text/html" = [ "firefox.desktop" ];
         "x-scheme-handler/http" = [ "firefox.desktop" ];
         "x-scheme-handler/https" = [ "firefox.desktop" ];
