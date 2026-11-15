@@ -251,6 +251,19 @@
   # (home.nix) can't enable a system service itself.
   services.pcscd.enable = true;
 
+  # YubiKey 5C NFC. FIDO2/U2F (browser WebAuthn, ssh ed25519-sk keys) already
+  # works through systemd's hidraw uaccess rules; the OTP and CCID (OATH, PIV,
+  # OpenPGP) applets go through pcscd above. yubikey-personalization adds the
+  # udev rules for the OTP interface. ykman configures the key from the CLI,
+  # Yubico Authenticator shows its TOTP codes, fido2-token manages FIDO2
+  # credentials and the PIN.
+  services.udev.packages = [ pkgs.yubikey-personalization ];
+  environment.systemPackages = [
+    pkgs.yubikey-manager
+    pkgs.yubioath-flutter
+    pkgs.libfido2
+  ];
+
   services.gnome = {
     gnome-keyring.enable = true;
     gcr-ssh-agent.enable = false;
