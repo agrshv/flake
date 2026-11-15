@@ -35,6 +35,22 @@ in
     pkgs.glib # gdbus
     pkgs.sshfs
     pkgs.slurp
+    # Dependencies of the plugins below (plugins.enabled): ocr reads the
+    # region slurp picks with grim + tesseract (the languages used here, not
+    # all ~120); color_picker samples with hyprpicker; vpn-manager imports
+    # and edits profiles through nm-connection-editor and asks for files with
+    # zenity. kubectl (k8s-status) and remmina are already installed elsewhere.
+    pkgs.grim
+    (pkgs.tesseract.override {
+      enableLanguages = [
+        "eng"
+        "rus"
+        "deu"
+      ];
+    })
+    pkgs.hyprpicker
+    pkgs.networkmanagerapplet # nm-connection-editor
+    pkgs.zenity
   ];
 
   home.file."Media/Pictures/Wallpapers/${defaultWallpaper}".source = defaultWallpaperFile;
@@ -103,9 +119,34 @@ in
       # widget — left click starts/stops. Its default source, "portal", asks
       # which screen or window to record. Saved under the XDG videos dir
       # (programs/xdg.nix) rather than the plugin's ~/Videos/Recordings.
+      #
+      # The rest, all fetched at runtime too (third-party code that can run
+      # commands as me, so keep the list deliberate):
+      # - claude-sessions: live Claude Code sessions, which ones wait on me,
+      #   plan limits. Its jump-to-terminal knows kitty/tmux, not ghostty.
+      # - translator (official): `/tr de text` in the launcher.
+      # - ssh-launcher: `/ssh` over the hosts in ~/.ssh/config.
+      # - remmina: saved Remmina connections from the launcher/bar.
+      # - nixos-updates: pending flake input updates.
+      # - k8s-status: nodes/pods/deployments of the current kubectl context,
+      #   work clusters included; it reads, but mind the context.
+      # - vpn-manager: NetworkManager VPNs, auto-connect off trusted networks.
+      # - emoji-picker, ocr (region to clipboard text), color_picker.
+      # The battery charge limit needs no plugin: noctalia's own toggle sets
+      # it through UPower, which restores it at boot.
       plugins.enabled = [
         "icefish/phone-connect"
         "noctalia/screen_recorder"
+        "noctalia/translator"
+        "lfdominguez/claude-sessions"
+        "cleboost/ssh-launcher"
+        "rylos/remmina"
+        "dmopp/nixos-updates"
+        "davemhammer/k8s-status"
+        "andrewdems/vpn-manager"
+        "liamwh/emoji-picker"
+        "fel/ocr"
+        "oldirtty/color_picker"
       ];
       plugin_settings = {
         "icefish/phone-connect".battery_display = "percent";
