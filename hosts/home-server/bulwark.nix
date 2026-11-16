@@ -32,8 +32,10 @@
       # Digest-pinned: podman never re-pulls a tag it already has, so :latest
       # silently froze at the first pull. Bump deliberately. 1.18+ is needed
       # for Stalwart 1.0 (then run Admin > Authentication > Auto-configure
-      # OAuth once).
-      image = "ghcr.io/bulwarkmail/webmail:1.20.0@sha256:df2074bd1f714f89643da127acf547d4167b4960a22cc1a3fa1570b4584ad16f";
+      # OAuth once); 1.21.1+ for Stalwart 1.0.3+, whose OAuthClient `scopes`
+      # must list every scope Bulwark requests (else `invalid_scope`) — re-run
+      # Auto-configure OAuth after crossing that line.
+      image = "ghcr.io/bulwarkmail/webmail:1.21.2@sha256:037b85b1433233d2d7eebb83f928df5ecc3b4adc91dc7e4c55f0a2f69024e754";
       autoStart = true;
       # Loopback only; nginx terminates TLS and applies the country gate.
       ports = [ "127.0.0.1:3456:3000" ];
