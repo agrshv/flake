@@ -414,6 +414,9 @@ in
         readline_shortcuts = true;
         greeter_sync.auto_sync = true;
         clipboard_enabled = false;
+        # Every screenshot (Super+Shift+S, screenshot-region) opens noctalia's
+        # annotation editor first; Done then copies and saves as usual.
+        screenshot.annotate = true;
       };
       theme = {
         # Light by day, dark by night: `auto` follows sunrise/sunset for
