@@ -37,6 +37,12 @@ let
     }
   ];
 
+  # Fixed per-output inventories: exactly these names, never pruned, and no
+  # trailing empty anonymous workspace for focus or Mod+wheel to wander into.
+  # Undocked, the Lenovo's two don't exist and their apps open on the
+  # focused workspace.
+  names = output: map (w: w.name) (lib.filter (w: w.output == output) workspaces);
+
   numbered = lib.imap1 (i: w: w // { key = toString i; }) workspaces;
   locked = action: {
     inherit action;
@@ -110,6 +116,7 @@ in
         };
         ${lenovo} = {
           mode = "2560x1440@99.946";
+          workspaces = names lenovo;
           position = [
             0
             0
@@ -121,6 +128,7 @@ in
             1440
           ];
           scale = 1;
+          workspaces = names "eDP-1";
         };
       };
 
@@ -130,10 +138,6 @@ in
         mode = "dwindle";
         gap = 8;
       };
-
-      # Persistent named workspaces, pinned to their monitors. Undocked, the
-      # Lenovo's two don't exist and their apps open on the focused workspace.
-      workspace = map (w: { inherit (w) name output; }) workspaces;
 
       appearance = {
         prefer_no_csd = true;
@@ -178,6 +182,25 @@ in
         "Mod+F" = "window-toggle-fullscreen";
         "Mod+Space" = "window-toggle-floating";
         "Mod+R" = "layout-toggle-split";
+        # Step through this output's workspaces; the cooldown keeps one wheel
+        # flick from skipping several.
+        "Mod+WheelUp" = {
+          action = "workspace-previous";
+          cooldown_ms = 150;
+        };
+        "Mod+WheelDown" = {
+          action = "workspace-next";
+          cooldown_ms = 150;
+        };
+        "Mod+Shift+WheelUp" = {
+          action = "window-move-to-workspace-previous";
+          cooldown_ms = 150;
+        };
+        "Mod+Shift+WheelDown" = {
+          action = "window-move-to-workspace-next";
+          cooldown_ms = 150;
+        };
+
         "Mod+Minus" = "window-modify-primary-extent -0.1";
         "Mod+Equal" = "window-modify-primary-extent 0.1";
       }
