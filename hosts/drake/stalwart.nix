@@ -24,13 +24,15 @@ in
   virtualisation.oci-containers = {
     backend = "podman";
     containers.stalwart = {
-      image = "docker.io/stalwartlabs/stalwart:v1.0.2-alpine@sha256:a8b055bcc655cc69a335319eb178ae9c600f62c1faa8b506cb5b69cdccf656f3";
+      image = "docker.io/stalwartlabs/stalwart:v1.1.0-alpine@sha256:8988c12e4070b2d3b96b41478191df21d1a8a06702a249155815b1e497961526";
       volumes = [
         "${dataDir}:${dataDir}"
         "${bootstrapConfig}:/etc/stalwart/config.json"
       ];
       environment = {
         TZ = "Asia/Almaty";
+        # Also the passkey relying-party ID (1.1+): sign in at exactly this
+        # origin, and changing its host invalidates every registered passkey.
         STALWART_PUBLIC_URL = "https://mail.agrshv.dev";
       };
       extraOptions = [ "--network=host" ];
