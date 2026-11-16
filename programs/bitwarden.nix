@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   # Bitwarden Desktop's SSH agent socket (Linux, non-Flatpak install).
   agentSock = "${config.home.homeDirectory}/.bitwarden-ssh-agent.sock";
@@ -16,6 +21,22 @@ in
   systemd.user.sessionVariables.SSH_AUTH_SOCK = agentSock;
 
   # Start with the session so the agent (and browser biometric unlock) are up
-  # before anything needs them. Start-to-tray is an in-app setting.
-  xdg.autostart.entries = [ "${pkgs.bitwarden-desktop}/share/applications/bitwarden.desktop" ];
+  # before anything needs them. Start-to-tray is an in-app setting. A unit
+  # rather than an XDG autostart entry: Hyprland doesn't start
+  # xdg-desktop-autostart.target, and turning that on would also run a second
+  # kdeconnectd next to its service. Quitting from the tray exits 0, so it
+  # stays closed; a launcher click reaches this instance (single-instance lock).
+  systemd.user.services.bitwarden = {
+    Unit = {
+      Description = "Bitwarden (SSH agent)";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = lib.getExe pkgs.bitwarden-desktop;
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
 }
