@@ -1,6 +1,7 @@
 {
   me,
   config,
+  lib,
   inputs,
   pkgs,
   pkgs-unstable,
@@ -40,6 +41,15 @@
   # trusts the NCA roots in the browser NSS DBs and autostarts it with the
   # session. Hardware tokens also need services.pcscd (hosts/common/desktop.nix).
   services.ncalayer.enable = true;
+  # Upstream starts it from default.target with Wants=graphical-session.target,
+  # which brings the session target up with the user manager, before any
+  # compositor has exported WAYLAND_DISPLAY; everything ordered after it
+  # (kdeconnect, noctalia) then starts without a display. Start it from the
+  # session target instead, like the other session services.
+  systemd.user.services.ncalayer = {
+    Unit.Wants = lib.mkForce [ ];
+    Install.WantedBy = lib.mkForce [ "graphical-session.target" ];
+  };
 
   home = {
     username = me.user;
