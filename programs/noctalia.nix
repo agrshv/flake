@@ -118,7 +118,8 @@ in
       # Screen Recorder (official plugin): gpu-screen-recorder behind a bar
       # widget — left click starts/stops. Its default source, "portal", asks
       # which screen or window to record. Saved under the XDG videos dir
-      # (programs/xdg.nix) rather than the plugin's ~/Videos/Recordings.
+      # (programs/xdg.nix) rather than the plugin's ~/Videos/Recordings, with
+      # the mic recorded alongside desktop audio.
       #
       # The rest, all fetched at runtime too (third-party code that can run
       # commands as me, so keep the list deliberate):
@@ -150,7 +151,11 @@ in
       ];
       plugin_settings = {
         "icefish/phone-connect".battery_display = "percent";
-        "noctalia/screen_recorder".directory = "${config.xdg.userDirs.videos}/Recordings";
+        "noctalia/screen_recorder" = {
+          directory = "${config.xdg.userDirs.videos}/Recordings";
+          # Desktop audio and the mic, mixed into one track.
+          audio_source = "both";
+        };
       };
       brightness.enable_ddcutil = true;
       idle = {
