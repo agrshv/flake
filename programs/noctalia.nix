@@ -442,13 +442,16 @@ in
           #
           # mango: renders ~/.config/mango/noctalia.conf, sourced at the end
           # of programs/mango.nix. umbriel: renders noctalia.toml, which
-          # programs/umbriel.nix already includes. btop: writes a noctalia theme
+          # programs/umbriel.nix already includes. hyprland: renders
+          # ~/.config/hypr/noctalia.lua, required at the end of
+          # programs/hyprland.nix. btop: writes a noctalia theme
           # and selects it in btop.conf (created by btop on first run).
           builtin_ids = [
             "btop"
             "ghostty"
             "gtk3"
             "gtk4"
+            "hyprland"
             "mango"
             "umbriel"
           ];

@@ -106,6 +106,14 @@
   # noctalia-greeter via displayManager.sessionPackages); the user config
   # lives in programs/umbriel.nix (home-manager).
   programs.umbriel.enable = true;
+  # Session + xdg-desktop-portal-hyprland; the user config lives in
+  # programs/hyprland.nix (home-manager). From unstable: that config follows
+  # the current Lua API (0.57), and 26.05 ships 0.55.
+  programs.hyprland = {
+    enable = true;
+    package = pkgs-unstable.hyprland;
+    portalPackage = pkgs-unstable.xdg-desktop-portal-hyprland;
+  };
 
   xdg.portal = {
     enable = true;
@@ -120,9 +128,9 @@
     # The passwordless path is appearance-only and never takes a session command.
     passwordless-sync-users = [ me.user ];
     settings = {
-      # Start on the password step for the only account, into umbriel; mango
-      # stays in the session list as the fallback.
-      session.default = "Umbriel";
+      # Start on the password step for the only account, into Hyprland;
+      # umbriel and mango stay in the session list as fallbacks.
+      session.default = "Hyprland";
       user.default = me.user;
       # The password is typed in us; the ru layout is session-only.
       keyboard.layout = "us";

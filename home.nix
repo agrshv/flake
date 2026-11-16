@@ -19,6 +19,7 @@
     ./programs/fish.nix
     ./programs/ghostty.nix
     ./programs/git.nix
+    ./programs/hyprland.nix
     ./programs/mango.nix
     ./programs/neovim.nix
     ./programs/nh.nix
