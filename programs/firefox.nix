@@ -46,6 +46,11 @@ in
       # Bitwarden fills logins; don't offer to save them twice.
       PasswordManagerEnabled = false;
       OfferToSaveLogins = false;
+      # Nor payment cards and addresses, and no history of what was typed
+      # into form fields (the dropdown of past entries under inputs).
+      AutofillCreditCardEnabled = false;
+      AutofillAddressEnabled = false;
+      DisableFormHistory = true;
       ExtensionSettings = builtins.listToAttrs [
         (addon "uBlock0@raymondhill.net" "ublock-origin")
         (addon "{446900e4-71c2-419f-a6a7-df9c091e268b}" "bitwarden-password-manager")
@@ -118,6 +123,9 @@ in
         "intl.regional_prefs.use_os_locales" = true;
         # Skip the language prompt and the privacy-notice tab on first start.
         "intl.multilingual.aboutWelcome.languageMismatchEnabled" = false;
+        # No "Translate this page?" offer on Russian pages (comma-separated
+        # BCP 47 tags; Settings → Translations → "Never translate").
+        "browser.translations.neverTranslateLanguages" = "ru";
         "datareporting.policy.dataSubmissionPolicyBypassNotification" = true;
         "toolkit.telemetry.reportingpolicy.firstRun" = false;
         # Restore the previous session and keep the new tab page plain.
