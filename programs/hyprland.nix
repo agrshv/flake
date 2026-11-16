@@ -7,7 +7,7 @@
 
 let
   inherit (pkgs-unstable) hyprland;
-  ghostty = lib.getExe pkgs.ghostty;
+  ghostty = lib.getExe pkgs-unstable.ghostty; # same package as programs/ghostty.nix
   noctalia = "noctalia msg";
   lenovo = "desc:Lenovo Group Limited N27q UT33383Y";
 
@@ -20,7 +20,12 @@ let
     {
       name = "terminal";
       monitor = lenovo;
-      cmd = ghostty;
+      # Placed by PID, so this has to stay its own process: as a single
+      # instance it can hand its window to another ghostty process (or exit
+      # quietly), and the login terminal never reached its workspace.
+      # systemd-cat execs in place (same PID) and puts its output in the
+      # journal: journalctl --user -t ghostty-login.
+      cmd = "systemd-cat -t ghostty-login ${ghostty} --gtk-single-instance=false";
     }
     {
       name = "browser";
