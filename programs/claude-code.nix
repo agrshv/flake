@@ -15,6 +15,27 @@
         -p MemoryMax=6G -p MemorySwapMax=0 -p CPUWeight=20 -p IOWeight=20 \
         -- nice -n 19 "$@"
     '')
+    # Lints an MR description (GitLab-flavoured Markdown) from stdin or files
+    # before it's posted. No first-line heading rule: descriptions are prose;
+    # bare URLs are fine (GitLab autolinks them, and the Asana link is one);
+    # lines wrap at 80, but a lone URL may run past it.
+    (writeShellScriptBin "mr-lint" ''
+      exec ${lib.getExe markdownlint-cli2} \
+        --config ${
+          writeText "mr.markdownlint.json" (
+            builtins.toJSON {
+              default = true;
+              MD041 = false;
+              MD034 = false;
+              MD013 = {
+                line_length = 80;
+                code_blocks = false;
+              };
+            }
+          )
+        } \
+        "''${@:--}"
+    '')
   ];
 
   programs.claude-code = {
@@ -191,21 +212,46 @@
 
       - Title: Conventional Commits, `type(scope): lowercase summary`, same as
         the commit title when the branch has a single commit.
-      - Description: plain prose, wrapped at ~72 columns, explaining why the
-        change is needed and anything a reviewer can't see in the diff.
-        No headings, no "Summary"/"Test plan" boilerplate. Skip the prose
-        entirely for trivial changes (fmt, version bumps).
+      - Description: prose explaining why the change is needed and anything
+        a reviewer can't see in the diff. No headings, no "Summary"/"Test plan"
+        boilerplate. Skip the prose entirely for trivial changes (fmt, version
+        bumps).
+      - It is GitLab-flavoured Markdown, rendered, not plain text:
+        - Wrap at ~72 columns; single newlines join into one paragraph, so
+          separate paragraphs with a blank line and write lists as `- ` items
+          with a blank line before them.
+        - Anything code goes in backticks: file and directory paths
+          (`archive/imports.tf`), branch names, commands, resource addresses,
+          settings and values (`archived = true`, `destroy = false`),
+          variables, env names, package versions. Prose words (GitLab,
+          Terraform, service names used as names) stay plain.
+        - Never backtick a GitLab reference: code spans aren't linked.
+      - GitLab references:
+        - Same project: `!19` (MR), `#19` (issue), a commit SHA, bare.
+        - Another project: the full path, `aviata/devops/backstage!19` or
+          `aviata/devops/backstage#19`, never a bare `!19` or
+          `backstage !19`: GitLab links a bare `!19` to *this* project's
+          MR 19, and a space breaks the reference. A commit in another
+          project is `aviata/devops/backstage@<sha>`.
+        - Before writing one, check it resolves:
+          `glab api "projects/<path url-encoded>/merge_requests/<iid>"`
+          returns the MR you mean (`web_url`, `title`).
       - The Asana URL goes alone on the **last line** of the description, after
         a blank line. If there's no prose, the URL is the whole description.
 
       ## 3. Create it
 
-      Commit only what I asked for, push with `git push -u origin HEAD`, then:
+      Commit only what I asked for and push with `git push -u origin HEAD`.
+
+      Write the description to a file in the scratchpad and lint it with
+      `mr-lint <file>`. Fix every finding and re-run until it's clean; then
+      reread it for code that isn't in backticks and for cross-project
+      references without a full path, which the linter can't see. Then:
 
       ```sh
       glab mr create \
         --title "<title>" \
-        --description "<description>" \
+        --description "$(cat <file>)" \
         --target-branch <default branch> \
         --assignee anton.groshev \
         --squash-before-merge=true \
