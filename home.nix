@@ -25,7 +25,6 @@
     ./programs/neovim.nix
     ./programs/nh.nix
     ./programs/noctalia.nix
-    ./programs/obsidian.nix
     ./programs/remmina.nix
     ./programs/ssh.nix
     ./programs/starship.nix

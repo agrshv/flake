@@ -468,8 +468,6 @@ in
           # settings files home-manager owns are untouched.
           #
           # claude-code: ~/.claude/themes/noctalia.json, picked once via /theme.
-          # obsidian: a noctalia.css snippet in each vault, switched on in the
-          # vault's appearance.json.
           #
           # pywalfox: writes ~/.cache/wal/colors.json, (re)writes its own
           # native-messaging manifest in ~/.mozilla/native-messaging-hosts and
@@ -485,7 +483,6 @@ in
             "claude-code"
             "discord"
             "neovim"
-            "obsidian"
             "pywalfox"
             "telegram"
           ];
