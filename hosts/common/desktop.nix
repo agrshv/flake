@@ -219,29 +219,6 @@
     "Noto Sans"
   ];
 
-  services.syncthing = {
-    enable = true;
-    inherit (me) user;
-    dataDir = "/home/${me.user}";
-    openDefaultPorts = true;
-    settings = {
-      devices."phone".id = "ERU7IIB-SSIQSQB-F242ET4-WG6TYCY-NSXQ5KZ-ET7PZZX-HYDMHLA-TNYP3AF";
-      folders = {
-        # The attribute name is only the label; `id` is what pairs the folder
-        # across devices and must match the phone's, which is why it looks
-        # generated rather than chosen. The previous id (tyd4h-e2mdp) existed
-        # on no other device, so this folder never synced anything — the phone
-        # kept logging "Unexpected folder ID in ClusterConfig".
-        "obsidian" = {
-          id = "hhehl-wc95y";
-          path = "/home/${me.user}/Documents/obsidian";
-          devices = [ "phone" ];
-          ignorePatterns = [ ".obsidian/" ];
-        };
-      };
-    };
-  };
-
   virtualisation.docker = {
     storageDriver = "btrfs";
     rootless = {

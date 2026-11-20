@@ -4,8 +4,8 @@
     vaults = {
       obsidian = {
         enable = true;
-        # Shared with the phone by syncthing (hosts/common/desktop.nix), which
-        # is why the directory is named after the folder rather than the app.
+        # Named after the folder syncthing used to share with the phone,
+        # rather than after the app.
         target = "Documents/obsidian";
       };
     };

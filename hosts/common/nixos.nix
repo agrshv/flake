@@ -50,7 +50,7 @@
 
   # Every host is btrfs (disko). A monthly scrub re-reads all data against its
   # checksums, so silent corruption shows up in the journal while the other
-  # copies (restic, syncthing) are still good, not on the day a file is needed.
+  # copies (restic) are still good, not on the day a file is needed.
   services.btrfs.autoScrub.enable = true;
 
   services.netbird = {
