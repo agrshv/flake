@@ -19,6 +19,7 @@ in
     ../common/disko.nix
     ../common/nixos.nix
     ../common/desktop.nix
+    ./network-privacy.nix
 
     # Zenbook UM425QA (Ryzen, NVMe). nixos-hardware has no profile for this
     # model, so these are the generic AMD-laptop ones. The pstate module also
