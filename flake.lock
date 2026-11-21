@@ -432,11 +432,11 @@
     },
     "work": {
       "locked": {
-        "lastModified": 1795251381,
-        "narHash": "sha256-7B5J8S112kTdmD9M88gV0mm+m571k0yNBihGsUpYMIY=",
+        "lastModified": 1795251822,
+        "narHash": "sha256-kHEcM6q+TuWNh1MObE6hzmCpNfvCwGwMoxmzW3YLmVY=",
         "ref": "refs/heads/master",
-        "rev": "5183bd0a39d282516859966c143f53cf7277e4d9",
-        "revCount": 16,
+        "rev": "7f8286ae8555ec5dcb78d462e9af6af32f137ab3",
+        "revCount": 17,
         "type": "git",
         "url": "ssh://git@github.com/agrshv/flake-work.git"
       },
