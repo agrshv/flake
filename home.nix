@@ -28,6 +28,7 @@
     ./programs/remmina.nix
     ./programs/ssh.nix
     ./programs/starship.nix
+    ./programs/tasks.nix
     ./programs/udiskie.nix
     ./programs/umbriel.nix
     ./programs/vesktop.nix
