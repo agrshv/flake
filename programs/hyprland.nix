@@ -9,6 +9,17 @@ let
   inherit (pkgs-unstable) hyprland;
   ghostty = lib.getExe pkgs-unstable.ghostty; # same package as programs/ghostty.nix
   noctalia = "noctalia msg";
+
+  # The session runs under UWSM (hosts/common/desktop.nix), which puts the
+  # compositor in its own unit. Anything Hyprland execs directly stays in that
+  # unit, so when systemd-oomd picks the biggest cgroup it kills the
+  # compositor along with every app in it. `uwsm app` gives each app its own
+  # scope in app-graphical.slice, so only the offender dies. systemd-run
+  # --scope execs in place, so the PID (and the workspace placement keyed on
+  # it) survives. `noctalia msg` calls are short-lived and stay unwrapped;
+  # noctalia's launcher already starts a unit per app
+  # (launch_apps_as_systemd_services in programs/noctalia.nix).
+  app = name: cmd: "uwsm app -a ${name} -- ${cmd}";
   lenovo = "desc:Lenovo Group Limited N27q UT33383Y";
 
   # Same app-to-number mapping as programs/umbriel.nix and programs/mango.nix.
@@ -25,22 +36,22 @@ let
       # quietly), and the login terminal never reached its workspace.
       # systemd-cat execs in place (same PID) and puts its output in the
       # journal: journalctl --user -t ghostty-login.
-      cmd = "systemd-cat -t ghostty-login ${ghostty} --gtk-single-instance=false";
+      cmd = app "ghostty" "systemd-cat -t ghostty-login ${ghostty} --gtk-single-instance=false";
     }
     {
       name = "browser";
       monitor = lenovo;
-      cmd = "firefox";
+      cmd = app "firefox" "firefox";
     }
     {
       name = "chat";
       monitor = "eDP-1";
-      cmd = "vesktop";
+      cmd = app "vesktop" "vesktop";
     }
     {
       name = "telegram";
       monitor = "eDP-1";
-      cmd = "Telegram";
+      cmd = app "telegram" "Telegram";
     }
   ];
   numbered = lib.imap1 (i: w: w // { key = toString i; }) workspaces;
@@ -106,7 +117,11 @@ let
     -- Each app on its workspace, but only the instance started here, so a
     -- terminal opened later with Mod+Return lands on the focused workspace.
     -- noctalia starts from its systemd service, so it isn't here.
+    -- finalize first: it exports WAYLAND_DISPLAY etc. to the systemd user
+    -- manager and marks the compositor unit started, which brings up
+    -- graphical-session.target (noctalia, bitwarden).
     hl.on("hyprland.start", function()
+      hl.exec_cmd("uwsm finalize HYPRLAND_INSTANCE_SIGNATURE")
     ${lib.concatMapStringsSep "\n" (
       w: "  hl.exec_cmd(${lua w.cmd}, { workspace = ${lua "name:${w.name} silent"} })"
     ) workspaces}
@@ -114,7 +129,7 @@ let
 
     -- Binds -------------------------------------------------------------------
     ${lib.concatStringsSep "\n" [
-      (bind "SUPER + Return" (exec ghostty) "")
+      (bind "SUPER + Return" (exec (app "ghostty" ghostty)) "")
       (bind "SUPER + SHIFT + Q" "hl.dsp.window.close()" "")
       (bind "SUPER + Escape" (exec "${noctalia} session lock") "")
       (bind "SUPER + SHIFT + E" "hl.dsp.exit()" "")
@@ -199,6 +214,9 @@ in
     package = null;
     portalPackage = null;
     configType = "lua";
+    # UWSM owns graphical-session.target and the environment import; this
+    # module's hyprland-session.target would bind the same target again.
+    systemd.enable = false;
     extraConfig = config + theme;
   };
 

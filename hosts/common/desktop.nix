@@ -111,6 +111,11 @@
   # the current Lua API (0.57), and 26.05 ships 0.55.
   programs.hyprland = {
     enable = true;
+    # Run the compositor as a systemd user unit (wayland-wm@hyprland.desktop)
+    # instead of in the logind session scope, with apps in their own scopes
+    # (programs/hyprland.nix). Without it every app shared the session scope
+    # with Hyprland, and systemd-oomd's swap kill took the whole desktop down.
+    withUWSM = true;
     package = pkgs-unstable.hyprland;
     portalPackage = pkgs-unstable.xdg-desktop-portal-hyprland;
   };
@@ -130,7 +135,8 @@
     settings = {
       # Start on the password step for the only account, into Hyprland;
       # umbriel and mango stay in the session list as fallbacks.
-      session.default = "Hyprland";
+      # By desktop file name: hyprland-uwsm.desktop, "Hyprland (uwsm-managed)".
+      session.default = "hyprland-uwsm";
       user.default = me.user;
       # The password is typed in us; the ru layout is session-only.
       keyboard.layout = "us";
