@@ -64,6 +64,9 @@
       - Asana tasks are written in Russian (title and description), whatever
         language the conversation is in. Technical names (GitLab, Terraform,
         service names, MR numbers) stay as they are.
+      - Work Asana tasks are the memory shared between sessions: in a work repo,
+        use the `asana-task` skill to load the task before starting and to
+        record progress in it. `asana-sweep` closes tasks whose MRs are all merged.
     '';
 
     # Language servers give Claude go-to-definition and diagnostics instead of
@@ -265,8 +268,10 @@
 
       No reviewers, labels or `--draft` unless I ask. If an MR for the branch
       already exists (`glab mr view`), update it with `glab mr update` instead
-      of opening a second one. If step 1 created the task, add the MR URL to it
-      as a comment.
+      of opening a second one. Then add the MR URL to the task as a comment
+      `MR: <url>` (whether step 1 found the task or created it), unless the
+      task's notes or comments already contain it: `asana-sweep` finds a
+      task's MRs through these links.
 
       ## 4. Add dependencies on MRs that must merge first
 
@@ -318,6 +323,136 @@
       with `--force-with-lease`, after asking.
 
       Finish by printing the MR URL and any dependencies you added.
+    '';
+
+    skills.asana-task = ''
+      ---
+      name: asana-task
+      description: Use the work Asana task as memory that carries over between sessions. Load its context before starting work in a work repo (gitlab.frhc.one), and record progress, decisions and next steps in it while working. Use at the start of any work-repo task, when I say "continue", "where were we" or name a task, and before finishing a turn that moved the work forward.
+      ---
+
+      # Asana task as memory between sessions
+
+      A new session knows nothing about earlier ones. The Asana task is where
+      that knowledge lives, so the next session (or a teammate) can pick up
+      from it. Everything written to Asana is in **Russian**, technical names
+      unchanged.
+
+      ## 1. Load the task before starting work
+
+      Find it in the same order as step 1 of the `gitlab-mr` skill: a URL or
+      ID I gave you, then an `app.asana.com` URL in the branch's commits or
+      its MR description, then a match among my incomplete tasks in
+      Travel Infrastructure Tasks (`1210670586512180`) and Devops Support
+      (`1210945785187568`), confirmed with me. The SessionStart hook
+      may already have put the branch's Asana URLs in context.
+
+      Read it with `get_task` (`comment_limit` 20 or more) and, if it is a
+      subtask, its parent as well: the parent's notes usually hold the
+      background and the subtasks hold the numbered plan. Before doing
+      anything, tell me in two or three lines where things stand, based on
+      the notes, the latest comments and which subtasks are done.
+
+      No task, and the work is more than a quick question? Offer to create
+      one (as in `gitlab-mr`) rather than creating it unasked.
+
+      ## 2. Keep it up to date
+
+      Write when something happens that the next session would need to know,
+      not after every step:
+
+      - **Comment** (`add_comment`) for things that happened, short and dated
+        by Asana itself: an MR opened or merged (`MR: <url>`), an apply or
+        deploy done, something found while debugging, a blocker or a question
+        to someone, a decision and why it was made.
+      - **Notes** (`update_tasks`) hold the current state: context, the
+        current approach, what is left. Edit them when they stop being true
+        and keep what is already there; don't append a running log to them.
+      - **Subtasks** for a plan of several steps that will take more than one
+        session: numbered names (`1. …`, `2. …`), the same way my existing
+        tasks do it. Complete each one as it is finished.
+
+      Before ending a turn in which the work moved forward and nothing has
+      been recorded yet, add one comment: what was done and what comes next.
+      Say in your reply what you wrote to Asana.
+
+      Never put secrets, tokens, passwords or their values in Asana, not even
+      in passing; name the secret and where it lives instead.
+
+      ## 3. Status
+
+      - Started work: move it to **В работе** if it is in Открыт or Backlog.
+      - Every MR is merged and nothing else is left: complete it, as in the
+        `asana-sweep` skill. Ask first if something remains to be applied or
+        checked after merge; in Travel Infrastructure Tasks, a task waiting
+        on that check goes to **Тестируется**.
+      - Last open subtask completed: say so, and offer to complete the parent.
+    '';
+
+    skills.asana-sweep = ''
+      ---
+      name: asana-sweep
+      description: Find my open work Asana tasks whose MRs are all merged (or which are otherwise finished) and close them, so no task stays open after the work is done. Use when I ask to clean up, sweep, sync or check the status of my Asana tasks or MRs.
+      ---
+
+      # Close Asana tasks whose work is finished
+
+      ## 1. Collect the tasks
+
+      `search_tasks` with `assignee_any=me`, `completed=false`,
+      `projects_any=1210670586512180,1210945785187568` (Travel
+      Infrastructure Tasks, Devops Support), `limit=100`; repeat with
+      `is_subtask=true` and no project filter, since subtasks usually aren't
+      in a project. Ask for `opt_fields=name,notes,parent.name,memberships.section.name,memberships.project.name,modified_at,permalink_url,num_subtasks`.
+
+      Comments: one `get_task_stories` call with all the task IDs (up to 50
+      per call) and `resource_subtype=comment_added`, `limit=50`.
+
+      ## 2. Find each task's MRs
+
+      - Every `gitlab.frhc.one/<path>/-/merge_requests/<iid>` URL in the
+        notes and comments.
+      - MRs whose description links the task: run
+        `glab api "merge_requests?scope=created_by_me&state=all&search=<task gid>&in=description&per_page=100"`
+        once per task, or once in all for an `app.asana.com` search if
+        that's faster, and match on the task gid.
+
+      For each MR, its state:
+      `glab api "projects/<path url-encoded>/merge_requests/<iid>"` → `state`
+      (`merged`, `opened`, `closed`), `merged_at`, `title`.
+
+      ## 3. Classify
+
+      - **Done**: at least one MR, every MR `merged` or deliberately `closed`
+        in favour of a merged one, and the latest comments don't mention
+        anything left (an apply, a deploy, a check, a next step).
+      - **Done, but something is left**: all MRs merged, yet the notes or the
+        last comments mention remaining work. Don't close; list what is left.
+      - **Parent**: every subtask completed (`get_task` shows subtasks;
+        check each with `completed`) → done, regardless of its own MRs.
+      - **In progress**: an MR still `opened`. Note if it is a draft, has a
+        failing pipeline or has had no activity for 14 days.
+      - **Stuck**: an MR `closed` without being merged and no merged
+        replacement, or no MRs and no activity (`modified_at`) for 14+ days.
+      - Tasks created by someone else in Devops Support with no MR: leave
+        alone, just list them.
+
+      ## 4. Report, then act on one confirmation
+
+      Show a table, grouped by class: task (name + link), MRs with state,
+      and what you propose. Then ask once: "Close the N done tasks?" (I can
+      exclude some). On yes, for each one:
+
+      1. Add a comment: `Все MR смёрджены: <MR URLs>. Задача закрыта.`
+         (adapted for parents: `Все подзадачи выполнены.`).
+      2. Move it to the project's **Закрыт** section (Travel Infrastructure
+         Tasks `1210670771566696`, Devops Support `1210941654277294`), if it
+         is in one of those projects.
+      3. Complete it (`update_tasks`, `completed=true`).
+
+      Complete subtasks before their parent. Nothing gets completed without
+      that confirmation, and stuck tasks are only reported. Finish with a list
+      of what was closed and what still needs me.
     '';
 
     # Live Terraform Registry docs (providers, modules, resource schemas), so
@@ -389,6 +524,41 @@
 
       # Real hooks live here. The module's own `hooks` option only drops
       # scripts into ~/.claude/hooks/ without registering them anywhere.
+
+      # In a work repo, put the branch and the Asana tasks its commits link
+      # into context, so the session starts from the task (asana-task skill)
+      # instead of from nothing. Silent everywhere else.
+      hooks.SessionStart = [
+        {
+          matcher = "startup|resume|clear|compact";
+          hooks = [
+            {
+              type = "command";
+              command = toString (
+                pkgs.writeShellScript "claude-asana-context" ''
+                  git() { ${pkgs.git}/bin/git "$@"; }
+                  git remote get-url origin 2>/dev/null | grep -q 'gitlab\.frhc\.one' || exit 0
+                  branch=$(git branch --show-current 2>/dev/null)
+                  base=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
+                  urls=""
+                  if [[ -n $base && -n $branch && $branch != "''${base#origin/}" ]]; then
+                    urls=$(git log --format=%B "$base..HEAD" 2>/dev/null |
+                      grep -oE 'https://app\.asana\.com/[A-Za-z0-9/_-]*[0-9]{10,}' | sort -u)
+                  fi
+                  echo "Work repo (gitlab.frhc.one), branch ''${branch:-detached}."
+                  if [[ -n $urls ]]; then
+                    echo "Asana tasks linked from this branch's commits:"
+                    echo "$urls"
+                  fi
+                  echo "Before starting work here, load its Asana task with the asana-task skill, and record progress in it."
+                  exit 0
+                ''
+              );
+            }
+          ];
+        }
+      ];
+
       hooks.PostToolUse = [
         {
           # Keep .nix files in the flake's own style (see `formatter` in
