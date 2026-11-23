@@ -103,7 +103,8 @@ in
         };
         mouse.accel_profile = "flat";
         cursor.follows_focus = true;
-        focus.follows_mouse = true;
+        # Was a bool; "sloppy" is the old `true`: entering a window focuses it.
+        focus.follows_mouse = "sloppy";
       };
 
       # The Lenovo above the laptop, as in the greeter (hosts/common/desktop.nix);
