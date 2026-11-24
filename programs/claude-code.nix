@@ -53,6 +53,8 @@
       - Before saying a change is done, use the `verify` skill.
       - Nix: format with `nix fmt`; rebuild with `nh os switch` / `nh home switch`,
         never call `nixos-rebuild` directly.
+      - No python on PATH: edit files with the Edit tool, wrangle JSON/YAML with
+        `jq` / `yq`. For a one-off script, `nix run nixpkgs#python3`.
       - Secrets are sops-encrypted (`secrets/*.yaml`); never decrypt or print them.
       - Terraform / OpenTofu: use `tofu` where the lock file pins
         `registry.opentofu.org` (all work repos), `terraform` otherwise. `fmt` and
