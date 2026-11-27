@@ -31,7 +31,17 @@ in
   # Scripts and `\rm` still delete for real; the hourly snapper snapshots
   # (hosts/common/desktop-backup.nix) cover those. Restore with
   # `trash-restore`, list with `trash-list`.
-  home.packages = [ pkgs.trash-cli ];
+  #
+  # Secrets and certificates, needed from any directory: sops edits
+  # secrets/*.yaml (age key in ~/.config/sops/age), ssh-to-age derives a host's
+  # recipient from its SSH key, openssl inspects certs and endpoints.
+  home.packages = with pkgs; [
+    trash-cli
+    sops
+    age
+    ssh-to-age
+    openssl
+  ];
   home.shellAliases.rm = "trash-put";
 
   # Items trashed more than 30 days ago are purged weekly, so the trash
