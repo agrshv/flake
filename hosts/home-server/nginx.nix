@@ -55,8 +55,6 @@ let
     "prowlarr.agrshv.dev"
     "bazarr.agrshv.dev"
     "qbittorrent.agrshv.dev"
-    # Until the default admin/admin password is changed (see ./gonic.nix).
-    "gonic.agrshv.dev"
   ];
 
   # Vhosts deliberately outside both gates.

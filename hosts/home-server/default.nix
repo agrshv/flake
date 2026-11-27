@@ -28,7 +28,6 @@
     ./bulwark.nix
     ./forgejo.nix
     ./forgejo-runner.nix
-    ./gonic.nix
     ./grampsweb.nix
     ./nocodb.nix
     ./dufs.nix
