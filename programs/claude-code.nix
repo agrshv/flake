@@ -10,14 +10,23 @@ let
   # Code strips sudo/env/nice/timeout before matching, but not our own
   # `lowprio` wrapper, and a `* ` after the tool catches global flags put
   # before the subcommand (`kubectl -n x apply`, `sops --input-type yaml -d`).
+  # A trailing ` *` is optional only in a rule with a single `*`, so the
+  # flags-first form needs a bare variant too (`systemctl --user daemon-reload`).
   bashRules =
     tool: verbs:
-    lib.concatMap (v: [
-      "Bash(${tool} ${v} *)"
-      "Bash(${tool} * ${v} *)"
-      "Bash(lowprio ${tool} ${v} *)"
-      "Bash(lowprio ${tool} * ${v} *)"
-    ]) verbs;
+    lib.concatMap (
+      v:
+      lib.concatMap
+        (p: [
+          "Bash(${p}${tool} ${v} *)"
+          "Bash(${p}${tool} * ${v} *)"
+          "Bash(${p}${tool} * ${v})"
+        ])
+        [
+          ""
+          "lowprio "
+        ]
+    ) verbs;
 in
 {
   # Tools Claude reaches for in its own shell; without them it falls back to
@@ -72,7 +81,10 @@ in
         the scope for breaking changes. Only commit or push when asked.
       - Before saying a change is done, use the `verify` skill.
       - Nix: format with `nix fmt`; rebuild with `nh os switch` / `nh home switch`,
-        never call `nixos-rebuild` directly.
+        never call `nixos-rebuild` directly. Add, configure, update or remove
+        software and services in the flake, never imperatively (`nix profile`,
+        `nix-env`, `systemctl enable`). Switching, deploying, `nix flake update`
+        and garbage collection only when asked.
       - No python on PATH: edit files with the Edit tool, wrangle JSON/YAML with
         `jq` / `yq`. For a one-off script, `nix run nixpkgs#python3`.
       - Secrets are sops-encrypted (`secrets/*.yaml`); never decrypt or print them.
@@ -530,7 +542,11 @@ in
           "Bash(nix run nixpkgs#sops *)"
           "Bash(nixos-rebuild *)"
           "Bash(lowprio nixos-rebuild *)"
+          # Software comes from the flake, never installed imperatively.
+          "Bash(nix-env *)"
+          "Bash(nix-channel *)"
         ]
+        ++ bashRules "nix" [ "profile" ]
         ++ bashRules "age" [
           "-d"
           "--decrypt"
@@ -589,7 +605,86 @@ in
             "upgrade"
             "uninstall"
             "rollback"
-          ];
+          ]
+          # Same for this machine and the servers: applying a configuration,
+          # deploying, bumping inputs and deleting old generations (the
+          # rollback path) happen only when I asked for them.
+          ++ [
+            "Bash(deploy *)"
+            "Bash(nix-collect-garbage *)"
+          ]
+          ++ bashRules "nh" [
+            "os switch"
+            "os boot"
+            "os test"
+            "os rollback"
+            "home switch"
+            "clean"
+          ]
+          ++ bashRules "home-manager" [ "switch" ]
+          ++ bashRules "nix" [
+            "flake update"
+            "flake lock"
+            "store gc"
+            "store delete"
+            "store optimise"
+            "run nixpkgs#deploy-rs"
+          ]
+          ++ bashRules "nix-store" [
+            "--gc"
+            "--delete"
+          ]
+          # Services: their config is declarative and goes live through
+          # `nh os switch`. Status and journalctl stay free; changing what
+          # runs right now (or the session itself) prompts.
+          ++ [
+            "Bash(reboot *)"
+            "Bash(poweroff *)"
+            "Bash(shutdown *)"
+            "Bash(pkill *)"
+            "Bash(killall *)"
+          ]
+          ++ bashRules "systemctl" [
+            "start"
+            "stop"
+            "restart"
+            "try-restart"
+            "reload"
+            "reload-or-restart"
+            "enable"
+            "disable"
+            "reenable"
+            "mask"
+            "unmask"
+            "link"
+            "revert"
+            "preset"
+            "edit"
+            "set-property"
+            "set-environment"
+            "kill"
+            "clean"
+            "freeze"
+            "isolate"
+            "reset-failed"
+            "daemon-reload"
+            "daemon-reexec"
+            "reboot"
+            "soft-reboot"
+            "poweroff"
+            "halt"
+            "suspend"
+            "hibernate"
+            "kexec"
+          ]
+          ++ bashRules "loginctl" [
+            "terminate-session"
+            "terminate-user"
+            "kill-session"
+            "kill-user"
+          ]
+          ++ bashRules "hyprctl" [ "dispatch exit" ]
+          ++ bashRules "uwsm" [ "stop" ];
       };
       # No attribution in commits or PRs/MRs it writes: no "Co-Authored-By:
       # Claude" trailer or "Generated with Claude Code" footer (empty strings),
