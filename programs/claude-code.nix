@@ -1,4 +1,24 @@
-{ pkgs, pkgs-unstable, ... }:
+{
+  lib,
+  pkgs,
+  pkgs-unstable,
+  me,
+  ...
+}:
+let
+  # A permission rule for a command and the forms it hides behind. Claude
+  # Code strips sudo/env/nice/timeout before matching, but not our own
+  # `lowprio` wrapper, and a `* ` after the tool catches global flags put
+  # before the subcommand (`kubectl -n x apply`, `sops --input-type yaml -d`).
+  bashRules =
+    tool: verbs:
+    lib.concatMap (v: [
+      "Bash(${tool} ${v} *)"
+      "Bash(${tool} * ${v} *)"
+      "Bash(lowprio ${tool} ${v} *)"
+      "Bash(lowprio ${tool} * ${v} *)"
+    ]) verbs;
+in
 {
   # Tools Claude reaches for in its own shell; without them it falls back to
   # clumsier python/sed one-liners.
@@ -126,12 +146,16 @@
       ## Nix flake
 
       1. `nix fmt -- --ci` (fails if anything needs formatting)
-      2. `lowprio nix flake check --no-build` (evaluates every output)
-      3. Build each host the change can affect. For a NixOS host:
-         `lowprio nix build --no-link .#nixosConfigurations.<host>.config.system.build.toplevel`.
-         If the host's system differs from this machine's (e.g. aarch64), only
-         evaluate it: `lowprio nix eval --raw .#nixosConfigurations.<host>.config.system.build.toplevel.drvPath`.
-         Home-manager only: `.#nixosConfigurations.<host>.config.home-manager.users.<user>.home.activationPackage`.
+      2. `lowprio nix flake check --no-build --all-systems` (evaluates every
+         output, including other architectures' checks; nothing is built)
+      3. Build the outputs the change affects for this machine's system:
+         `lowprio nix build --no-link .#<output>`.
+         In ~/Documents/flake (the NixOS config) that means work-laptop:
+         `.#nixosConfigurations.work-laptop.config.system.build.toplevel`
+         (home-manager only: `.#nixosConfigurations.work-laptop.config.home-manager.users.${me.user}.home.activationPackage`).
+         Never build home-server or drake: step 2 already evaluates them,
+         and deploy-rs builds both on their own hosts. Say they were
+         evaluated but not built, and ask if a real build seems necessary.
       4. Do not run `nh os switch` or anything that activates a configuration
          unless asked.
 
@@ -471,24 +495,101 @@
     # `/model`, `/theme` and the notification toggle still work, but only for
     # the running session. Change them here instead.
     settings = {
-      # Default model for every new session. `[1m]` picks the
-      # 1M-context Opus 5; it counts 5x against rate limits, plain "opus" is the
-      # regular 200k one.
-      model = "opus[1m]";
+      # Default model for every new session. The alias follows the latest
+      # Opus (5.5 at the time of writing), whose context is natively 1M, so
+      # no `[1m]` suffix is needed.
+      model = "opus";
+      # Most work here changes real systems (Terraform, Flux, NixOS), where a
+      # shallow answer costs more than the extra thinking. Applies to every
+      # model, not just Opus; `/effort` lasts only for the session. For a
+      # hard session: `CLAUDE_CODE_EFFORT_LEVEL=xhigh claude`.
+      effortLevel = "high";
       permissions = {
         # Start in Auto rather than Claude Code's own default of "ask each
         # time": no routine permission prompts, a reviewer model screens
         # actions instead.
         defaultMode = "auto";
-        # Hard stops that hold regardless of what the auto-mode reviewer thinks.
+        # Hard stops that hold regardless of what the auto-mode reviewer
+        # thinks, or what Claude is told in chat. A backstop, not a sandbox:
+        # prefix matching can't see through every wrapper.
         deny = [
           "Read(~/.config/sops/age/**)"
           "Read(~/.ssh/id_*)"
-          "Bash(terraform apply:*)"
-          "Bash(terraform destroy:*)"
-          "Bash(tofu apply:*)"
-          "Bash(tofu destroy:*)"
+          # Secrets sops-nix has already decrypted (home-manager and system).
+          # `//` makes the path absolute; a single `/` is relative to this file.
+          "Read(~/.config/sops-nix/**)"
+          "Read(//run/user/*/secrets.d/**)"
+          "Read(//run/secrets/**)"
+          "Read(//run/secrets.d/**)"
+          # Never decrypt: sops has too many ways in (-d after any flag,
+          # exec-env, exec-file, edit, or a bare file with EDITOR=cat), so
+          # nothing of sops runs. Ask me for `updatekeys` or an encrypt.
+          "Bash(sops *)"
+          "Bash(lowprio sops *)"
+          "Bash(nix shell * -c sops *)"
+          "Bash(nix run nixpkgs#sops *)"
+          "Bash(nixos-rebuild *)"
+          "Bash(lowprio nixos-rebuild *)"
+        ]
+        ++ bashRules "age" [
+          "-d"
+          "--decrypt"
+        ]
+        ++ bashRules "terraform" [
+          "apply"
+          "destroy"
+        ]
+        ++ bashRules "tofu" [
+          "apply"
+          "destroy"
         ];
+        # Writes to a cluster always prompt, even in auto mode, so "unless
+        # told otherwise" in CLAUDE.md still works: I approve when I asked.
+        ask =
+          bashRules "kubectl" [
+            "apply"
+            "create"
+            "replace"
+            "patch"
+            "edit"
+            "delete"
+            "scale"
+            "autoscale"
+            "rollout restart"
+            "rollout undo"
+            "rollout pause"
+            "rollout resume"
+            "set"
+            "label"
+            "annotate"
+            "taint"
+            "cordon"
+            "uncordon"
+            "drain"
+            "expose"
+            "run"
+            "exec"
+            "debug"
+            "cp"
+          ]
+          ++ bashRules "flux" [
+            "reconcile"
+            "suspend"
+            "resume"
+            "create"
+            "delete"
+            "bootstrap"
+            "install"
+            "uninstall"
+            "push"
+            "tag"
+          ]
+          ++ bashRules "helm" [
+            "install"
+            "upgrade"
+            "uninstall"
+            "rollback"
+          ];
       };
       # No attribution in commits or PRs/MRs it writes: no "Co-Authored-By:
       # Claude" trailer or "Generated with Claude Code" footer (empty strings),
@@ -572,7 +673,25 @@
               command = toString (
                 pkgs.writeShellScript "claude-nixfmt" ''
                   f=$(${pkgs.jq}/bin/jq -r '.tool_input.file_path // empty')
-                  [[ $f == *.nix && -f $f ]] && ${pkgs.nixfmt}/bin/nixfmt "$f"
+                  if [[ $f == *.nix && -f $f ]]; then
+                    ${pkgs.nixfmt}/bin/nixfmt "$f" || exit 2
+                  fi
+                  exit 0
+                ''
+              );
+            }
+            {
+              # Same for Terraform / OpenTofu, so `fmt -check` doesn't fail on
+              # Claude's own edits. tofu's formatter matches terraform's. A file
+              # that doesn't parse exits 2, which hands tofu's error back to
+              # Claude instead of swallowing it.
+              type = "command";
+              command = toString (
+                pkgs.writeShellScript "claude-tofufmt" ''
+                  f=$(${pkgs.jq}/bin/jq -r '.tool_input.file_path // empty')
+                  if [[ $f =~ \.(tf|tfvars|tofu|tftest\.hcl|tofutest\.hcl)$ && -f $f ]]; then
+                    ${pkgs.opentofu}/bin/tofu fmt -no-color "$f" >/dev/null || exit 2
+                  fi
                   exit 0
                 ''
               );
